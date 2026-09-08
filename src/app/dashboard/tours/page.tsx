@@ -29,7 +29,7 @@ export default async function ToursPage() {
       {groups.map(([key, items]) => (
         <div key={key} className="space-y-3">
           <h2 className="text-lg font-semibold tracking-tight">{formatDateHeading(key)}</h2>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {items.map((tour) => (
               <Card key={tour.id}>
                 <CardHeader>

@@ -45,7 +45,8 @@ export default async function InspectionsPage() {
         return (
           <div key={t.id} className="space-y-3">
             <h2 className="text-lg font-semibold text-muted-foreground">{t.property_address}</h2>
-            {txItems.map((item) => (
+            <div className="grid gap-3 md:grid-cols-2">
+              {txItems.map((item) => (
               <Card key={item.id} className={item.resolved ? "opacity-60" : undefined}>
                 <CardHeader>
                   <div className="flex items-start justify-between gap-2">
@@ -63,8 +64,9 @@ export default async function InspectionsPage() {
                     <p className="text-sm text-muted-foreground">{item.negotiation_note}</p>
                   </CardContent>
                 )}
-              </Card>
-            ))}
+                </Card>
+              ))}
+            </div>
           </div>
         );
       })}

@@ -68,25 +68,25 @@ export function TransactionEditor({
         </p>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <Label>Stage</Label>
-          <Select value={stageKey} onValueChange={(v) => setStageKey(v ?? stageKey)}>
-            <SelectTrigger>
-              <SelectValue>
-                {(value: string) => typeStages.find((s) => s.stage_key === value)?.label ?? value}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              {typeStages.map((s) => (
-                <SelectItem key={s.stage_key} value={s.stage_key}>
-                  {s.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="space-y-2">
+            <Label>Stage</Label>
+            <Select value={stageKey} onValueChange={(v) => setStageKey(v ?? stageKey)}>
+              <SelectTrigger className="w-full">
+                <SelectValue>
+                  {(value: string) => typeStages.find((s) => s.stage_key === value)?.label ?? value}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                {typeStages.map((s) => (
+                  <SelectItem key={s.stage_key} value={s.stage_key}>
+                    {s.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-        <div className="grid gap-4 sm:grid-cols-3">
           {DATE_FIELDS.map(({ key, label }) => (
             <div key={key} className="space-y-2">
               <Label htmlFor={`${transaction.id}-${key}`}>{label}</Label>

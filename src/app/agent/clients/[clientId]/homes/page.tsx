@@ -27,7 +27,7 @@ export default async function ClientHomesPage({
       {topContenders.length > 0 && (
         <div className="space-y-3">
           <h3 className="text-sm font-semibold text-muted-foreground">Top Contenders</h3>
-          <div className="space-y-3">
+          <div className="grid gap-3 md:grid-cols-2">
             {topContenders.map((home) => (
               <div key={home.id} className="relative">
                 <HomeSeenCard
