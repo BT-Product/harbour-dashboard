@@ -208,6 +208,39 @@ export type Database = {
         Args: { p_partner_name: string | null; p_partner_email: string | null };
         Returns: Profile;
       };
+      agent_update_key_dates: {
+        Args: { p_transaction_id: string; p_key_dates: KeyDates };
+        Returns: Transaction;
+      };
+      agent_upsert_tour: {
+        Args: {
+          p_tour_id: string | null;
+          p_client_id: string;
+          p_address: string;
+          p_scheduled_at: string;
+          p_notes: string | null;
+        };
+        Returns: Tour;
+      };
+      agent_delete_tour: {
+        Args: { p_tour_id: string };
+        Returns: undefined;
+      };
+      agent_upsert_inspection_item: {
+        Args: {
+          p_item_id: string | null;
+          p_transaction_id: string;
+          p_item: string;
+          p_importance: ItemImportance;
+          p_negotiation_note: string | null;
+          p_resolved: boolean;
+        };
+        Returns: InspectionItem;
+      };
+      agent_delete_inspection_item: {
+        Args: { p_item_id: string };
+        Returns: undefined;
+      };
     };
   };
 };

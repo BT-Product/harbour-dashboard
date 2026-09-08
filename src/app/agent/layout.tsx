@@ -1,12 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { DashboardNav } from "@/components/dashboard-nav";
-import { SignOutButton } from "@/components/sign-out-button";
-
-const NAV_ITEMS = [
-  { href: "/agent/debrief", label: "Debrief" },
-  { href: "/agent/transactions", label: "Transactions" },
-];
+import { getCurrentProfile } from "@/lib/data/dashboard";
+import { AgentSidebar } from "@/components/agent-sidebar";
 
 export default async function AgentLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -15,18 +10,14 @@ export default async function AgentLayout({ children }: { children: React.ReactN
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
+  const profile = await getCurrentProfile(supabase, user.id);
+
   return (
-    <div className="flex min-h-screen flex-col">
-      <header className="border-b">
-        <div className="mx-auto flex max-w-2xl items-center justify-between gap-4 px-4 py-3">
-          <div className="flex items-center gap-6">
-            <span className="text-lg font-semibold tracking-tight">Harbour Agent</span>
-            <DashboardNav items={NAV_ITEMS} />
-          </div>
-          <SignOutButton />
-        </div>
-      </header>
-      <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-6">{children}</main>
+    <div className="flex h-screen overflow-hidden">
+      <AgentSidebar fullName={profile.full_name} />
+      <main className="min-w-0 flex-1 overflow-y-auto">
+        <div className="mx-auto w-full max-w-3xl px-6 py-10 sm:px-10">{children}</div>
+      </main>
     </div>
   );
 }
