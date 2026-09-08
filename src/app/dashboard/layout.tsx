@@ -27,14 +27,14 @@ export default async function DashboardLayout({ children }: { children: React.Re
     primary?.type === "buy" ? linkedTransaction(transactions, primary) : undefined;
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex h-screen overflow-hidden">
       <DashboardSidebar
         fullName={profile.full_name}
         hasBuy={hasBuy}
         partnerName={profile.partner_name}
         partnerEmail={profile.partner_email}
       />
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 flex-col overflow-y-auto">
         {linkedSell && linkedSell.status === "active" && (
           <SellerStatusStrip sellTransaction={linkedSell} stages={stages} />
         )}

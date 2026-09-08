@@ -49,7 +49,7 @@ export function DashboardSidebar({
         <span className="font-heading text-xl font-semibold tracking-tight">Harbour</span>
       </div>
 
-      <nav className="flex flex-1 flex-col gap-1">
+      <nav className="flex flex-1 flex-col gap-1 overflow-y-auto">
         {items.map((item) => {
           const active = pathname === item.href;
           const Icon = item.icon;
