@@ -25,5 +25,5 @@ export async function signIn(_prevState: string | null, formData: FormData) {
     .eq("id", data.user.id)
     .single();
 
-  redirect(profile?.is_agent ? "/agent/debrief" : "/dashboard");
+  redirect(profile?.is_agent ? "/agent" : "/dashboard");
 }

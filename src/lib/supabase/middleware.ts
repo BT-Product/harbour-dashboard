@@ -49,7 +49,7 @@ export async function updateSession(request: NextRequest) {
 
     if (path === "/login") {
       const url = request.nextUrl.clone();
-      url.pathname = profile?.is_agent ? "/agent/debrief" : "/dashboard";
+      url.pathname = profile?.is_agent ? "/agent" : "/dashboard";
       url.search = "";
       return NextResponse.redirect(url);
     }
