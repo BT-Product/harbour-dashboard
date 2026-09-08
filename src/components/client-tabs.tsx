@@ -10,7 +10,7 @@ export function ClientTabs({ clientId, hasBuy }: { clientId: string; hasBuy: boo
 
   const items = [
     { href: base, label: "Overview" },
-    ...(hasBuy ? [{ href: `${base}/tours`, label: "Tours" }] : []),
+    ...(hasBuy ? [{ href: `${base}/tours`, label: "Upcoming Tours" }] : []),
     ...(hasBuy ? [{ href: `${base}/homes`, label: "Homes Seen" }] : []),
     { href: `${base}/inspections`, label: "Inspections" },
   ];

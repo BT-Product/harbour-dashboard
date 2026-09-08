@@ -17,7 +17,7 @@ import { SignOutButton } from "@/components/sign-out-button";
 
 const ALL_NAV_ITEMS = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard, buyOnly: false },
-  { href: "/dashboard/tours", label: "Tours", icon: CalendarCheck, buyOnly: true },
+  { href: "/dashboard/tours", label: "Upcoming Tours", icon: CalendarCheck, buyOnly: true },
   { href: "/dashboard/homes", label: "Homes Seen", icon: Home, buyOnly: true },
   { href: "/dashboard/escrow", label: "Escrow", icon: Milestone, buyOnly: false },
   { href: "/dashboard/inspections", label: "Inspections", icon: ClipboardCheck, buyOnly: false },
