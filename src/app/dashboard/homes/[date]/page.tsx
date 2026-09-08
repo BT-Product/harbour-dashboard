@@ -35,7 +35,7 @@ export default async function HomesSeenDayPage({
         </h1>
       </div>
 
-      <div className="space-y-3">
+      <div className="grid gap-3 md:grid-cols-2">
         {dayHomes.length === 0 && (
           <p className="text-sm text-muted-foreground">No homes found for this date.</p>
         )}

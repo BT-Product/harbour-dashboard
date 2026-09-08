@@ -75,49 +75,51 @@ export default async function AgentHomePage() {
         ]}
       />
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Upcoming tours</CardTitle>
-        </CardHeader>
-        <CardContent className="divide-y divide-border">
-          {upcoming.length === 0 && (
-            <p className="py-2 text-sm text-muted-foreground">
-              Nothing scheduled in the next 7 days.
-            </p>
-          )}
-          {upcoming.map((tour) => (
-            <IconListRow
-              key={tour.id}
-              href={`/agent/clients/${tour.client_id}/tours`}
-              icon={Building2}
-              title={tour.profiles?.full_name ?? "Client"}
-              subtitle={tour.address}
-              trailing={formatWhen(tour.scheduled_at)}
-            />
-          ))}
-        </CardContent>
-      </Card>
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Upcoming tours</CardTitle>
+          </CardHeader>
+          <CardContent className="divide-y divide-border">
+            {upcoming.length === 0 && (
+              <p className="py-2 text-sm text-muted-foreground">
+                Nothing scheduled in the next 7 days.
+              </p>
+            )}
+            {upcoming.map((tour) => (
+              <IconListRow
+                key={tour.id}
+                href={`/agent/clients/${tour.client_id}/tours`}
+                icon={Building2}
+                title={tour.profiles?.full_name ?? "Client"}
+                subtitle={tour.address}
+                trailing={formatWhen(tour.scheduled_at)}
+              />
+            ))}
+          </CardContent>
+        </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Recent tours — got a debrief written?</CardTitle>
-        </CardHeader>
-        <CardContent className="divide-y divide-border">
-          {recentPast.length === 0 && (
-            <p className="py-2 text-sm text-muted-foreground">No tours in the last 7 days.</p>
-          )}
-          {recentPast.map((tour) => (
-            <IconListRow
-              key={tour.id}
-              href={`/agent/clients/${tour.client_id}/homes`}
-              icon={Building2}
-              title={tour.profiles?.full_name ?? "Client"}
-              subtitle={tour.address}
-              trailing={formatWhen(tour.scheduled_at)}
-            />
-          ))}
-        </CardContent>
-      </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent tours — got a debrief written?</CardTitle>
+          </CardHeader>
+          <CardContent className="divide-y divide-border">
+            {recentPast.length === 0 && (
+              <p className="py-2 text-sm text-muted-foreground">No tours in the last 7 days.</p>
+            )}
+            {recentPast.map((tour) => (
+              <IconListRow
+                key={tour.id}
+                href={`/agent/clients/${tour.client_id}/homes`}
+                icon={Building2}
+                title={tour.profiles?.full_name ?? "Client"}
+                subtitle={tour.address}
+                trailing={formatWhen(tour.scheduled_at)}
+              />
+            ))}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
