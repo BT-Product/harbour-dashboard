@@ -7,9 +7,8 @@ import {
   linkedTransaction,
   primaryTransaction,
 } from "@/lib/data/dashboard";
-import { DashboardNav } from "@/components/dashboard-nav";
+import { DashboardSidebar } from "@/components/dashboard-sidebar";
 import { SellerStatusStrip } from "@/components/seller-status-strip";
-import { SignOutButton } from "@/components/sign-out-button";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -27,35 +26,20 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const linkedSell =
     primary?.type === "buy" ? linkedTransaction(transactions, primary) : undefined;
 
-  const navItems = [
-    { href: "/dashboard", label: "Overview" },
-    ...(hasBuy ? [{ href: "/dashboard/homes", label: "Homes Seen" }] : []),
-    ...(hasBuy ? [{ href: "/dashboard/tours", label: "Tours" }] : []),
-    { href: "/dashboard/escrow", label: "Escrow" },
-    { href: "/dashboard/inspections", label: "Inspections" },
-    ...(hasBuy ? [{ href: "/dashboard/financials", label: "Financials" }] : []),
-  ];
-
   return (
-    <div className="flex min-h-screen flex-col">
-      {linkedSell && linkedSell.status === "active" && (
-        <SellerStatusStrip sellTransaction={linkedSell} stages={stages} />
-      )}
-      <header className="border-b">
-        <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3">
-          <div className="flex items-center gap-6">
-            <span className="text-lg font-semibold tracking-tight">Harbour</span>
-            <DashboardNav items={navItems} />
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="hidden text-sm text-muted-foreground sm:inline">
-              {profile.full_name}
-            </span>
-            <SignOutButton />
-          </div>
-        </div>
-      </header>
-      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">{children}</main>
+    <div className="flex min-h-screen">
+      <DashboardSidebar
+        fullName={profile.full_name}
+        hasBuy={hasBuy}
+        partnerName={profile.partner_name}
+        partnerEmail={profile.partner_email}
+      />
+      <div className="flex min-w-0 flex-1 flex-col">
+        {linkedSell && linkedSell.status === "active" && (
+          <SellerStatusStrip sellTransaction={linkedSell} stages={stages} />
+        )}
+        <main className="mx-auto w-full max-w-4xl flex-1 px-6 py-10 sm:px-10">{children}</main>
+      </div>
     </div>
   );
 }

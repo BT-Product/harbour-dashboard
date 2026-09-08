@@ -35,6 +35,8 @@ export type Profile = {
   full_name: string;
   phone: string | null;
   is_agent: boolean;
+  partner_name: string | null;
+  partner_email: string | null;
   created_at: string;
 };
 
@@ -201,6 +203,10 @@ export type Database = {
       agent_advance_stage: {
         Args: { p_transaction_id: string; p_stage_key: string };
         Returns: Transaction;
+      };
+      update_my_partner: {
+        Args: { p_partner_name: string | null; p_partner_email: string | null };
+        Returns: Profile;
       };
     };
   };

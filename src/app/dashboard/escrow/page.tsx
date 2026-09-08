@@ -12,7 +12,7 @@ export default async function EscrowPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold tracking-tight">Escrow</h1>
+      <h1 className="font-heading text-3xl font-semibold tracking-tight">Escrow</h1>
       <div className="grid gap-4 md:grid-cols-2">
         {transactions.map((t) => (
           <StageStepper key={t.id} transaction={t} stages={stages} />

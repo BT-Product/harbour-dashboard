@@ -36,7 +36,7 @@ export default async function InspectionsPage() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-2xl font-semibold tracking-tight">Inspections</h1>
+      <h1 className="font-heading text-3xl font-semibold tracking-tight">Inspections</h1>
 
       {transactions.map((t) => {
         const txItems = (items ?? []).filter((i) => i.transaction_id === t.id);

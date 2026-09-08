@@ -13,7 +13,7 @@ export default async function FinancialsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold tracking-tight">Financials</h1>
+      <h1 className="font-heading text-3xl font-semibold tracking-tight">Financials</h1>
 
       {!preapproval && (
         <p className="text-sm text-muted-foreground">
