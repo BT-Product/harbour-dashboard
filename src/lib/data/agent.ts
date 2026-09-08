@@ -44,6 +44,17 @@ export async function getClientHomesSeen(supabase: Client, clientId: string): Pr
   return data ?? [];
 }
 
+export type TourWithClient = Tour & { profiles: { full_name: string } | null };
+
+export async function getAgentTours(supabase: Client): Promise<TourWithClient[]> {
+  const { data, error } = await supabase
+    .from("tours")
+    .select("*, profiles(full_name)")
+    .order("scheduled_at", { ascending: true });
+  if (error) throw error;
+  return (data ?? []) as unknown as TourWithClient[];
+}
+
 export async function getInspectionItemsForTransactions(
   supabase: Client,
   transactionIds: string[],

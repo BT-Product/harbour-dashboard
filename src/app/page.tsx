@@ -15,5 +15,5 @@ export default async function Home() {
     .eq("id", user.id)
     .single();
 
-  redirect(profile?.is_agent ? "/agent/debrief" : "/dashboard");
+  redirect(profile?.is_agent ? "/agent" : "/dashboard");
 }

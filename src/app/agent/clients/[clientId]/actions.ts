@@ -5,7 +5,10 @@ import { createClient } from "@/lib/supabase/server";
 import type { InterestLevel, ItemImportance, KeyDates } from "@/lib/supabase/database.types";
 
 function ok(clientId: string) {
-  revalidatePath(`/agent/clients/${clientId}`);
+  // 'layout' revalidates every sub-route (overview, tours, homes, inspections)
+  // sharing this client's layout, not just the overview page itself.
+  revalidatePath(`/agent/clients/${clientId}`, "layout");
+  revalidatePath("/agent");
 }
 
 export async function updateStage(clientId: string, transactionId: string, stageKey: string) {

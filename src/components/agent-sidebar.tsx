@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { NotebookPen, Users } from "lucide-react";
+import { House, NotebookPen, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SignOutButton } from "@/components/sign-out-button";
 
 const NAV_ITEMS = [
-  { href: "/agent/debrief", label: "Debrief", icon: NotebookPen },
-  { href: "/agent/clients", label: "Clients", icon: Users },
+  { href: "/agent", label: "Home", icon: House, exact: true },
+  { href: "/agent/clients", label: "Clients", icon: Users, exact: false },
+  { href: "/agent/debrief", label: "Debrief", icon: NotebookPen, exact: false },
 ];
 
 function initials(name: string) {
@@ -28,7 +29,9 @@ export function AgentSidebar({ fullName }: { fullName: string }) {
 
       <nav className="flex flex-1 flex-col gap-1 overflow-y-auto">
         {NAV_ITEMS.map((item) => {
-          const active = pathname === item.href || pathname.startsWith(item.href + "/");
+          const active = item.exact
+            ? pathname === item.href
+            : pathname === item.href || pathname.startsWith(item.href + "/");
           const Icon = item.icon;
           return (
             <Link
