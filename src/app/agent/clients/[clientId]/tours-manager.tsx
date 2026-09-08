@@ -3,7 +3,6 @@
 import { useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -24,20 +23,28 @@ function toDatetimeLocal(value: string): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
-function TourFormDialog({
+export function TourFormDialog({
   clientId,
   tour,
+  defaultDateKey,
   triggerLabel,
   triggerVariant = "outline",
 }: {
   clientId: string;
   tour?: Tour;
+  defaultDateKey?: string;
   triggerLabel: string;
   triggerVariant?: "outline" | "ghost";
 }) {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const formRef = useRef<HTMLFormElement>(null);
+
+  const defaultDatetime = tour
+    ? toDatetimeLocal(tour.scheduled_at)
+    : defaultDateKey
+      ? `${defaultDateKey}T10:00`
+      : undefined;
 
   function handleSubmit(formData: FormData) {
     startTransition(async () => {
@@ -78,7 +85,7 @@ function TourFormDialog({
                 name="scheduled_at"
                 type="datetime-local"
                 required
-                defaultValue={tour ? toDatetimeLocal(tour.scheduled_at) : undefined}
+                defaultValue={defaultDatetime}
               />
             </div>
             <div className="space-y-2">
@@ -97,7 +104,15 @@ function TourFormDialog({
   );
 }
 
-export function ToursManager({ clientId, tours }: { clientId: string; tours: Tour[] }) {
+export function ToursDayManager({
+  clientId,
+  dateKeyStr,
+  tours,
+}: {
+  clientId: string;
+  dateKeyStr: string;
+  tours: Tour[];
+}) {
   const [isPending, startTransition] = useTransition();
 
   function handleDelete(id: string) {
@@ -113,53 +128,39 @@ export function ToursManager({ clientId, tours }: { clientId: string; tours: Tou
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle>Tours</CardTitle>
-          <TourFormDialog clientId={clientId} triggerLabel="Add tour" />
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        {tours.length === 0 && <p className="text-sm text-muted-foreground">No tours yet.</p>}
-        {tours.map((tour) => (
-          <div
-            key={tour.id}
-            className="flex items-start justify-between gap-2 rounded-lg border p-3"
-          >
-            <div>
-              <p className="text-sm font-medium">{tour.address}</p>
-              <p className="text-xs text-muted-foreground">
-                {new Date(tour.scheduled_at).toLocaleString(undefined, {
-                  weekday: "short",
-                  month: "short",
-                  day: "numeric",
-                  hour: "numeric",
-                  minute: "2-digit",
-                })}
-              </p>
-              {tour.notes && <p className="mt-1 text-sm">{tour.notes}</p>}
-            </div>
-            <div className="flex shrink-0 gap-2">
-              <TourFormDialog
-                clientId={clientId}
-                tour={tour}
-                triggerLabel="Edit"
-                triggerVariant="ghost"
-              />
-              <Button
-                size="sm"
-                variant="ghost"
-                type="button"
-                disabled={isPending}
-                onClick={() => handleDelete(tour.id)}
-              >
-                Delete
-              </Button>
-            </div>
+    <div className="space-y-3">
+      <div className="flex justify-end">
+        <TourFormDialog clientId={clientId} defaultDateKey={dateKeyStr} triggerLabel="Add stop" />
+      </div>
+      {tours.length === 0 && (
+        <p className="text-sm text-muted-foreground">No tours found for this date.</p>
+      )}
+      {tours.map((tour) => (
+        <div key={tour.id} className="flex items-start justify-between gap-2 rounded-lg border p-3">
+          <div>
+            <p className="text-sm font-medium">{tour.address}</p>
+            <p className="text-xs text-muted-foreground">
+              {new Date(tour.scheduled_at).toLocaleTimeString(undefined, {
+                hour: "numeric",
+                minute: "2-digit",
+              })}
+            </p>
+            {tour.notes && <p className="mt-1 text-sm">{tour.notes}</p>}
           </div>
-        ))}
-      </CardContent>
-    </Card>
+          <div className="flex shrink-0 gap-2">
+            <TourFormDialog clientId={clientId} tour={tour} triggerLabel="Edit" triggerVariant="ghost" />
+            <Button
+              size="sm"
+              variant="ghost"
+              type="button"
+              disabled={isPending}
+              onClick={() => handleDelete(tour.id)}
+            >
+              Delete
+            </Button>
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }
