@@ -17,7 +17,7 @@ export default async function ToursPage() {
   return (
     <div className="space-y-8">
       <div className="space-y-3">
-        <h1 className="text-2xl font-semibold tracking-tight">Upcoming Tours</h1>
+        <h1 className="font-heading text-3xl font-semibold tracking-tight">Upcoming Tours</h1>
         {upcoming.length === 0 && (
           <p className="text-sm text-muted-foreground">No tours scheduled right now.</p>
         )}
