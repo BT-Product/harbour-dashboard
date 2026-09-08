@@ -67,9 +67,27 @@ async function main() {
   console.log("Creating profiles…");
   const { error: profilesError } = await supabase.from("profiles").insert([
     { id: agentUserId, agent_id: agent.id, full_name: "Britton Taylor", is_agent: true },
-    { id: moveUpId, agent_id: agent.id, full_name: "Jordan Move-Up", phone: "555-0101" },
-    { id: buyerId, agent_id: agent.id, full_name: "Sam Buyer", phone: "555-0102" },
-    { id: sellerId, agent_id: agent.id, full_name: "Alex Seller", phone: "555-0103" },
+    {
+      id: moveUpId,
+      agent_id: agent.id,
+      full_name: "Jordan Move-Up",
+      phone: "555-0101",
+      is_agent: false,
+    },
+    {
+      id: buyerId,
+      agent_id: agent.id,
+      full_name: "Sam Buyer",
+      phone: "555-0102",
+      is_agent: false,
+    },
+    {
+      id: sellerId,
+      agent_id: agent.id,
+      full_name: "Alex Seller",
+      phone: "555-0103",
+      is_agent: false,
+    },
   ]);
   if (profilesError) throw profilesError;
 
