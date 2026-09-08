@@ -46,7 +46,7 @@ export function AddPartnerDialog({
       <DialogContent>
         <form ref={formRef} action={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Add your spouse or partner</DialogTitle>
+            <DialogTitle>Add your partner</DialogTitle>
             <DialogDescription>
               We&apos;ll keep their name and email on file so your agent knows who else is
               involved.
