@@ -21,7 +21,10 @@ export async function GET() {
       .single();
     if (readError) throw readError;
 
-    if (data.checked_at !== now) {
+    // Compare parsed instants, not raw strings — Postgres returns
+    // timestamptz in a different string format (offset notation, precision)
+    // than JS's toISOString(), even when the value round-tripped correctly.
+    if (new Date(data.checked_at).getTime() !== new Date(now).getTime()) {
       throw new Error("Round-trip write did not persist");
     }
 

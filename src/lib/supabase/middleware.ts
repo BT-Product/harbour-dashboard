@@ -40,19 +40,19 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  if (user && path === "/login") {
-    const url = request.nextUrl.clone();
-    url.pathname = "/dashboard";
-    url.search = "";
-    return NextResponse.redirect(url);
-  }
-
-  if (user && path.startsWith("/agent")) {
+  if (user && (path === "/login" || path.startsWith("/agent"))) {
     const { data: profile } = await supabase
       .from("profiles")
       .select("is_agent")
       .eq("id", user.id)
       .single();
+
+    if (path === "/login") {
+      const url = request.nextUrl.clone();
+      url.pathname = profile?.is_agent ? "/agent/debrief" : "/dashboard";
+      url.search = "";
+      return NextResponse.redirect(url);
+    }
 
     if (!profile?.is_agent) {
       const url = request.nextUrl.clone();
