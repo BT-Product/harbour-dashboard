@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { House, NotebookPen, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SignOutButton } from "@/components/sign-out-button";
+import { useSidebarDrawer } from "@/components/app-shell";
 
 const NAV_ITEMS = [
   { href: "/agent", label: "Home", icon: House, exact: true },
@@ -19,6 +20,7 @@ function initials(name: string) {
 
 export function AgentSidebar({ fullName }: { fullName: string }) {
   const pathname = usePathname();
+  const { close } = useSidebarDrawer();
 
   return (
     <aside className="flex h-full w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar px-3 py-4 text-sidebar-foreground">
@@ -37,6 +39,7 @@ export function AgentSidebar({ fullName }: { fullName: string }) {
             <Link
               key={item.href}
               href={item.href}
+              onClick={close}
               className={cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                 active

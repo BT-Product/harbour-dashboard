@@ -14,6 +14,7 @@ import {
 import { cn } from "@/lib/utils";
 import { AddPartnerDialog } from "@/components/add-partner-dialog";
 import { SignOutButton } from "@/components/sign-out-button";
+import { useSidebarDrawer } from "@/components/app-shell";
 
 const ALL_NAV_ITEMS = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard, buyOnly: false },
@@ -41,6 +42,7 @@ export function DashboardSidebar({
   partnerEmail: string | null;
 }) {
   const pathname = usePathname();
+  const { close } = useSidebarDrawer();
   const items = ALL_NAV_ITEMS.filter((item) => hasBuy || !item.buyOnly);
 
   return (
@@ -57,6 +59,7 @@ export function DashboardSidebar({
             <Link
               key={item.href}
               href={item.href}
+              onClick={close}
               className={cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                 active
