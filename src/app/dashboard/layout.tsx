@@ -8,6 +8,7 @@ import {
   primaryTransaction,
 } from "@/lib/data/dashboard";
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
+import { AppShell } from "@/components/app-shell";
 import { SellerStatusStrip } from "@/components/seller-status-strip";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -27,19 +28,22 @@ export default async function DashboardLayout({ children }: { children: React.Re
     primary?.type === "buy" ? linkedTransaction(transactions, primary) : undefined;
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      <DashboardSidebar
-        fullName={profile.full_name}
-        hasBuy={hasBuy}
-        partnerName={profile.partner_name}
-        partnerEmail={profile.partner_email}
-      />
-      <div className="flex min-w-0 flex-1 flex-col overflow-y-auto">
-        {linkedSell && linkedSell.status === "active" && (
+    <AppShell
+      sidebar={
+        <DashboardSidebar
+          fullName={profile.full_name}
+          hasBuy={hasBuy}
+          partnerName={profile.partner_name}
+          partnerEmail={profile.partner_email}
+        />
+      }
+      banner={
+        linkedSell && linkedSell.status === "active" ? (
           <SellerStatusStrip sellTransaction={linkedSell} stages={stages} />
-        )}
-        <main className="w-full flex-1 px-6 py-8 sm:px-8">{children}</main>
-      </div>
-    </div>
+        ) : null
+      }
+    >
+      <main className="w-full px-4 py-6 sm:px-8 sm:py-8">{children}</main>
+    </AppShell>
   );
 }
