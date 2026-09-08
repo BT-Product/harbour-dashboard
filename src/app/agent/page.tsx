@@ -1,7 +1,10 @@
-import Link from "next/link";
+import { Building2, CalendarCheck, CalendarClock, Users } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { StatBar } from "@/components/stat-bar";
+import { IconListRow } from "@/components/icon-list-row";
 import { createClient } from "@/lib/supabase/server";
 import { getAgentClients, getAgentTours } from "@/lib/data/agent";
+import { getCurrentProfile } from "@/lib/data/dashboard";
 
 function formatWhen(iso: string) {
   return new Date(iso).toLocaleString(undefined, {
@@ -13,9 +16,20 @@ function formatWhen(iso: string) {
   });
 }
 
+function greeting() {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good morning";
+  if (hour < 18) return "Good afternoon";
+  return "Good evening";
+}
+
 export default async function AgentHomePage() {
   const supabase = await createClient();
-  const [clients, tours] = await Promise.all([
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const [profile, clients, tours] = await Promise.all([
+    getCurrentProfile(supabase, user!.id),
     getAgentClients(supabase),
     getAgentTours(supabase),
   ]);
@@ -37,57 +51,49 @@ export default async function AgentHomePage() {
     c.transactions.some((t) => t.status === "active"),
   ).length;
 
+  const firstName = profile.full_name.split(" ")[0];
+  const today = new Date().toLocaleDateString(undefined, {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  });
+
   return (
     <div className="space-y-6">
-      <h1 className="font-heading text-3xl font-semibold tracking-tight">Home</h1>
-
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm text-muted-foreground">Active clients</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-semibold">{activeClientCount}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm text-muted-foreground">Tours this week</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-semibold">{upcoming.length}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm text-muted-foreground">Tours last week</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-semibold">{recentPast.length}</p>
-          </CardContent>
-        </Card>
+      <div>
+        <h1 className="font-heading text-3xl font-semibold tracking-tight">
+          {greeting()}, {firstName}
+        </h1>
+        <p className="text-sm text-muted-foreground">{today}</p>
       </div>
+
+      <StatBar
+        stats={[
+          { icon: Users, value: activeClientCount, label: "Active clients" },
+          { icon: CalendarCheck, value: upcoming.length, label: "Tours this week" },
+          { icon: CalendarClock, value: recentPast.length, label: "Tours last week" },
+        ]}
+      />
 
       <Card>
         <CardHeader>
           <CardTitle>Upcoming tours</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2">
+        <CardContent className="divide-y divide-border">
           {upcoming.length === 0 && (
-            <p className="text-sm text-muted-foreground">Nothing scheduled in the next 7 days.</p>
+            <p className="py-2 text-sm text-muted-foreground">
+              Nothing scheduled in the next 7 days.
+            </p>
           )}
           {upcoming.map((tour) => (
-            <Link
+            <IconListRow
               key={tour.id}
               href={`/agent/clients/${tour.client_id}/tours`}
-              className="flex items-center justify-between rounded-lg border p-3 text-sm hover:bg-muted/40"
-            >
-              <div>
-                <span className="font-medium">{tour.profiles?.full_name ?? "Client"}</span>
-                <span className="text-muted-foreground"> · {tour.address}</span>
-              </div>
-              <span className="text-muted-foreground">{formatWhen(tour.scheduled_at)}</span>
-            </Link>
+              icon={Building2}
+              title={tour.profiles?.full_name ?? "Client"}
+              subtitle={tour.address}
+              trailing={formatWhen(tour.scheduled_at)}
+            />
           ))}
         </CardContent>
       </Card>
@@ -96,22 +102,19 @@ export default async function AgentHomePage() {
         <CardHeader>
           <CardTitle>Recent tours — got a debrief written?</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2">
+        <CardContent className="divide-y divide-border">
           {recentPast.length === 0 && (
-            <p className="text-sm text-muted-foreground">No tours in the last 7 days.</p>
+            <p className="py-2 text-sm text-muted-foreground">No tours in the last 7 days.</p>
           )}
           {recentPast.map((tour) => (
-            <Link
+            <IconListRow
               key={tour.id}
               href={`/agent/clients/${tour.client_id}/homes`}
-              className="flex items-center justify-between rounded-lg border p-3 text-sm hover:bg-muted/40"
-            >
-              <div>
-                <span className="font-medium">{tour.profiles?.full_name ?? "Client"}</span>
-                <span className="text-muted-foreground"> · {tour.address}</span>
-              </div>
-              <span className="text-muted-foreground">{formatWhen(tour.scheduled_at)}</span>
-            </Link>
+              icon={Building2}
+              title={tour.profiles?.full_name ?? "Client"}
+              subtitle={tour.address}
+              trailing={formatWhen(tour.scheduled_at)}
+            />
           ))}
         </CardContent>
       </Card>

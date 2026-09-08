@@ -38,7 +38,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         {linkedSell && linkedSell.status === "active" && (
           <SellerStatusStrip sellTransaction={linkedSell} stages={stages} />
         )}
-        <main className="mx-auto w-full max-w-4xl flex-1 px-6 py-10 sm:px-10">{children}</main>
+        <main className="mx-auto w-full max-w-4xl flex-1 px-6 py-8 sm:px-10">{children}</main>
       </div>
     </div>
   );
