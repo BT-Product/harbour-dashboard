@@ -16,7 +16,7 @@ export default async function AgentLayout({ children }: { children: React.ReactN
     <div className="flex h-screen overflow-hidden">
       <AgentSidebar fullName={profile.full_name} />
       <main className="min-w-0 flex-1 overflow-y-auto">
-        <div className="mx-auto w-full max-w-3xl px-6 py-10 sm:px-10">{children}</div>
+        <div className="mx-auto w-full max-w-3xl px-6 py-8 sm:px-10">{children}</div>
       </main>
     </div>
   );
