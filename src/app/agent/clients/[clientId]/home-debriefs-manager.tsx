@@ -2,9 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -17,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { HomeSeenCard } from "@/components/home-seen-card";
 import type { HomeSeen, InterestLevel } from "@/lib/supabase/database.types";
 import { saveDebriefInterest } from "./actions";
 
@@ -26,20 +25,21 @@ const INTEREST_OPTIONS: { value: InterestLevel; label: string }[] = [
   { value: "strong", label: "Strong" },
 ];
 
-const INTEREST_VARIANT: Record<InterestLevel, "default" | "secondary" | "outline"> = {
-  strong: "default",
-  maybe: "secondary",
-  pass: "outline",
-};
+function todayKey(): string {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
 
-function DebriefFormDialog({
+export function DebriefFormDialog({
   clientId,
   home,
+  defaultDateKey,
   triggerLabel,
   triggerVariant = "outline",
 }: {
   clientId: string;
   home?: HomeSeen;
+  defaultDateKey?: string;
   triggerLabel: string;
   triggerVariant?: "outline" | "ghost";
 }) {
@@ -47,16 +47,19 @@ function DebriefFormDialog({
   const [isPending, startTransition] = useTransition();
   const [interest, setInterest] = useState<InterestLevel | "">(home?.interest_level ?? "");
 
+  const defaultSeenAt = home ? home.seen_at.slice(0, 10) : (defaultDateKey ?? todayKey());
+
   function handleSubmit(formData: FormData) {
     startTransition(async () => {
       try {
+        const seenAtInput = String(formData.get("seen_at") || defaultSeenAt);
         await saveDebriefInterest(clientId, {
           id: home?.id ?? null,
           address: String(formData.get("address") || ""),
           clientNotes: String(formData.get("client_notes") || "").trim() || null,
           privateNotes: String(formData.get("private_notes") || "").trim() || null,
           interestLevel: interest || null,
-          seenAt: home ? home.seen_at : new Date().toISOString(),
+          seenAt: new Date(`${seenAtInput}T12:00`).toISOString(),
         });
         toast.success("Saved");
         setOpen(false);
@@ -80,6 +83,10 @@ function DebriefFormDialog({
             <div className="space-y-2">
               <Label htmlFor="address">Address</Label>
               <Input id="address" name="address" required defaultValue={home?.address} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="seen_at">Seen on</Label>
+              <Input id="seen_at" name="seen_at" type="date" required defaultValue={defaultSeenAt} />
             </div>
             <div className="space-y-2">
               <Label>Interest level</Label>
@@ -131,51 +138,37 @@ function DebriefFormDialog({
   );
 }
 
-export function HomeDebriefsManager({ clientId, homes }: { clientId: string; homes: HomeSeen[] }) {
+export function HomesSeenDayManager({
+  clientId,
+  dateKeyStr,
+  homes,
+}: {
+  clientId: string;
+  dateKeyStr: string;
+  homes: HomeSeen[];
+}) {
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle>Homes Seen</CardTitle>
-          <DebriefFormDialog clientId={clientId} triggerLabel="Add debrief" />
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        {homes.length === 0 && (
-          <p className="text-sm text-muted-foreground">No debriefs yet.</p>
-        )}
-        {homes.map((home) => (
-          <div key={home.id} className="rounded-lg border p-3">
-            <div className="flex items-start justify-between gap-2">
-              <div>
-                <div className="flex items-center gap-2">
-                  <p className="text-sm font-medium">{home.address}</p>
-                  {home.interest_level && (
-                    <Badge variant={INTEREST_VARIANT[home.interest_level]}>
-                      {home.interest_level}
-                    </Badge>
-                  )}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Seen {new Date(home.seen_at).toLocaleDateString()}
-                </p>
-                {home.client_notes && <p className="mt-1 text-sm">{home.client_notes}</p>}
-                {home.private_notes && (
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    Private: {home.private_notes}
-                  </p>
-                )}
-              </div>
-              <DebriefFormDialog
-                clientId={clientId}
-                home={home}
-                triggerLabel="Edit"
-                triggerVariant="ghost"
-              />
-            </div>
+    <div className="space-y-3">
+      <div className="flex justify-end">
+        <DebriefFormDialog clientId={clientId} defaultDateKey={dateKeyStr} triggerLabel="Add debrief" />
+      </div>
+      {homes.length === 0 && (
+        <p className="text-sm text-muted-foreground">No debriefs found for this date.</p>
+      )}
+      {homes.map((home) => (
+        <div key={home.id} className="relative">
+          <HomeSeenCard
+            address={home.address}
+            clientNotes={home.client_notes}
+            interestLevel={home.interest_level}
+            seenAt={home.seen_at}
+            privateNotes={home.private_notes}
+          />
+          <div className="absolute top-3 right-3">
+            <DebriefFormDialog clientId={clientId} home={home} triggerLabel="Edit" triggerVariant="ghost" />
           </div>
-        ))}
-      </CardContent>
-    </Card>
+        </div>
+      ))}
+    </div>
   );
 }

@@ -1,18 +1,7 @@
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/server";
-
-const INTEREST_LABEL: Record<string, string> = {
-  strong: "Strong interest",
-  maybe: "Maybe",
-  pass: "Passed",
-};
-
-const INTEREST_VARIANT: Record<string, "default" | "secondary" | "outline"> = {
-  strong: "default",
-  maybe: "secondary",
-  pass: "outline",
-};
+import { HomeSeenCard } from "@/components/home-seen-card";
+import { DateGroupCard } from "@/components/date-group-card";
+import { groupByDateKey } from "@/lib/date-grouping";
 
 export default async function HomesSeenPage() {
   const supabase = await createClient();
@@ -23,40 +12,54 @@ export default async function HomesSeenPage() {
 
   if (error) throw error;
 
-  return (
-    <div className="space-y-6">
-      <h1 className="font-heading text-3xl font-semibold tracking-tight">Homes Seen</h1>
+  const topContenders = (homes ?? []).filter((h) => h.interest_level === "strong");
+  const groups = [...groupByDateKey(homes ?? [], (h) => h.seen_at).entries()];
 
-      {(!homes || homes.length === 0) && (
-        <p className="text-sm text-muted-foreground">
-          No home tours debriefed yet. They&apos;ll show up here after your next showing.
-        </p>
+  return (
+    <div className="space-y-8">
+      <div className="space-y-3">
+        <h1 className="font-heading text-3xl font-semibold tracking-tight">Homes Seen</h1>
+
+        {(!homes || homes.length === 0) && (
+          <p className="text-sm text-muted-foreground">
+            No home tours debriefed yet. They&apos;ll show up here after your next showing.
+          </p>
+        )}
+      </div>
+
+      {topContenders.length > 0 && (
+        <div className="space-y-3">
+          <h2 className="text-lg font-semibold tracking-tight">Top Contenders</h2>
+          <div className="space-y-3">
+            {topContenders.map((home) => (
+              <HomeSeenCard
+                key={home.id}
+                address={home.address}
+                clientNotes={home.client_notes}
+                interestLevel={home.interest_level}
+                seenAt={home.seen_at}
+              />
+            ))}
+          </div>
+        </div>
       )}
 
-      <div className="space-y-3">
-        {homes?.map((home) => (
-          <Card key={home.id}>
-            <CardHeader>
-              <div className="flex items-start justify-between gap-2">
-                <CardTitle className="text-base">{home.address}</CardTitle>
-                {home.interest_level && (
-                  <Badge variant={INTEREST_VARIANT[home.interest_level]}>
-                    {INTEREST_LABEL[home.interest_level]}
-                  </Badge>
-                )}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Seen {new Date(home.seen_at).toLocaleDateString()}
-              </p>
-            </CardHeader>
-            {home.client_notes && (
-              <CardContent>
-                <p className="text-sm">{home.client_notes}</p>
-              </CardContent>
-            )}
-          </Card>
-        ))}
-      </div>
+      {groups.length > 0 && (
+        <div className="space-y-3">
+          <h2 className="text-lg font-semibold tracking-tight text-muted-foreground">
+            All Homes Seen
+          </h2>
+          {groups.map(([key, items]) => (
+            <DateGroupCard
+              key={key}
+              href={`/dashboard/homes/${key}`}
+              dateKeyStr={key}
+              count={items.length}
+              countLabel="home"
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
