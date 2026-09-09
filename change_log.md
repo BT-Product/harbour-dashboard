@@ -50,6 +50,76 @@
 - Created `project.md`, `strategy.md`, and this file to start tracking the
   project going forward.
 
+## Day 2 — 2026-09-08 (Discovery phase)
+
+Pushed the repo to GitHub (private: `BT-Product/harbour-dashboard`), then
+spent the day on design and on reworking the agent side, which didn't
+survive contact with how the work actually happens.
+
+**Look and feel.** Redesigned the client dashboard around a left sidebar
+with a warm, calm palette and a serif display face (Lora) for headings,
+using the Perplexity Health dashboard as a reference point. Later did a
+density pass against HoneyBook and Buffer — a unified stat bar with
+internal dividers, icon-led list rows, a time-of-day greeting — because
+the first version read as unfinished: too much dead space and a bordered
+box around every row. Then removed the `max-w-3xl`/`max-w-4xl` centering
+so content uses the full width, with multi-column layouts where a single
+column would otherwise stretch.
+
+**The agent side got rebuilt around clients, not properties.** The flat
+`/agent/transactions` list was replaced by `/agent/clients`, which drills
+into a per-client page split across tabs (overview, upcoming tours, homes
+seen, inspections) rather than one long scroll. Stage editing became a
+real select over any stage rather than one-tap-forward-only, and key
+dates, tours, and inspection items all became editable from the UI. Added
+an `/agent` home page (active clients, tours this week, tours last week,
+plus a nudge listing recent tours to check they got debriefed) and made
+it the post-login landing.
+
+This is a deliberate departure from the build spec's section 4a, which
+scoped the agent to exactly two surfaces and left everything else in
+Supabase Studio. The reasoning still stands for *entry friction* — the
+debrief form is still its own fast standalone page — but managing a
+client's transaction turned out to need a real UI, so we revisited it.
+
+**Two structural decisions worth remembering:**
+
+- Tours are now **upcoming-only**. A real tour outing is 5–6 addresses on
+  one day, so both sections were flooding after a couple of weekends.
+  Tours and Homes Seen are now grouped into one card per date, and once a
+  tour date passes it drops off Tours entirely — the debrief under Homes
+  Seen becomes the record of it. That also removed the duplication where
+  the same home showed up in both places.
+- **Top Contenders** on Homes Seen shows every home marked "strong," with
+  no fixed cap. A hard top-2 was considered and rejected: an arbitrary
+  cutoff could hide a home the agent actually flagged.
+
+**Bugs found by clicking through the app, not by typecheck or lint:**
+
+- Dialog triggers nested a `<button>` inside a `<button>`, a real
+  hydration error, from passing a full `<Button>` through Base UI's
+  `render` prop.
+- Select dropdowns displayed raw values (`loan_approval`) instead of
+  labels — masked for a while because single-word stages like "listed"
+  happen to look presentable.
+- Server actions only revalidated the overview route, so edits made from
+  the new tab sub-routes could show stale data.
+- The sidebar's bottom block wasn't pinned to the bottom because the
+  shell used `min-h-screen` rather than `h-screen`.
+
+**The app was unusable on a phone**, and had been since the sidebar was
+introduced. Both sidebars were a fixed 256px with no responsive handling,
+leaving ~119px of content on a 375px screen. This never showed up on
+desktop because the old narrow container constrained the content, not the
+sidebar. Fixed with a drawer: below `lg` the sidebar hides behind a
+hamburger in a top bar; at `lg`+ nothing changed. This mattered more than
+a normal layout bug — the debrief flow is explicitly designed for phone
+use between showings, and clients are likely to open their dashboard on a
+phone first.
+
+Deployed to production after each change and verified live, including at
+a 375px viewport.
+
 ### Not yet done
 
 - Pilot cohort not yet selected or invited (`npm run invite-client` is
@@ -57,3 +127,12 @@
 - Stage-explainer copy is a first draft — needs broker review and a Fair
   Housing check before any real client sees it.
 - Brokerage name/DRE number in the `agents` row are still placeholders.
+- Creating transactions and entering pre-approvals are still Studio-only;
+  only editing is in the UI.
+- Inspection report upload with LLM extraction is still a future idea,
+  deliberately not started.
+- `tours.home_seen_id` exists in the schema but nothing populates it, so
+  a tour and its debrief aren't actually linked. The "recent tours — got
+  a debrief written?" nudge is date-based, not a real gap calculation.
+- Dark mode colors are defined but not wired up (nothing sets the `.dark`
+  class), so the app is light-only.

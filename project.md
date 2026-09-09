@@ -21,9 +21,10 @@ small pilot cohort before any decision on broader rollout or the B2B2C
 path. Pre-committed success thresholds are set; nothing about "launch" is
 implied until those are read out.
 
-V1 build (client dashboard, the two agent-facing surfaces, auth, health
-check) shipped to production during discovery — see `change_log.md` for
-day 1.
+V1 shipped to production during discovery and has kept moving: client
+dashboard, auth, health check, and an agent surface that grew past the
+spec's original two screens into a client-centric management view. Works
+on a phone as of day 2. See `change_log.md`.
 
 ## Key stakeholders
 
