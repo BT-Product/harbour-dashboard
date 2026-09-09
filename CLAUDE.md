@@ -52,24 +52,50 @@ database.
   header comment for what was tested. If you ever add a new sensitive column
   to a client-readable table, use this same pattern (revoke the column grant
   + a `SECURITY DEFINER` function), not just an RLS policy.
-- **Agent writes go through RPC functions**, not direct table
-  inserts/updates: `agent_upsert_home_debrief`, `agent_advance_stage`. Both
-  take the target `client_id`/`transaction_id` and re-derive authorization
-  from `auth.uid()` server-side — never trust a client-supplied "I am the
-  agent" flag.
+- **Agent writes go through `SECURITY DEFINER` RPC functions**, not direct
+  table inserts/updates. Each one takes the target `client_id` /
+  `transaction_id` / row id and re-derives authorization from `auth.uid()`
+  server-side via `is_agent_of()` — never trust a client-supplied "I am the
+  agent" flag. Current set:
+  - `agent_upsert_home_debrief`, `agent_list_homes_seen` (migration 0002)
+  - `agent_advance_stage` (0002) — despite the name it sets any stage, not
+    just the next one; the UI uses it as a general stage setter
+  - `agent_update_key_dates`, `agent_upsert_tour`, `agent_delete_tour`,
+    `agent_upsert_inspection_item`, `agent_delete_inspection_item` (0005)
+  - `update_my_partner` (0004) — the one client-side write; scoped to the
+    caller's own row and only touches the two partner columns
+  Follow this pattern for any new agent write rather than adding table
+  grants.
 - **`/api/health`** round-trips a real write against a dedicated
   `_health_check` single-row table (migration `0003`) using the service-role
   client, never the app's real tables. Returns 503 on failure.
 
-## What stays in Supabase Studio, on purpose
+## Agent surface
 
-Per the build spec's v1 scope, only two agent-facing UIs exist:
-`/agent/debrief` (tour debrief entry) and `/agent/transactions` (one-tap
-stage advance). Tour scheduling, inspection item entry, and preapproval
-records are entered directly in Supabase Studio — no UI was built for them
-because they're low-frequency, desk-context, long-form data entry, not the
-"parking lot between showings" workflow the two built surfaces optimize for.
-Don't add UI for these without revisiting that call first.
+The build spec's section 4a scoped the agent to exactly two surfaces
+(debrief entry + one-tap stage advance) and left everything else in
+Supabase Studio. That was revisited on 2026-09-08 and deliberately
+widened — managing a client's transaction needed a real UI. Today:
+
+- `/agent` — home: active clients, tours this week/last week, and a nudge
+  listing recent tours to check they got debriefed. Post-login landing.
+- `/agent/clients` — client list; drills into a per-client page split
+  across tabs (overview, upcoming tours, homes seen, inspections).
+- `/agent/debrief` — still its own standalone fast-entry form. The
+  original reasoning holds here: this is the one used in a parking lot
+  between showings, so it stays optimized for speed over completeness.
+
+Still Studio-only: **creating** transactions and entering pre-approvals.
+Editing an existing transaction's stage and key dates is in the UI.
+
+## Layout
+
+`AppShell` (`src/components/app-shell.tsx`) wraps both dashboards. Below
+`lg` the sidebar hides off-canvas behind a hamburger in a top bar and
+slides in as a drawer; at `lg`+ it's static and always visible. Content
+is full-width — deliberately not constrained to a centered max-width
+column. If you add a page, use multi-column grids at wider breakpoints
+rather than letting a single column stretch, and check it at 375px.
 
 ## Client onboarding
 
