@@ -31,13 +31,21 @@ most closely, not just the visit-frequency number.
 
 - Login frequency per client, by transaction week — retention curve shape,
   not a raw total.
-  - **Not instrumented as of 2026-09-08.** Supabase stores only
-    `auth.users.last_sign_in_at`, a single overwritten timestamp, and
-    `auth.refresh_tokens` reflects sessions rather than visits. There is
-    no visit history, and none can be reconstructed after the fact — a
-    week of pilot usage that goes unrecorded is gone. This needs a
-    per-visit record written on load of the client dashboard before the
-    pilot cohort is relied on for the retention number.
+  - **Instrumented 2026-09-09**, before the first real client. Every
+    client dashboard page view is recorded in `client_page_views`
+    (Supabase itself keeps only `auth.users.last_sign_in_at`, a single
+    overwritten timestamp, so none of this could be reconstructed after
+    the fact).
+  - **A visit is a run of page views with no gap longer than 30 minutes.**
+    The table stores raw views, not visits, so that threshold can be
+    re-argued later against data already collected rather than being
+    frozen at write time. It's a guess — worth revisiting once there's a
+    month of real usage to look at.
+  - The agent's own browsing is excluded database-side, so Britton
+    checking a client's dashboard can't inflate their numbers.
+  - Per-client counts are visible on the agent's client page (last visit,
+    visits this week, week before, pages opened). The cohort-level
+    median is a manual read for now — there's no analytics view.
 - At close: "How would you feel if this dashboard had not been available?"
   (Sean Ellis disappointment framing.)
 - One qualitative note per client at close: did it change how they talked

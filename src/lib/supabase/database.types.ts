@@ -111,6 +111,13 @@ export type Preapproval = {
   updated_at: string;
 };
 
+export type ClientPageView = {
+  id: number;
+  client_id: string;
+  path: string;
+  viewed_at: string;
+};
+
 export type Database = {
   public: {
     Tables: {
@@ -172,6 +179,14 @@ export type Database = {
         Row: Preapproval;
         Insert: Partial<Preapproval>;
         Update: Partial<Preapproval>;
+        Relationships: [];
+      };
+      // Insert is structurally empty: rows only ever arrive through
+      // record_my_page_view, which scopes them to auth.uid().
+      client_page_views: {
+        Row: ClientPageView;
+        Insert: Record<string, never>;
+        Update: Record<string, never>;
         Relationships: [];
       };
       // Infra-only, service-role access. See /api/health and migration 0003.
@@ -239,6 +254,10 @@ export type Database = {
       };
       agent_delete_inspection_item: {
         Args: { p_item_id: string };
+        Returns: undefined;
+      };
+      record_my_page_view: {
+        Args: { p_path: string };
         Returns: undefined;
       };
       agent_upsert_preapproval: {

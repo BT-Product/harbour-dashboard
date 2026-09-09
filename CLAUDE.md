@@ -72,10 +72,19 @@ database.
     `p_stage_key` to the first stage of that type's sequence, and sets
     `linked_transaction_id` on **both** legs when a move-up buyer's
     counterpart is passed
-  - `update_my_partner` (0004) — the one client-side write; scoped to the
-    caller's own row and only touches the two partner columns
+  - `update_my_partner` (0004) and `record_my_page_view` (0008) — the two
+    client-side writes; both scoped to `auth.uid()`, so a client session
+    cannot write a row for anyone else
   Follow this pattern for any new agent write rather than adding table
   grants.
+- **`client_page_views` records raw views, not visits** (migration
+  `0008`). A visit is derived at read time as a run of views with no gap
+  over 30 minutes (`collapseToVisits` in `src/lib/data/agent.ts`), so the
+  threshold stays changeable against data already collected. The write
+  happens from `VisitBeacon` in the browser *after mount* — never during
+  a server render, because Next prefetches routes and those renders would
+  count as visits nobody made. Agents are filtered out inside
+  `record_my_page_view`, not in app code.
 - **`/api/health`** round-trips a real write against a dedicated
   `_health_check` single-row table (migration `0003`) using the service-role
   client, never the app's real tables. Returns 503 on failure.

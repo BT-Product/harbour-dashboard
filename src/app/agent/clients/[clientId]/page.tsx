@@ -5,7 +5,9 @@ import {
   getClientPreapproval,
   getClientProfile,
   getClientTours,
+  getClientVisitStats,
 } from "@/lib/data/agent";
+import { VisitStatsCard } from "@/components/visit-stats-card";
 import { getClientTransactions, getStageDefinitions } from "@/lib/data/dashboard";
 import { NewTransactionDialog } from "./new-transaction-dialog";
 import { RemoveClientDialog } from "./remove-client-dialog";
@@ -19,18 +21,21 @@ export default async function ClientOverviewPage({
   const { clientId } = await params;
   const supabase = await createClient();
 
-  const [client, transactions, stages, tours, homesSeen, preapproval] = await Promise.all([
+  const [client, transactions, stages, tours, homesSeen, preapproval, visits] = await Promise.all([
     getClientProfile(supabase, clientId).catch(() => null),
     getClientTransactions(supabase, clientId),
     getStageDefinitions(supabase),
     getClientTours(supabase, clientId),
     getClientHomesSeen(supabase, clientId),
     getClientPreapproval(supabase, clientId),
+    getClientVisitStats(supabase, clientId),
   ]);
   if (!client) notFound();
 
   return (
     <div className="space-y-4 pt-4">
+      <VisitStatsCard stats={visits} />
+
       {transactions.length > 0 && (
         <div className="flex items-center justify-between gap-3">
           <h2 className="text-sm font-semibold text-muted-foreground">
