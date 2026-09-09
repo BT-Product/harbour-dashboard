@@ -10,6 +10,7 @@ import {
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
 import { AppShell } from "@/components/app-shell";
 import { SellerStatusStrip } from "@/components/seller-status-strip";
+import { VisitBeacon } from "@/components/visit-beacon";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -44,6 +45,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
       }
     >
       <main className="w-full px-4 py-6 sm:px-8 sm:py-8">{children}</main>
+      {/* Renders nothing; records the visit metric from strategy.md. Agents
+          are filtered out database-side, not here. */}
+      <VisitBeacon />
     </AppShell>
   );
 }

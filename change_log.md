@@ -202,6 +202,33 @@ non-delivery, but the first real invite should be confirmed received.
 Deployed to production after each change and verified live, including at
 a 375px viewport.
 
+## Day 3 — 2026-09-09 (Discovery phase)
+
+**Visit tracking, built the day before real clients arrive.** The
+primary metric in `strategy.md` — median 2+ visits per week per client —
+had no data behind it, and Supabase keeps only a single overwritten
+`last_sign_in_at`, so a week of pilot usage would have been permanently
+unmeasurable. Every client dashboard page view now writes a row.
+
+Three decisions worth keeping:
+
+- **The table stores page views; a visit is defined at read time** as a
+  run with no gap over 30 minutes. Baking the threshold into the write
+  path would freeze a number that's currently a guess — this way it can
+  be re-argued against data already collected.
+- **The write fires from the browser after mount, not during the server
+  render.** Next prefetches routes on link hover and in viewport, and
+  those prefetch renders would have counted as visits nobody made.
+  Verified by hovering a nav link and confirming no row was written.
+- **The agent is excluded in the database**, not in the app, so Britton
+  opening a client's dashboard can never inflate their numbers.
+
+Per-client counts show on the agent's client page: last visit, visits
+this week, the week before, and pages opened. Verified end to end by
+signing in as a demo client, walking five pages, and watching them
+collapse into one visit; the test rows were then deleted so the pilot
+starts from zero.
+
 ### Not yet done
 
 - Pilot cohort not yet selected or invited (`npm run invite-client` is
@@ -211,11 +238,8 @@ a 375px viewport.
 - Brokerage name/DRE number in the `agents` row are still placeholders.
 - Custom SMTP is not configured in Supabase, so invite emails to real
   pilot clients can't be relied on yet.
-- **Visit tracking doesn't exist**, and it's the primary metric in
-  `strategy.md`. Supabase keeps only a single `last_sign_in_at` per
-  user, so visit history can't be reconstructed later — any pilot usage
-  before this is built is unmeasurable. Real clients are due to be
-  invited 2026-09-09.
+- Visit data is collected per client but there's no cohort view — the
+  median across clients is a manual read for now.
 - Inspection report upload with LLM extraction is still a future idea,
   deliberately not started.
 - `tours.home_seen_id` exists in the schema but nothing populates it, so

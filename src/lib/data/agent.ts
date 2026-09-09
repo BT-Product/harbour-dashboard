@@ -95,6 +95,63 @@ export async function getClientPreapproval(
   return data;
 }
 
+/**
+ * A visit is a run of page views with no gap longer than this. The raw
+ * table stores views; the visit definition lives here so it can be changed
+ * later without invalidating data already collected.
+ */
+const VISIT_GAP_MS = 30 * 60 * 1000;
+
+export type VisitStats = {
+  lastVisitAt: string | null;
+  visitsLast7Days: number;
+  visitsPrior7Days: number;
+  viewsLast7Days: number;
+};
+
+/** Collapses ascending view timestamps into visit start times. */
+export function collapseToVisits(viewedAt: string[]): Date[] {
+  const visits: Date[] = [];
+  let previous: number | null = null;
+
+  for (const iso of viewedAt) {
+    const at = new Date(iso).getTime();
+    if (previous === null || at - previous > VISIT_GAP_MS) visits.push(new Date(at));
+    previous = at;
+  }
+
+  return visits;
+}
+
+export async function getClientVisitStats(
+  supabase: Client,
+  clientId: string,
+): Promise<VisitStats> {
+  const since = new Date(Date.now() - 30 * 86_400_000).toISOString();
+  const { data, error } = await supabase
+    .from("client_page_views")
+    .select("viewed_at")
+    .eq("client_id", clientId)
+    .gte("viewed_at", since)
+    .order("viewed_at", { ascending: true });
+  if (error) throw error;
+
+  const views = (data ?? []).map((row) => row.viewed_at);
+  const visits = collapseToVisits(views);
+
+  const now = Date.now();
+  const weekAgo = now - 7 * 86_400_000;
+  const twoWeeksAgo = now - 14 * 86_400_000;
+  const at = (d: Date) => d.getTime();
+
+  return {
+    lastVisitAt: views.at(-1) ?? null,
+    visitsLast7Days: visits.filter((v) => at(v) >= weekAgo).length,
+    visitsPrior7Days: visits.filter((v) => at(v) >= twoWeeksAgo && at(v) < weekAgo).length,
+    viewsLast7Days: views.filter((v) => new Date(v).getTime() >= weekAgo).length,
+  };
+}
+
 export type TourWithClient = Tour & { profiles: { full_name: string } | null };
 
 export async function getAgentTours(supabase: Client): Promise<TourWithClient[]> {
