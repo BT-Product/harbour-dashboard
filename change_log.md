@@ -117,6 +117,16 @@ a normal layout bug — the debrief flow is explicitly designed for phone
 use between showings, and clients are likely to open their dashboard on a
 phone first.
 
+**Grouped the client list by type.** Clients are now bucketed into
+move-up buyers, buyers, and sellers, derived from what they're carrying
+rather than a field anyone has to maintain — both a buy and a sell makes
+a move-up buyer. Filter pills carry counts, and filtering goes through a
+URL search param (`?group=buyer`) so a filtered view survives a refresh
+and can be linked. A client with no transactions gets their own group
+instead of dropping off the list; that's the state every real client sits
+in between being invited and having their transaction created, so they
+need to stay findable.
+
 Deployed to production after each change and verified live, including at
 a 375px viewport.
 
