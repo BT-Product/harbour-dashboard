@@ -62,6 +62,11 @@ database.
     just the next one; the UI uses it as a general stage setter
   - `agent_update_key_dates`, `agent_upsert_tour`, `agent_delete_tour`,
     `agent_upsert_inspection_item`, `agent_delete_inspection_item` (0005)
+  - `agent_upsert_preapproval`, `agent_delete_preapproval`,
+    `agent_delete_client_data` (0007) — the last one deletes every app
+    row a client owns in one transaction and refuses to touch a profile
+    with `is_agent = true` (`is_agent_of()` is true for the agent's own
+    profile, so without that guard an agent could delete themselves)
   - `agent_create_transaction` (0006) — takes `agent_id` from
     `current_agent_id()` rather than the caller, defaults a null
     `p_stage_key` to the first stage of that type's sequence, and sets
@@ -94,9 +99,26 @@ Creating a transaction is on the client's Overview tab, including
 linking a move-up buyer's two legs together — that link is what turns
 on the coordination view, so it's offered as a checked-by-default
 option whenever an unlinked opposite-side transaction exists rather
-than left to be remembered.
+than left to be remembered. Pre-approvals are on the client's
+Financials tab (buy-side only, matching the client's own nav).
 
-Still Studio-only: entering pre-approvals.
+Nothing about a client's normal lifecycle requires Supabase Studio any
+more.
+
+**Adding and removing a client are the one exception to the RPC rule.**
+Creating and deleting an `auth.users` row is an Admin API operation, so
+`src/app/agent/clients/actions.ts` uses the service-role key directly.
+It calls `requireAgent()` first — an explicit `is_agent` check on the
+caller's own profile — because RLS isn't doing that work there. Removal
+still routes the *data* delete through `agent_delete_client_data` so the
+cascade is one transaction with database-side authorization, and only
+the auth user is deleted with the service role, last (deleting it first
+cascades the profile away and strands everything referencing it).
+
+These two actions return `{ ok, error }` rather than throwing: Next
+scrubs server action error messages in production, and their failures
+(rejected address, already invited, mail not sent) are ones the agent
+has to read to act on.
 
 ## Layout
 
@@ -109,7 +131,19 @@ rather than letting a single column stretch, and check it at 375px.
 
 ## Client onboarding
 
-No public signup. Real clients are invited via `npm run invite-client`
-(Supabase's invite-by-email flow — they set their own password). Demo/test
-accounts from `npm run seed` use a fixed password instead since they're fake
-data, not real onboarding — see the comment at the top of `scripts/seed.ts`.
+No public signup. Real clients are invited from **Clients → Add client**
+in the agent UI (Supabase's invite-by-email flow — they set their own
+password, and no password ever passes through the app).
+`npm run invite-client` still does the same thing from the terminal.
+
+**The invite email depends on Supabase's SMTP setup.** The built-in
+email service is for testing: it's rate-limited and won't reliably
+deliver to arbitrary addresses, so custom SMTP has to be configured in
+the Supabase dashboard before inviting real pilot clients. A failed send
+surfaces as an error toast on the Add client dialog rather than a silent
+non-delivery — but check that a pilot client actually received the email
+before assuming they're onboarded.
+
+Demo/test accounts from `npm run seed` use a fixed password instead since
+they're fake data, not real onboarding — see the comment at the top of
+`scripts/seed.ts`.

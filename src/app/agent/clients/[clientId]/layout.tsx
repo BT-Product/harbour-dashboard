@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getClientProfile } from "@/lib/data/agent";
@@ -15,10 +16,13 @@ export default async function ClientDetailLayout({
   const { clientId } = await params;
   const supabase = await createClient();
 
+  // A removed client, or one belonging to another agent, is a 404 rather
+  // than a crash — an agent can easily be sitting on a stale link.
   const [client, transactions] = await Promise.all([
-    getClientProfile(supabase, clientId),
+    getClientProfile(supabase, clientId).catch(() => null),
     getClientTransactions(supabase, clientId),
   ]);
+  if (!client) notFound();
 
   const hasBuy = transactions.some((t) => t.type === "buy");
 

@@ -11,6 +11,7 @@ import {
 import { getStageDefinitions, findStage } from "@/lib/data/dashboard";
 import type { StageDefinition } from "@/lib/supabase/database.types";
 import { cn } from "@/lib/utils";
+import { NewClientDialog } from "./new-client-dialog";
 
 function initials(name: string) {
   const parts = name.trim().split(/\s+/);
@@ -80,7 +81,10 @@ export default async function AgentClientsPage({
 
   return (
     <div className="space-y-6">
-      <h1 className="font-heading text-3xl font-semibold tracking-tight">Clients</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="font-heading text-3xl font-semibold tracking-tight">Clients</h1>
+        <NewClientDialog />
+      </div>
 
       {availableGroups.length > 1 && (
         <div className="flex flex-wrap gap-2">

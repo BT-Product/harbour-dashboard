@@ -154,6 +154,51 @@ Verified beyond the happy path: a client session calling the function
 gets "not authorized", and linking to another client's transaction is
 rejected.
 
+**Pre-approvals and client add/remove — Studio is now out of the loop.**
+With transactions already moved into the UI, the remaining gaps were
+pre-approvals and creating clients at all. Pre-approval editing lives on
+a new Financials tab on the client page (buy-side only, matching the
+client's own nav) with a side panel showing exactly what the client will
+see — their approved monthly budget and the max price at the HOA on
+file — because those numbers are derived, not typed, and it's easy to
+enter a plausible-looking loan and rate that produce a number you didn't
+intend. Adding a client sends a Supabase invite email from **Clients →
+Add client**; removing one deletes their login and their whole history
+behind a type-the-name confirmation that lists what's about to go.
+
+**Add/remove is the one place the app uses the service-role key.**
+Creating and deleting an auth user is an Admin API call, so it can't go
+through a SECURITY DEFINER function like every other agent write. The
+action checks `is_agent` on the caller's own profile before the
+service-role client is constructed, and removal still routes the data
+delete through an RPC so that cascade stays transactional and
+authorized database-side. Two guards worth noting: the delete function
+refuses to touch an agent profile (`is_agent_of()` is true for the
+agent's own row, so an agent could otherwise delete themselves), and it
+unlinks a move-up buyer's paired transactions before deleting them,
+since they point at each other.
+
+**Three things only clicking through found:**
+
+- A server action that threw took the app to a full page reload instead
+  of showing the error. Worse, Next scrubs those messages in production,
+  so an agent would never learn *why* an invite failed. Both actions now
+  return `{ ok, error }` instead of throwing.
+- The invite form reset itself on a failed submit — React resets an
+  uncontrolled form once the action resolves — so a rejected address
+  meant retyping everything. Now controlled.
+- Removing a client revalidated the deleted client's own route before
+  the browser navigated away, throwing "Client not found" twice.
+  Narrowed the revalidation to the list, and a missing client is now a
+  404 rather than a crash, since a stale link to a removed client is
+  ordinary.
+
+**Known constraint for the pilot:** Supabase's built-in email service is
+a testing service — rate-limited and unreliable for arbitrary addresses.
+Custom SMTP needs to be configured in Supabase before inviting real
+clients. A failed send does surface as an error rather than a silent
+non-delivery, but the first real invite should be confirmed received.
+
 Deployed to production after each change and verified live, including at
 a 375px viewport.
 
@@ -164,8 +209,8 @@ a 375px viewport.
 - Stage-explainer copy is a first draft — needs broker review and a Fair
   Housing check before any real client sees it.
 - Brokerage name/DRE number in the `agents` row are still placeholders.
-- Entering pre-approvals is still Studio-only, so the affordability
-  calculator can't be set up from the UI.
+- Custom SMTP is not configured in Supabase, so invite emails to real
+  pilot clients can't be relied on yet.
 - Inspection report upload with LLM extraction is still a future idea,
   deliberately not started.
 - `tours.home_seen_id` exists in the schema but nothing populates it, so

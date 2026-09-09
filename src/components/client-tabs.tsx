@@ -13,6 +13,9 @@ export function ClientTabs({ clientId, hasBuy }: { clientId: string; hasBuy: boo
     ...(hasBuy ? [{ href: `${base}/tours`, label: "Upcoming Tours" }] : []),
     ...(hasBuy ? [{ href: `${base}/homes`, label: "Homes Seen" }] : []),
     { href: `${base}/inspections`, label: "Inspections" },
+    // Pre-approval is buy-side only — the client's own Financials nav is
+    // hidden for a pure seller, so there'd be nothing to feed.
+    ...(hasBuy ? [{ href: `${base}/financials`, label: "Financials" }] : []),
   ];
 
   return (
