@@ -12,6 +12,43 @@ type Client = SupabaseClient<Database>;
 
 export type ClientWithTransactions = Profile & { transactions: Transaction[] };
 
+/**
+ * A client is a move-up buyer when they're carrying both sides at once —
+ * that's the case the product is built around, so it's grouped first.
+ * "unassigned" covers a client who exists but has no transaction yet, so
+ * they never silently drop off the list.
+ */
+export type ClientGroup = "move_up" | "buyer" | "seller" | "unassigned";
+
+export const CLIENT_GROUPS: { key: ClientGroup; label: string }[] = [
+  { key: "move_up", label: "Move-up buyers" },
+  { key: "buyer", label: "Buyers" },
+  { key: "seller", label: "Sellers" },
+  { key: "unassigned", label: "No transactions" },
+];
+
+export function clientGroup(client: ClientWithTransactions): ClientGroup {
+  const hasBuy = client.transactions.some((t) => t.type === "buy");
+  const hasSell = client.transactions.some((t) => t.type === "sell");
+  if (hasBuy && hasSell) return "move_up";
+  if (hasBuy) return "buyer";
+  if (hasSell) return "seller";
+  return "unassigned";
+}
+
+export function groupClients(
+  clients: ClientWithTransactions[],
+): Map<ClientGroup, ClientWithTransactions[]> {
+  const groups = new Map<ClientGroup, ClientWithTransactions[]>();
+  for (const client of clients) {
+    const key = clientGroup(client);
+    const bucket = groups.get(key);
+    if (bucket) bucket.push(client);
+    else groups.set(key, [client]);
+  }
+  return groups;
+}
+
 export async function getAgentClients(supabase: Client): Promise<ClientWithTransactions[]> {
   const { data, error } = await supabase
     .from("profiles")
