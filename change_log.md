@@ -127,6 +127,33 @@ instead of dropping off the list; that's the state every real client sits
 in between being invited and having their transaction created, so they
 need to stay findable.
 
+**Transactions can be created from the agent UI.** This was the last
+piece of the normal client lifecycle still stuck in Supabase Studio, and
+it sat directly in front of onboarding a pilot client — a newly invited
+client has no transaction, so there was nothing for them to log into.
+Now it's a dialog on the client's Overview tab, through a new
+`agent_create_transaction` function following the same SECURITY DEFINER
+pattern as every other agent write.
+
+Two decisions inside it:
+
+- **The starting stage is a field, not always the first stage.** Real
+  clients get onboarded onto Harbour mid-transaction — often already in
+  escrow — so forcing them to start at "Offer Accepted"/"Prep" and then
+  immediately click forward would be busywork and would briefly show the
+  client a wrong status.
+- **Linking the two legs of a move-up buyer is offered inline, checked
+  by default,** whenever an unlinked opposite-side transaction exists.
+  The link is what turns on the coordination view — the feature the
+  product is built around — and it's invisible if you forget it: you'd
+  get two transactions that look right individually and a client whose
+  dashboard is quietly missing the thing they most need. Better to make
+  it the default and let it be unchecked.
+
+Verified beyond the happy path: a client session calling the function
+gets "not authorized", and linking to another client's transaction is
+rejected.
+
 Deployed to production after each change and verified live, including at
 a 375px viewport.
 
@@ -137,8 +164,8 @@ a 375px viewport.
 - Stage-explainer copy is a first draft — needs broker review and a Fair
   Housing check before any real client sees it.
 - Brokerage name/DRE number in the `agents` row are still placeholders.
-- Creating transactions and entering pre-approvals are still Studio-only;
-  only editing is in the UI.
+- Entering pre-approvals is still Studio-only, so the affordability
+  calculator can't be set up from the UI.
 - Inspection report upload with LLM extraction is still a future idea,
   deliberately not started.
 - `tours.home_seen_id` exists in the schema but nothing populates it, so
