@@ -62,6 +62,11 @@ database.
     just the next one; the UI uses it as a general stage setter
   - `agent_update_key_dates`, `agent_upsert_tour`, `agent_delete_tour`,
     `agent_upsert_inspection_item`, `agent_delete_inspection_item` (0005)
+  - `agent_create_transaction` (0006) — takes `agent_id` from
+    `current_agent_id()` rather than the caller, defaults a null
+    `p_stage_key` to the first stage of that type's sequence, and sets
+    `linked_transaction_id` on **both** legs when a move-up buyer's
+    counterpart is passed
   - `update_my_partner` (0004) — the one client-side write; scoped to the
     caller's own row and only touches the two partner columns
   Follow this pattern for any new agent write rather than adding table
@@ -85,8 +90,13 @@ widened — managing a client's transaction needed a real UI. Today:
   original reasoning holds here: this is the one used in a parking lot
   between showings, so it stays optimized for speed over completeness.
 
-Still Studio-only: **creating** transactions and entering pre-approvals.
-Editing an existing transaction's stage and key dates is in the UI.
+Creating a transaction is on the client's Overview tab, including
+linking a move-up buyer's two legs together — that link is what turns
+on the coordination view, so it's offered as a checked-by-default
+option whenever an unlinked opposite-side transaction exists rather
+than left to be remembered.
+
+Still Studio-only: entering pre-approvals.
 
 ## Layout
 

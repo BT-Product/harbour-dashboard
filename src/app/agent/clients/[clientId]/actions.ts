@@ -2,7 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import type { InterestLevel, ItemImportance, KeyDates } from "@/lib/supabase/database.types";
+import type {
+  InterestLevel,
+  ItemImportance,
+  KeyDates,
+  TransactionType,
+} from "@/lib/supabase/database.types";
 
 function ok(clientId: string) {
   // 'layout' revalidates every sub-route (overview, tours, homes, inspections)
@@ -18,6 +23,30 @@ export async function updateStage(clientId: string, transactionId: string, stage
     p_stage_key: stageKey,
   });
   if (error) throw new Error(error.message);
+  ok(clientId);
+}
+
+export async function createTransaction(
+  clientId: string,
+  transaction: {
+    type: TransactionType;
+    propertyAddress: string;
+    stageKey: string | null;
+    linkToTransactionId: string | null;
+  },
+) {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("agent_create_transaction", {
+    p_client_id: clientId,
+    p_type: transaction.type,
+    p_property_address: transaction.propertyAddress,
+    p_stage_key: transaction.stageKey,
+    p_link_to_transaction_id: transaction.linkToTransactionId,
+  });
+  if (error) throw new Error(error.message);
+  // The client's own dashboard nav changes shape once a transaction exists
+  // (a buy leg adds Tours/Homes Seen), so revalidate their tree too.
+  revalidatePath("/dashboard", "layout");
   ok(clientId);
 }
 

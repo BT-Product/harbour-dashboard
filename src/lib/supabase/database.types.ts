@@ -241,6 +241,16 @@ export type Database = {
         Args: { p_item_id: string };
         Returns: undefined;
       };
+      agent_create_transaction: {
+        Args: {
+          p_client_id: string;
+          p_type: TransactionType;
+          p_property_address: string;
+          p_stage_key: string | null;
+          p_link_to_transaction_id: string | null;
+        };
+        Returns: Transaction;
+      };
     };
   };
 };
