@@ -26,13 +26,24 @@ dashboard, auth, health check, and an agent surface that grew past the
 spec's original two screens into a client-centric management view. Works
 on a phone as of day 2. See `change_log.md`.
 
+As of 2026-09-08 the agent can run a client's whole lifecycle from the
+app — invite them, create and edit their transactions, keep tours,
+debriefs, inspections and pre-approvals current, and remove them —
+with nothing left in Supabase Studio. **Real pilot clients are planned
+to be invited on 2026-09-09**, which makes two things load-bearing that
+weren't before: custom SMTP in Supabase (the built-in email service
+won't reliably deliver invites), and the stage-explainer copy, which
+hasn't had broker or Fair Housing review and will be read by a real
+client the moment they log in.
+
 ## Key stakeholders
 
 - **Britton Taylor** — agent, product owner, sole tenant, and the person
   the pilot cohort's experience runs through day to day.
 - **Pilot cohort clients** — 2–3 active clients, prioritizing at least one
   move-up buyer (the primary persona the product is designed around).
-  Not yet selected/onboarded as of day 1.
+  Britton plans to invite the first real clients on 2026-09-09; as of
+  2026-09-08 the only accounts are the seeded demo cohort.
 - **Brokerage** — not yet engaged; broker review of the stage-explainer
   copy (and a Fair Housing check on any copy that varies by client
   circumstance) is a pre-launch gate before a real client sees the app.

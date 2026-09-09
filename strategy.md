@@ -31,6 +31,13 @@ most closely, not just the visit-frequency number.
 
 - Login frequency per client, by transaction week — retention curve shape,
   not a raw total.
+  - **Not instrumented as of 2026-09-08.** Supabase stores only
+    `auth.users.last_sign_in_at`, a single overwritten timestamp, and
+    `auth.refresh_tokens` reflects sessions rather than visits. There is
+    no visit history, and none can be reconstructed after the fact — a
+    week of pilot usage that goes unrecorded is gone. This needs a
+    per-visit record written on load of the client dashboard before the
+    pilot cohort is relied on for the retention number.
 - At close: "How would you feel if this dashboard had not been available?"
   (Sean Ellis disappointment framing.)
 - One qualitative note per client at close: did it change how they talked

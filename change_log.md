@@ -211,6 +211,11 @@ a 375px viewport.
 - Brokerage name/DRE number in the `agents` row are still placeholders.
 - Custom SMTP is not configured in Supabase, so invite emails to real
   pilot clients can't be relied on yet.
+- **Visit tracking doesn't exist**, and it's the primary metric in
+  `strategy.md`. Supabase keeps only a single `last_sign_in_at` per
+  user, so visit history can't be reconstructed later — any pilot usage
+  before this is built is unmeasurable. Real clients are due to be
+  invited 2026-09-09.
 - Inspection report upload with LLM extraction is still a future idea,
   deliberately not started.
 - `tours.home_seen_id` exists in the schema but nothing populates it, so
