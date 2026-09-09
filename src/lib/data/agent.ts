@@ -6,6 +6,7 @@ import type {
   Tour,
   InspectionItem,
   HomeSeen,
+  Preapproval,
 } from "@/lib/supabase/database.types";
 
 type Client = SupabaseClient<Database>;
@@ -79,6 +80,19 @@ export async function getClientHomesSeen(supabase: Client, clientId: string): Pr
   const { data, error } = await supabase.rpc("agent_list_homes_seen", { p_client_id: clientId });
   if (error) throw error;
   return data ?? [];
+}
+
+export async function getClientPreapproval(
+  supabase: Client,
+  clientId: string,
+): Promise<Preapproval | null> {
+  const { data, error } = await supabase
+    .from("preapproval")
+    .select("*")
+    .eq("client_id", clientId)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
 }
 
 export type TourWithClient = Tour & { profiles: { full_name: string } | null };

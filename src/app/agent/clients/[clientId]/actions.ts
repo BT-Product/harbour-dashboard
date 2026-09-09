@@ -60,6 +60,39 @@ export async function updateKeyDates(clientId: string, transactionId: string, ke
   ok(clientId);
 }
 
+export async function savePreapproval(
+  clientId: string,
+  preapproval: {
+    loanAmount: number;
+    downPayment: number;
+    rate: number;
+    lender: string | null;
+    hoaMonthly: number;
+  },
+) {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("agent_upsert_preapproval", {
+    p_client_id: clientId,
+    p_loan_amount: preapproval.loanAmount,
+    p_down_payment: preapproval.downPayment,
+    p_rate: preapproval.rate,
+    p_lender: preapproval.lender,
+    p_hoa_monthly: preapproval.hoaMonthly,
+  });
+  if (error) throw new Error(error.message);
+  // The client's Financials page and affordability calculator read this.
+  revalidatePath("/dashboard", "layout");
+  ok(clientId);
+}
+
+export async function deletePreapproval(clientId: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("agent_delete_preapproval", { p_client_id: clientId });
+  if (error) throw new Error(error.message);
+  revalidatePath("/dashboard", "layout");
+  ok(clientId);
+}
+
 export async function saveTour(
   clientId: string,
   tour: { id: string | null; address: string; scheduledAt: string; notes: string | null },

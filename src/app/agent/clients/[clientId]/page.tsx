@@ -1,6 +1,14 @@
+import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import {
+  getClientHomesSeen,
+  getClientPreapproval,
+  getClientProfile,
+  getClientTours,
+} from "@/lib/data/agent";
 import { getClientTransactions, getStageDefinitions } from "@/lib/data/dashboard";
 import { NewTransactionDialog } from "./new-transaction-dialog";
+import { RemoveClientDialog } from "./remove-client-dialog";
 import { TransactionEditor } from "./transaction-editor";
 
 export default async function ClientOverviewPage({
@@ -11,10 +19,15 @@ export default async function ClientOverviewPage({
   const { clientId } = await params;
   const supabase = await createClient();
 
-  const [transactions, stages] = await Promise.all([
+  const [client, transactions, stages, tours, homesSeen, preapproval] = await Promise.all([
+    getClientProfile(supabase, clientId).catch(() => null),
     getClientTransactions(supabase, clientId),
     getStageDefinitions(supabase),
+    getClientTours(supabase, clientId),
+    getClientHomesSeen(supabase, clientId),
+    getClientPreapproval(supabase, clientId),
   ]);
+  if (!client) notFound();
 
   return (
     <div className="space-y-4 pt-4">
@@ -51,6 +64,22 @@ export default async function ClientOverviewPage({
           </div>
         </div>
       )}
+
+      <div className="flex items-center justify-between gap-3 border-t pt-4">
+        <p className="text-sm text-muted-foreground">
+          Removing a client deletes their login and their whole history.
+        </p>
+        <RemoveClientDialog
+          clientId={clientId}
+          fullName={client.full_name}
+          counts={{
+            transactions: transactions.length,
+            tours: tours.length,
+            homesSeen: homesSeen.length,
+            hasPreapproval: preapproval !== null,
+          }}
+        />
+      </div>
     </div>
   );
 }

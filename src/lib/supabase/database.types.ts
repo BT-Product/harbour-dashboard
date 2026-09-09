@@ -241,6 +241,25 @@ export type Database = {
         Args: { p_item_id: string };
         Returns: undefined;
       };
+      agent_upsert_preapproval: {
+        Args: {
+          p_client_id: string;
+          p_loan_amount: number;
+          p_down_payment: number;
+          p_rate: number;
+          p_lender: string | null;
+          p_hoa_monthly: number;
+        };
+        Returns: Preapproval;
+      };
+      agent_delete_preapproval: {
+        Args: { p_client_id: string };
+        Returns: undefined;
+      };
+      agent_delete_client_data: {
+        Args: { p_client_id: string };
+        Returns: undefined;
+      };
       agent_create_transaction: {
         Args: {
           p_client_id: string;
