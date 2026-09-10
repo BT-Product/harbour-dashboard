@@ -30,7 +30,7 @@ export async function createTransaction(
   clientId: string,
   transaction: {
     type: TransactionType;
-    propertyAddress: string;
+    propertyAddress: string | null;
     stageKey: string | null;
     linkToTransactionId: string | null;
   },

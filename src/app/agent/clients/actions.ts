@@ -51,9 +51,15 @@ export async function inviteClient(input: {
   fullName: string;
   email: string;
   phone: string | null;
+  buying: boolean;
+  selling: boolean;
+  buyStageKey: string | null;
+  buyAddress: string | null;
+  sellStageKey: string | null;
+  sellAddress: string | null;
 }): Promise<ActionResult<{ clientId: string }>> {
   try {
-    const { profile } = await requireAgent();
+    const { supabase, profile } = await requireAgent();
 
     const fullName = input.fullName.trim();
     const email = input.email.trim().toLowerCase();
@@ -81,6 +87,31 @@ export async function inviteClient(input: {
       // blocks re-inviting the same address, so undo the invite.
       await admin.auth.admin.deleteUser(data.user.id);
       return { ok: false, error: profileError.message };
+    }
+
+    // Their transactions go through the agent's own session, not the
+    // service role: agent_onboard_client re-derives authorization from
+    // auth.uid() like every other agent write, and creates both legs of a
+    // move-up client in one transaction so they can't end up half set up.
+    const { error: onboardError } = await supabase.rpc("agent_onboard_client", {
+      p_client_id: data.user.id,
+      p_buying: input.buying,
+      p_selling: input.selling,
+      p_buy_stage_key: input.buyStageKey,
+      p_buy_address: input.buyAddress,
+      p_sell_stage_key: input.sellStageKey,
+      p_sell_address: input.sellAddress,
+    });
+
+    if (onboardError) {
+      // The client exists and is invited; only their transactions failed.
+      // Say so rather than implying nothing happened — re-inviting the same
+      // address would fail, and the fix is to add the transaction by hand.
+      revalidateClientLists();
+      return {
+        ok: false,
+        error: `${input.fullName} was invited, but setting up their transaction failed: ${onboardError.message}. Add it from their page.`,
+      };
     }
 
     revalidateClientLists();

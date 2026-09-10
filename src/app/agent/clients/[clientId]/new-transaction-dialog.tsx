@@ -48,6 +48,11 @@ export function NewTransactionDialog({
   );
   const linkCandidate = linkCandidates.length === 1 ? linkCandidates[0] : undefined;
 
+  // An empty stageKey means "the first stage of this type", which is what
+  // gets created server-side when none is passed.
+  const selectedStage = typeStages.find((s) => s.stage_key === stageKey) ?? typeStages[0];
+  const requiresProperty = selectedStage?.requires_property ?? true;
+
   function handleTypeChange(next: TransactionType) {
     setType(next);
     // Stages are per-type, so a stage picked for the old type is meaningless.
@@ -59,7 +64,7 @@ export function NewTransactionDialog({
       try {
         await createTransaction(clientId, {
           type,
-          propertyAddress: String(formData.get("property_address") || ""),
+          propertyAddress: String(formData.get("property_address") || "").trim() || null,
           stageKey: stageKey || null,
           linkToTransactionId: link && linkCandidate ? linkCandidate.id : null,
         });
@@ -102,19 +107,18 @@ export function NewTransactionDialog({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="property_address">Property address</Label>
+              <Label htmlFor="property_address">
+                Property address{!requiresProperty && " (optional)"}
+              </Label>
               <Input
                 id="property_address"
                 name="property_address"
-                required
-                placeholder={
-                  type === "buy" ? "Target address, or TBD" : "123 Main St, Springfield"
-                }
+                required={requiresProperty}
+                placeholder={type === "buy" ? "Leave blank while house hunting" : "123 Main St"}
               />
-              {type === "buy" && (
+              {!requiresProperty && (
                 <p className="text-xs text-muted-foreground">
-                  A buyer who hasn&apos;t chosen a home yet can start as &ldquo;TBD&rdquo; — you
-                  can change it once they&apos;re in contract.
+                  A house-hunting buyer has no address yet. Add it when their offer is accepted.
                 </p>
               )}
             </div>

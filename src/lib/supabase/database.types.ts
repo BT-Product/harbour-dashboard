@@ -46,6 +46,8 @@ export type StageDefinition = {
   sort_order: number;
   label: string;
   explainer: string;
+  /** False only for house hunting — the buyer has no property yet. */
+  requires_property: boolean;
 };
 
 export type Transaction = {
@@ -55,7 +57,8 @@ export type Transaction = {
   type: TransactionType;
   status: TransactionStatus;
   current_stage_key: string;
-  property_address: string;
+  /** Null while a buyer is still house hunting — no property chosen yet. */
+  property_address: string | null;
   key_dates: KeyDates;
   linked_transaction_id: string | null;
   created_at: string;
@@ -283,11 +286,23 @@ export type Database = {
         Args: {
           p_client_id: string;
           p_type: TransactionType;
-          p_property_address: string;
+          p_property_address: string | null;
           p_stage_key: string | null;
           p_link_to_transaction_id: string | null;
         };
         Returns: Transaction;
+      };
+      agent_onboard_client: {
+        Args: {
+          p_client_id: string;
+          p_buying: boolean;
+          p_selling: boolean;
+          p_buy_stage_key: string | null;
+          p_buy_address: string | null;
+          p_sell_stage_key: string | null;
+          p_sell_address: string | null;
+        };
+        Returns: undefined;
       };
     };
   };

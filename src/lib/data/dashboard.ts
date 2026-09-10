@@ -33,6 +33,16 @@ export async function getStageDefinitions(
   return data ?? [];
 }
 
+/**
+ * What to call a transaction that may not have a property yet. A buyer who
+ * is still house hunting has no address, and "—" reads like missing data
+ * rather than the normal, expected state that it is.
+ */
+export function transactionLabel(transaction: Transaction): string {
+  if (transaction.property_address) return transaction.property_address;
+  return transaction.type === "buy" ? "Home search" : "Their home";
+}
+
 export function findStage(
   stages: StageDefinition[],
   type: "buy" | "sell",

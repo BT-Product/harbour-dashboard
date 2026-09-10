@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { KeyDates, StageDefinition, Transaction } from "@/lib/supabase/database.types";
+import { transactionLabel } from "@/lib/data/dashboard";
 import { updateKeyDates, updateStage } from "./actions";
 
 const DATE_FIELDS: { key: keyof KeyDates; label: string }[] = [
@@ -62,7 +63,7 @@ export function TransactionEditor({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">{transaction.property_address}</CardTitle>
+        <CardTitle className="text-base">{transactionLabel(transaction)}</CardTitle>
         <p className="text-sm text-muted-foreground">
           {transaction.type === "buy" ? "Purchase" : "Sale"} · {transaction.status}
         </p>

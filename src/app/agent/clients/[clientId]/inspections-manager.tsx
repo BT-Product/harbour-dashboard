@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
+import { transactionLabel } from "@/lib/data/dashboard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -95,14 +96,14 @@ function ItemFormDialog({
                     <SelectValue>
                       {(value: string) => {
                         const t = transactions.find((tx) => tx.id === value);
-                        return t ? `${t.property_address} (${t.type})` : value;
+                        return t ? `${transactionLabel(t)} (${t.type})` : value;
                       }}
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {transactions.map((t) => (
                       <SelectItem key={t.id} value={t.id}>
-                        {t.property_address} ({t.type})
+                        {transactionLabel(t)} ({t.type})
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -215,7 +216,7 @@ export function InspectionsManager({
                     </Badge>
                     {item.resolved && <Badge variant="secondary">Resolved</Badge>}
                   </div>
-                  {tx && <p className="text-xs text-muted-foreground">{tx.property_address}</p>}
+                  {tx && <p className="text-xs text-muted-foreground">{transactionLabel(tx)}</p>}
                   {item.negotiation_note && <p className="mt-1 text-sm">{item.negotiation_note}</p>}
                 </div>
                 <div className="flex shrink-0 gap-2">

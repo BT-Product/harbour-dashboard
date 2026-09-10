@@ -5,6 +5,7 @@
 -- Needs broker review before any real client sees it (spec section 8).
 
 insert into stage_definitions (stage_key, transaction_type, sort_order, label, explainer) values
+  ('house_hunting', 'buy', 0, 'House Hunting', 'You''re out looking at homes. Tours you have scheduled and notes from homes you''ve already seen show up here as we go. When an offer is accepted, this moves to the next stage.'),
   ('offer_accepted', 'buy', 1, 'Offer Accepted', 'Your offer has been accepted. Next, the home will be inspected and your lender will begin final underwriting. No action needed from you yet beyond staying reachable.'),
   ('inspection', 'buy', 2, 'Inspection', 'A licensed inspector is examining the property for issues. Once the report is in, we will review it together and decide what, if anything, to negotiate with the seller.'),
   ('appraisal', 'buy', 3, 'Appraisal', 'Your lender is having the home independently valued to confirm it supports the loan amount. This is handled by the lender; no action needed from you.'),
@@ -20,3 +21,9 @@ insert into stage_definitions (stage_key, transaction_type, sort_order, label, e
   ('clear_to_close', 'sell', 6, 'Clear to Close', 'All conditions are met on the buyer''s side. Closing documents are being prepared.'),
   ('closed', 'sell', 7, 'Closed', 'The sale is complete and recorded.')
 on conflict (transaction_type, stage_key) do nothing;
+
+-- House hunting is the one stage with no property attached yet; migration
+-- 0009 adds the column this depends on.
+update stage_definitions
+set requires_property = false
+where transaction_type = 'buy' and stage_key = 'house_hunting';

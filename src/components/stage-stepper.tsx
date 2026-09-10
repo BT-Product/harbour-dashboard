@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { transactionLabel } from "@/lib/data/dashboard";
 import type { StageDefinition, Transaction } from "@/lib/supabase/database.types";
 
 export function StageStepper({
@@ -17,9 +18,12 @@ export function StageStepper({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">{transaction.property_address}</CardTitle>
-        <p className="text-sm text-muted-foreground capitalize">
-          {transaction.type === "buy" ? "Purchase" : "Sale"} escrow
+        <CardTitle className="text-base">{transactionLabel(transaction)}</CardTitle>
+        <p className="text-sm text-muted-foreground">
+          {/* Not "escrow" until there's a contract — a house-hunting buyer
+              hasn't opened one. */}
+          {transaction.type === "buy" ? "Purchase" : "Sale"}{" "}
+          {typeStages[currentIndex]?.requires_property ? "escrow" : "timeline"}
         </p>
       </CardHeader>
       <CardContent>
