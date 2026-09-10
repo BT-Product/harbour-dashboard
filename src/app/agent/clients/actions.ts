@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { getCurrentProfile } from "@/lib/data/dashboard";
+import { getSiteUrl } from "@/lib/site-url";
 
 /**
  * These two return a result object instead of throwing, unlike the rest of
@@ -66,11 +67,18 @@ export async function inviteClient(input: {
     if (!fullName || !email) return { ok: false, error: "Name and email are both required" };
 
     const admin = createServiceRoleClient();
+    const siteUrl = await getSiteUrl();
 
     // Invite rather than create-with-password: the client sets their own
     // password from the email link, so no password ever passes through here.
+    //
+    // redirectTo is not optional. Without it Supabase falls back to the
+    // project's Site URL, which defaults to http://localhost:3000 — the
+    // first real client's link verified her account and then sent her
+    // browser to a dead address on her own machine.
     const { data, error } = await admin.auth.admin.inviteUserByEmail(email, {
       data: { full_name: fullName },
+      redirectTo: `${siteUrl}/auth/callback`,
     });
     if (error) return { ok: false, error: error.message };
 
@@ -116,6 +124,45 @@ export async function inviteClient(input: {
 
     revalidateClientLists();
     return { ok: true, data: { clientId: data.user.id } };
+  } catch (e) {
+    return { ok: false, error: message(e) };
+  }
+}
+
+/**
+ * Sends a client a fresh link to get into their account. Covers both the
+ * client who never finished setting a password (their invite link expired,
+ * was used twice, or dead-ended somewhere) and the one who forgot it.
+ *
+ * Uses the password-reset mail rather than re-inviting: once an auth user
+ * exists, inviting the same address again just fails.
+ */
+export async function resendAccessLink(clientId: string): Promise<ActionResult<{ email: string }>> {
+  try {
+    const { supabase } = await requireAgent();
+
+    const admin = createServiceRoleClient();
+    const { data, error } = await admin.auth.admin.getUserById(clientId);
+    if (error || !data.user?.email) {
+      return { ok: false, error: error?.message ?? "No email on file for that client" };
+    }
+
+    // Through the agent's own session so RLS still decides whether this
+    // client is theirs to act on.
+    const { error: lookupError } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("id", clientId)
+      .single();
+    if (lookupError) return { ok: false, error: "Not your client" };
+
+    const siteUrl = await getSiteUrl();
+    const { error: sendError } = await admin.auth.resetPasswordForEmail(data.user.email, {
+      redirectTo: `${siteUrl}/auth/callback`,
+    });
+    if (sendError) return { ok: false, error: sendError.message };
+
+    return { ok: true, data: { email: data.user.email } };
   } catch (e) {
     return { ok: false, error: message(e) };
   }

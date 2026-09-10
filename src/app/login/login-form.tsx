@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,6 +31,12 @@ export function LoginForm({ next }: { next: string }) {
       <Button type="submit" className="w-full" disabled={isPending}>
         {isPending ? "Signing in…" : "Sign in"}
       </Button>
+      <Link
+        href="/forgot-password"
+        className="block text-center text-sm text-muted-foreground hover:text-foreground"
+      >
+        Forgot your password, or never set one?
+      </Link>
     </form>
   );
 }

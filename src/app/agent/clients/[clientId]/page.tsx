@@ -12,6 +12,7 @@ import { getClientTransactions, getStageDefinitions } from "@/lib/data/dashboard
 import { GettingStartedCard } from "./getting-started-card";
 import { NewTransactionDialog } from "./new-transaction-dialog";
 import { RemoveClientDialog } from "./remove-client-dialog";
+import { ResendAccessButton } from "./resend-access-button";
 import { TransactionEditor } from "./transaction-editor";
 
 export default async function ClientOverviewPage({
@@ -37,6 +38,23 @@ export default async function ClientOverviewPage({
 
   return (
     <div className="space-y-4 pt-4">
+      {/* Never opened it at all is a different problem from not visiting
+          lately — usually their sign-in link never worked. */}
+      {visits.lastVisitAt === null && (
+        <div className="flex flex-col gap-3 rounded-lg border border-dashed p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm font-medium">
+              {client.full_name} hasn&apos;t opened their dashboard yet
+            </p>
+            <p className="text-sm text-muted-foreground">
+              If their invite link didn&apos;t work, send a fresh one — it lets them set a password
+              and lands them straight in.
+            </p>
+          </div>
+          <ResendAccessButton clientId={clientId} />
+        </div>
+      )}
+
       <VisitStatsCard stats={visits} />
 
       {/* Only while something's still missing — it's onboarding, not a
@@ -85,9 +103,18 @@ export default async function ClientOverviewPage({
       )}
 
       <div className="flex items-center justify-between gap-3 border-t pt-4">
-        <p className="text-sm text-muted-foreground">
-          Removing a client deletes their login and their whole history.
-        </p>
+        <div className="flex flex-wrap items-center gap-3">
+          <p className="text-sm text-muted-foreground">
+            Removing a client deletes their login and their whole history.
+          </p>
+          {visits.lastVisitAt !== null && (
+            <ResendAccessButton
+              clientId={clientId}
+              variant="ghost"
+              label="Send password reset"
+            />
+          )}
+        </div>
         <RemoveClientDialog
           clientId={clientId}
           fullName={client.full_name}
