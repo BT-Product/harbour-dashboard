@@ -39,9 +39,15 @@ async function main() {
     throw new Error("No agent row found — run `npm run seed` first or create one in Studio.");
   }
 
+  // Must be explicit: without it Supabase falls back to the project's Site
+  // URL, which defaults to http://localhost:3000 and dead-ends the link on
+  // the client's machine. Same reasoning as the in-app invite.
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://harbour-dashboard-ten.vercel.app")
+    .replace(/\/+$/, "");
+
   const { data: invited, error: inviteError } = await supabase.auth.admin.inviteUserByEmail(
     email,
-    { data: { full_name: fullName } },
+    { data: { full_name: fullName }, redirectTo: `${siteUrl}/auth/callback` },
   );
   if (inviteError) throw inviteError;
 

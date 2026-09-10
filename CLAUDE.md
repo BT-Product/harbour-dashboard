@@ -165,6 +165,22 @@ in the agent UI (Supabase's invite-by-email flow — they set their own
 password, and no password ever passes through the app).
 `npm run invite-client` still does the same thing from the terminal.
 
+**Auth email links must carry an explicit `redirectTo`.** Supabase falls
+back to the project's Site URL when a link doesn't name one, and that
+default is `http://localhost:3000` — the first real client's invite
+verified her account and then sent her browser to a dead address on her
+own machine. Every link the app generates goes through `getSiteUrl()`
+(`src/lib/site-url.ts`) and points at `/auth/callback`, which reads the
+tokens Supabase puts in the URL fragment, establishes the session in the
+browser client, and forwards to `/set-password`. The origin still has to
+be in the project's redirect allow-list or Supabase ignores it.
+
+Links are single-use. Mail security scanners that prefetch links will
+burn one before the client ever clicks, so "invalid or expired" is an
+expected failure mode, not a bug — the callback page says so and offers
+a fresh link, and the agent can send one from the client's page
+(`resendAccessLink`).
+
 **The invite email depends on Supabase's SMTP setup.** The built-in
 email service is for testing: it's rate-limited and won't reliably
 deliver to arbitrary addresses, so custom SMTP has to be configured in

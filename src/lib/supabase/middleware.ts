@@ -2,7 +2,19 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import type { Database } from "./database.types";
 
-const PUBLIC_PATHS = ["/login", "/api/health"];
+// Everything an invited client touches before they have a session has to be
+// here. /auth/callback especially: it's where an email link lands, and the
+// tokens arrive in the URL fragment — a redirect to /login would drop them
+// and strand the client exactly the way the localhost Site URL did.
+// /set-password stays public too, so a cookie that hasn't propagated yet
+// can't bounce someone mid-flow; the page checks for a session itself.
+const PUBLIC_PATHS = [
+  "/login",
+  "/api/health",
+  "/auth",
+  "/forgot-password",
+  "/set-password",
+];
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });

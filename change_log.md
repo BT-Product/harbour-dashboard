@@ -273,6 +273,42 @@ writing two rows a second apart; production doesn't, but a refresh or a
 double-tapped link would. Visit counts were never affected — only the
 finer-grained "pages opened" number.
 
+**The first real client's invite link dead-ended, and it was our bug.**
+Tara clicked "Accept invitation" and got an error. Her auth record
+showed the token was consumed — account confirmed, session created — but
+visit tracking showed she never reached the dashboard. Probing the auth
+API confirmed why: the project's Site URL is still Supabase's default,
+`http://localhost:3000`, and the invite carried no explicit redirect, so
+Supabase verified her account and then sent her browser to an address
+that only exists on a developer's laptop.
+
+Two things were wrong, and both are fixed:
+
+- **Links now name their own destination.** Invites and resets pass an
+  explicit `redirectTo` derived from the request origin, so they no
+  longer depend on a dashboard setting nobody had changed.
+- **There was nowhere to land even if the redirect had worked.** An
+  invited client has no password yet, and the app had no page to set
+  one — only a login form they couldn't use. Added `/auth/callback`
+  (reads the tokens Supabase returns in the URL fragment) and
+  `/set-password`.
+
+Also added, because this will happen again: **"Send them a sign-in
+link"** on the client's page, surfaced as a banner when they've never
+opened their dashboard, and a **"Forgot your password, or never set
+one?"** link on sign-in. Both send a fresh link. Auth links are
+single-use, and mail security scanners routinely prefetch links in
+external email — which burns the token before the recipient clicks — so
+"invalid or expired" needs a self-serve way out rather than a support
+conversation.
+
+**Still needs doing in the Supabase dashboard** (no API access with the
+current token): set Site URL to the production URL and add it to the
+redirect allow-list; configure custom SMTP; and fix the invite email
+itself, which arrives from "Supabase Auth" at a supabase.io address with
+`You\'ve been invited` — a literal backslash — as its subject line. None
+of that is what a client should get from their agent.
+
 ### Not yet done
 
 - Pilot cohort not yet selected or invited (`npm run invite-client` is
@@ -281,8 +317,11 @@ finer-grained "pages opened" number.
   Housing check before any real client sees it.
 - Brokerage name/DRE number in the `agents` row are still placeholders.
 - Custom SMTP is still not configured in Supabase. The first real invite
-  delivered on the built-in service, but that service is rate-limited and
-  intended for testing — don't assume the next few will land.
+  delivered on the built-in service, but it arrives from "Supabase Auth"
+  at a supabase.io address, with a mangled subject line, and that service
+  is rate-limited — don't assume the next few will land.
+- Supabase's Site URL and redirect allow-list still point at localhost.
+  The app no longer depends on them, but they should be corrected.
 - Visit data is collected per client but there's no cohort view — the
   median across clients is a manual read for now.
 - Inspection report upload with LLM extraction is still a future idea,
