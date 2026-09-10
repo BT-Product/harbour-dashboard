@@ -229,6 +229,50 @@ signing in as a demo client, walking five pages, and watching them
 collapse into one visit; the test rows were then deleted so the pilot
 starts from zero.
 
+## Day 4 — 2026-09-10 (Discovery phase)
+
+**The first real client was invited and signed in** (Tara Taylor,
+invited 9:30am, password set and first login by 9:59am). The invite
+email delivered on Supabase's built-in service — the SMTP worry didn't
+block the first one, though nothing about volume or deliverability at
+scale is proven by a single send.
+
+**Buyers exist before properties do — the data model didn't allow it.**
+Onboarding a real buyer surfaced the gap immediately: the buy sequence
+started at "Offer Accepted", so the only way to give a touring buyer a
+dashboard was to invent an address and a stage that hadn't happened.
+That's backwards — touring *is* the window this product is about, and a
+buyer typically spends weeks there before any contract exists.
+
+- Added **House Hunting** as the first buy stage, and made
+  `property_address` nullable. Which stages need a property is now a
+  column (`stage_definitions.requires_property`) rather than a rule
+  written into the form, so the create-transaction UI and the database
+  function agree by reading the same flag.
+- A transaction with no address renders as **"Home search"** everywhere
+  via a single `transactionLabel()` helper, rather than a blank or a
+  dash that reads like missing data.
+- The client's own stepper now shows House Hunting as step 1 with the
+  whole journey ahead of it, and the header says "Purchase timeline"
+  rather than "Purchase escrow" until there's actually a contract.
+
+**Add client now asks what they're doing.** Buying, selling, or both —
+then collects what that answer implies: the address of the home they're
+selling and where it is in the sale; where the buyer is in their search
+(defaulting to House Hunting, no address needed). Both creates two
+linked transactions in one database call, so a move-up client can't end
+up half set up. Their page then shows a "Get their dashboard started"
+card with three things: schedule an upcoming tour, log homes they've
+**already** toured (with a backdated seen-on date — agents often tour
+with someone for weeks before they're officially a client), and add a
+pre-approval.
+
+**Also:** page views now collapse repeats of the same path inside 30
+seconds. React Strict Mode remounts a component once in dev and was
+writing two rows a second apart; production doesn't, but a refresh or a
+double-tapped link would. Visit counts were never affected — only the
+finer-grained "pages opened" number.
+
 ### Not yet done
 
 - Pilot cohort not yet selected or invited (`npm run invite-client` is
@@ -236,8 +280,9 @@ starts from zero.
 - Stage-explainer copy is a first draft — needs broker review and a Fair
   Housing check before any real client sees it.
 - Brokerage name/DRE number in the `agents` row are still placeholders.
-- Custom SMTP is not configured in Supabase, so invite emails to real
-  pilot clients can't be relied on yet.
+- Custom SMTP is still not configured in Supabase. The first real invite
+  delivered on the built-in service, but that service is rate-limited and
+  intended for testing — don't assume the next few will land.
 - Visit data is collected per client but there's no cohort view — the
   median across clients is a manual read for now.
 - Inspection report upload with LLM extraction is still a future idea,

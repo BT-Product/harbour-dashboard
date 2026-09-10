@@ -9,6 +9,7 @@ import {
 } from "@/lib/data/agent";
 import { VisitStatsCard } from "@/components/visit-stats-card";
 import { getClientTransactions, getStageDefinitions } from "@/lib/data/dashboard";
+import { GettingStartedCard } from "./getting-started-card";
 import { NewTransactionDialog } from "./new-transaction-dialog";
 import { RemoveClientDialog } from "./remove-client-dialog";
 import { TransactionEditor } from "./transaction-editor";
@@ -32,9 +33,22 @@ export default async function ClientOverviewPage({
   ]);
   if (!client) notFound();
 
+  const hasBuy = transactions.some((t) => t.type === "buy");
+
   return (
     <div className="space-y-4 pt-4">
       <VisitStatsCard stats={visits} />
+
+      {/* Only while something's still missing — it's onboarding, not a
+          permanent fixture of the page. */}
+      {hasBuy && (!tours.length || !homesSeen.length || !preapproval) && (
+        <GettingStartedCard
+          clientId={clientId}
+          hasTours={tours.length > 0}
+          hasHomesSeen={homesSeen.length > 0}
+          hasPreapproval={preapproval !== null}
+        />
+      )}
 
       {transactions.length > 0 && (
         <div className="flex items-center justify-between gap-3">

@@ -8,7 +8,7 @@ import {
   CLIENT_GROUPS,
   type ClientWithTransactions,
 } from "@/lib/data/agent";
-import { getStageDefinitions, findStage } from "@/lib/data/dashboard";
+import { getStageDefinitions, findStage, transactionLabel } from "@/lib/data/dashboard";
 import type { StageDefinition } from "@/lib/supabase/database.types";
 import { cn } from "@/lib/utils";
 import { NewClientDialog } from "./new-client-dialog";
@@ -38,7 +38,7 @@ function ClientRow({
           <p className="font-medium">{client.full_name}</p>
           <p className="truncate text-sm text-muted-foreground">
             {client.transactions.length > 0
-              ? client.transactions.map((t) => t.property_address).join(" · ")
+              ? client.transactions.map(transactionLabel).join(" · ")
               : (client.phone ?? "No phone on file")}
           </p>
         </div>
@@ -83,7 +83,7 @@ export default async function AgentClientsPage({
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-heading text-3xl font-semibold tracking-tight">Clients</h1>
-        <NewClientDialog />
+        <NewClientDialog stages={stages} />
       </div>
 
       {availableGroups.length > 1 && (

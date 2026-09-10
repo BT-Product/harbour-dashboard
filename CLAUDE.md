@@ -62,6 +62,9 @@ database.
     just the next one; the UI uses it as a general stage setter
   - `agent_update_key_dates`, `agent_upsert_tour`, `agent_delete_tour`,
     `agent_upsert_inspection_item`, `agent_delete_inspection_item` (0005)
+  - `agent_onboard_client` (0009) — creates a new client's transactions
+    from the buying/selling/both answer in one call, so a move-up client
+    can't end up with one leg saved, the other failed, and no link
   - `agent_upsert_preapproval`, `agent_delete_preapproval`,
     `agent_delete_client_data` (0007) — the last one deletes every app
     row a client owns in one transaction and refuses to touch a profile
@@ -77,6 +80,16 @@ database.
     cannot write a row for anyone else
   Follow this pattern for any new agent write rather than adding table
   grants.
+- **A buyer exists before a property does.** The buy sequence starts at
+  `house_hunting` (sort_order 0, migration `0009`), which is where a
+  newly onboarded buyer normally lands — touring, no address, no
+  contract. `transactions.property_address` is therefore nullable, and
+  `stage_definitions.requires_property` says which stages demand one.
+  Both the create-transaction form and `agent_create_transaction` read
+  that flag rather than hardcoding a stage key. Render a transaction's
+  name through `transactionLabel()` (`src/lib/data/dashboard.ts`), never
+  `property_address` directly — a house-hunting buyer shows as "Home
+  search".
 - **`client_page_views` records raw views, not visits** (migration
   `0008`). A visit is derived at read time as a run of views with no gap
   over 30 minutes (`collapseToVisits` in `src/lib/data/agent.ts`), so the
@@ -103,6 +116,13 @@ widened — managing a client's transaction needed a real UI. Today:
 - `/agent/debrief` — still its own standalone fast-entry form. The
   original reasoning holds here: this is the one used in a parking lot
   between showings, so it stays optimized for speed over completeness.
+
+**Add client** asks whether they're buying, selling, or both, and
+creates their transactions as part of the invite — a buyer defaults to
+House Hunting with no address. Their page then shows a "Get their
+dashboard started" card (upcoming tour, homes already seen, pre-approval)
+until those are filled in, because a buyer's history often predates them
+becoming a client.
 
 Creating a transaction is on the client's Overview tab, including
 linking a move-up buyer's two legs together — that link is what turns

@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { StageDefinition, Transaction } from "@/lib/supabase/database.types";
-import { findStage } from "@/lib/data/dashboard";
+import { findStage, transactionLabel } from "@/lib/data/dashboard";
 
 const KEY_DATE_LABELS: Record<string, string> = {
   contract_date: "Contract signed",
@@ -24,7 +24,7 @@ export function TransactionCard({
       <CardHeader>
         <div className="flex items-start justify-between gap-2">
           <div>
-            <CardTitle className="text-base">{transaction.property_address}</CardTitle>
+            <CardTitle className="text-base">{transactionLabel(transaction)}</CardTitle>
             <p className="mt-1 text-sm text-muted-foreground capitalize">
               {transaction.type === "buy" ? "Your purchase" : "Your sale"}
             </p>

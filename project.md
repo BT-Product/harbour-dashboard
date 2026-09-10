@@ -16,9 +16,9 @@ product — no shared branding, data, or logic with Harbour.
 
 ## Current phase
 
-**Discovery** — validating the core hypothesis (see `strategy.md`) with a
-small pilot cohort before any decision on broader rollout or the B2B2C
-path. Pre-committed success thresholds are set; nothing about "launch" is
+**Discovery, now with a live client.** Validating the core hypothesis
+(see `strategy.md`) with a small pilot cohort before any decision on
+broader rollout or the B2B2C path. Pre-committed success thresholds are set; nothing about "launch" is
 implied until those are read out.
 
 V1 shipped to production during discovery and has kept moving: client
@@ -42,8 +42,9 @@ client the moment they log in.
   the pilot cohort's experience runs through day to day.
 - **Pilot cohort clients** — 2–3 active clients, prioritizing at least one
   move-up buyer (the primary persona the product is designed around).
-  Britton plans to invite the first real clients on 2026-09-09; as of
-  2026-09-08 the only accounts are the seeded demo cohort.
+  **First real client onboarded 2026-09-10** (Tara Taylor — invited,
+  password set, signed in the same morning). Still short of a move-up
+  buyer, which is the case the hypothesis actually turns on.
 - **Brokerage** — not yet engaged; broker review of the stage-explainer
   copy (and a Fair Housing check on any copy that varies by client
   circumstance) is a pre-launch gate before a real client sees the app.

@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/server";
-import { getClientTransactions } from "@/lib/data/dashboard";
+import { getClientTransactions, transactionLabel } from "@/lib/data/dashboard";
 
 const IMPORTANCE_VARIANT: Record<string, "destructive" | "default" | "secondary"> = {
   dealbreaker: "destructive",
@@ -44,7 +44,7 @@ export default async function InspectionsPage() {
 
         return (
           <div key={t.id} className="space-y-3">
-            <h2 className="text-lg font-semibold text-muted-foreground">{t.property_address}</h2>
+            <h2 className="text-lg font-semibold text-muted-foreground">{transactionLabel(t)}</h2>
             <div className="grid gap-3 md:grid-cols-2">
               {txItems.map((item) => (
               <Card key={item.id} className={item.resolved ? "opacity-60" : undefined}>
