@@ -67,3 +67,209 @@ move-up client logging into a buy-only view sees half their transaction —
 and the missing half is usually the one causing the anxiety. Without that,
 this phase would only be testing a generic status tracker, not the actual
 differentiator.
+
+---
+
+# The inspection agent
+
+*Second strategic bet, scoped 2026-09-11. Not part of the Discovery-phase
+pilot — the pilot tests the dashboard hypothesis above and shouldn't be
+destabilized by this. Recorded now because the design decisions below were
+argued through properly and would be expensive to re-derive.*
+
+## Hypothesis under test
+
+A client who receives a calm, sourced frame *at the same time* as their raw
+inspection report will not spiral — and the agent who provided it will look
+more like an advisor than a forwarder.
+
+The wedge is not analysis. Britton can triage a report in ten minutes. The
+wedge is that the client currently opens a sixty-page PDF containing
+forty-seven flagged "deficiencies" with no frame at all, and the hour of
+phone work that follows is the most expensive, least leveraged thing in the
+transaction.
+
+Unlike the dashboard hypothesis, this one is explicitly built for many
+realtors from the start. Britton is the first tenant and the calibration
+source, not the only intended user.
+
+## The constraint that shapes everything: there is no window
+
+The inspector sends the report to the client and the agent **at the same
+moment** — the client usually paid for it, so they are the customer of
+record. There is no period during which Britton knows something the client
+doesn't and can prepare.
+
+This kills the obvious design. A pipeline that ingests, analyzes, drafts,
+and then waits for human approval delivers its brief *after* the client has
+already read the PDF and panicked — often the next morning, if the report
+lands at 6pm on a Friday. It would be a post-mortem sold as prevention.
+
+The resolution is to split the response by how much judgment it requires.
+A holding message carries none — "the report is in; most of what you'll see
+is routine; I'm reviewing it and will walk you through it tonight" is true
+of every inspection ever conducted. It can send automatically, within
+seconds of arrival, with no review. It buys the window that the architecture
+otherwise cannot produce. Everything substantive follows it and waits for a
+human.
+
+**The holding message is the actual intervention.** The brief is the
+follow-up. This inverts the intuitive priority order and should survive
+contact with implementation pressure.
+
+## The origination rule
+
+The agent is never the source of a fact.
+
+Realtor liability on inspections comes from three places: unauthorized
+practice (rendering opinions requiring a license you don't hold), negligent
+misrepresentation (stating something as fact that proves wrong and was
+relied upon), and failure to disclose. The instinct that "more information
+means more liability" is wrong — it points at volume when the real axis is
+*origination*. A thorough brief where every claim is attributed is safer
+than a short one saying "minor, don't worry about it," because the second
+is an unlicensed structural opinion offered in Britton's own voice.
+
+So every client-visible claim carries provenance, and the safe set is
+narrow:
+
+- **Inspector-stated**, with citation — safe. He carries that liability and
+  insures against it.
+- **Base-rate context** ("homes of this age typically show 40–60 findings")
+  — safe. Context, not assessment.
+- **Specialist-required** ("a licensed roofer should price this") — safe,
+  and it is the correct realtor behavior anyway.
+- **Britton's own judgment** — allowed, but marked as such, and never
+  applied to anything requiring a license.
+
+Originating a cost figure or a severity verdict falls outside all four and
+is prohibited. This also defuses the false-positive risk: *"this warrants a
+structural engineer's look"* costs the client five hundred dollars and three
+days if wrong, where *"the foundation is failing"* costs the deal.
+
+Provenance should be enforced in the schema rather than promised in a
+prompt — the same reasoning that revoked the column grant on
+`homes_seen.private_notes` instead of trusting app code to respect it.
+
+## Filtering is safe here, and the reason is contingent
+
+An earlier version of this design forbade the agent from ever dropping a
+finding, on failure-to-disclose grounds. That was wrong, and the correction
+matters enough to record.
+
+Failure to disclose requires that the withholding party be the channel.
+Britton is not: the inspector delivers the full report to the client
+directly, so disclosure is complete before the agent runs. Filtering cannot
+undo it. And a forty-seven-card list is itself the overload the product
+exists to prevent — the constraint was working against the primary goal.
+
+What survives is weaker and differently shaped: **reliance on the ranking.**
+A brief saying "these four matter" implies the other forty-three don't, and
+a misgraded item invites "I relied on you to tell me what mattered." Note
+that the discarded never-drop rule did not fix this either — an item buried
+at position forty-four under "routine" is as invisible as an omitted one.
+
+Two cheap mitigations, and one caveat:
+
+- Surface the few that matter; collapse the rest behind a single expandable
+  line ("43 other routine findings"), not forty-three cards. The client sees
+  four things.
+- State non-completeness in the brief: *"this isn't the full report — read
+  it, and tell me if anything in it concerns you."*
+- **The caveat, which is load-bearing:** all of this holds *because* the
+  client independently receives the raw report. If Harbour ever becomes
+  their primary view of it — a plausible and arguably desirable evolution —
+  the analysis inverts and the never-drop rule comes back. Revisit this
+  section before making Harbour the inspection's front door.
+
+The collapsed-but-present list is kept for a second reason that is stronger
+than the liability one: it is the only way Britton can audit what the agent
+de-prioritized without re-reading the PDF. See the measurement plan below.
+
+## Calibration is asymmetric by category
+
+Not one confidence dial. Health/safety and structural findings must never be
+under-called; cosmetic and routine-maintenance findings must never be
+over-called. The cost of error flips sign depending on the category, so the
+agent needs a real taxonomy rather than a tunable caution level.
+
+The stated goal of "100% accuracy" is not achievable and should not be
+designed toward — inspectors miss things constantly, which is why they carry
+E&O. The achievable goal is an architecture where **being wrong is
+survivable**, which is what the origination rule and the collapsed list
+together buy.
+
+## Autonomy is a per-tenant setting, not a build stage
+
+Every realtor starts at *show me the reasoning with citations* and graduates
+to *show me only the exceptions* on a measured track record. This is
+per-tenant state from the first migration, not something retrofitted once
+Britton personally gets comfortable — a new realtor arriving in month
+eighteen has extended the agent exactly zero trust and must start at the
+bottom of the same ladder.
+
+## Measurement plan
+
+The trust ladder above has no rungs unless disagreement is captured. **Every
+edit Britton makes during review is the signal**: a re-graded item, a
+reworded recommendation, an item promoted out of the collapsed list. Without
+recording these, graduation happens on feeling rather than evidence, and the
+central safety claim of the whole design goes unverified.
+
+- Rate of items Britton re-grades during review, by category — the accuracy
+  curve, and the graduation criterion.
+- Promotions out of the collapsed list — the direct false-negative count,
+  and the reason the list stays visible.
+- Time from report arrival to client-visible brief; separately, time to the
+  auto-sent holding message.
+- Whether inspection-week visit frequency departs from the baseline the
+  dashboard hypothesis is already collecting.
+- Qualitative, at close: did the client mention the inspection as a moment
+  of stress or of reassurance?
+
+## Deferred deliberately
+
+**Attributed contractor cost ranges.** *"Miller Roofing quotes $9–12k for a
+re-roof of this age in this zip"* is both a genuine moat — locally sourced,
+compounding with every deal, not scrapeable — and a liability *reduction*,
+since it replaces an originated number with a sourced one. It is deferred
+because it is a contractor-relationship project rather than an engineering
+one, and building the moat before the product is the classic version of this
+mistake.
+
+**The full standalone brief** with sections and cost ranges. The narrative
+frame plus graded list is the v1 artifact; the standalone document is the
+destination. The architecture should not foreclose it.
+
+## Known gaps, not yet resolved
+
+- Reports arrive in pieces — general, roof, sewer, pest — over several days.
+  The current design assumes one PDF and one brief.
+- The seller's response round is unmodeled, and client anxiety peaks there
+  rather than at the initial report.
+- The client-facing brief says nothing about *what happens next*, though a
+  good share of inspection panic is process ignorance rather than defect
+  severity.
+- Where calibration comes from — general model knowledge, rules written down
+  once, or learned from Britton's graded history in Harbour — is open.
+- Whether the client can ask questions back, and whether the agent answers
+  or routes to Britton, is open.
+
+## Security posture
+
+The intake is a dedicated mailbox (`inspections@brittontaylor.com`) that
+inspectors send to directly, not a filter or alias on Britton's main inbox.
+This is a real boundary rather than a cosmetic one: Gmail API access cannot
+be scoped to a label, so an alias would grant the agent read access to the
+entire mailbox — including other clients' confidential positions, which
+raises fiduciary problems, and regulated financial data, which raises
+compliance ones. The separate mailbox is worth its monthly cost for that
+reason alone.
+
+Inspection reports are **untrusted input**. Real estate is the most targeted
+sector for business-email-compromise fraud, and a PDF arriving from an
+outside party can carry text addressed to the agent rather than to the
+reader. The agent treats document contents as data and never as
+instructions, and never acts on directives found inside a report. The narrow
+mailbox reduces this exposure but does not eliminate it — the reports
+themselves are the vector.

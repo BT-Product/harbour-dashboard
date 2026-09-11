@@ -28,6 +28,19 @@ Copy `.env.local.example` to `.env.local` and fill in the Supabase project's
 URL, anon key, and service role key before running anything that touches the
 database.
 
+## Tracking docs — keep four files in sync, not three
+
+`project.md` (what Harbour is, current phase), `strategy.md` (hypothesis,
+thresholds, design reasoning), and `change_log.md` (day-by-day history) are
+kept current as work happens rather than retroactively.
+
+**`README.md` is the fourth.** Whenever the other three change, check whether
+the README needs to follow. It is the only one of the four written for an
+outside reader — it doubles as the repo's portfolio face for hiring managers
+and PMs, who will not open `strategy.md`. It doesn't need every detail, but
+it should never be *wrong* about the current state, and a significant piece
+of product reasoning shouldn't exist only in the tracking docs.
+
 ## Architecture notes worth knowing before changing the schema
 
 - **Multi-tenant from day one**: every client-owned row traces back to

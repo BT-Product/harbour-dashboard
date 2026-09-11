@@ -348,10 +348,51 @@ currently receive their invites from a gmail.com address with Gmail's
 provider (Resend, Postmark, SendGrid, SES) on a real sending domain is
 set for **2026-10-26**.
 
+### Also day 5 — scoped the inspection agent (design only, no code)
+
+Interviewed through a second strategic bet: an agent that turns an
+inspection report into a client-facing brief. Written up in full in
+`strategy.md`; nothing built, and deliberately not started, so the
+Discovery pilot isn't destabilized.
+
+Three things changed shape during the interview and are worth recording
+as reasoning, not just conclusions:
+
+- **The pain isn't triage, it's panic.** Britton can read a report in ten
+  minutes. The expensive part is the hour on the phone after the client
+  opens a sixty-page PDF alone. That reframed the deliverable from
+  "summary" to "frame delivered before the spiral starts."
+- **There is no window to deliver it in.** The inspector sends to client
+  and agent simultaneously, so any design with a human approval gate
+  arrives after the damage. Resolved by splitting on judgment: a
+  judgment-free holding message auto-sends on arrival; everything
+  substantive still waits for review. The holding message ended up being
+  the actual intervention, which inverts the obvious priority order.
+- **An early liability constraint was wrong and got reversed.** The
+  design initially forbade the agent from dropping any finding, on
+  failure-to-disclose grounds. Britton pushed back correctly: the client
+  receives the raw report directly, so disclosure is already complete and
+  filtering can't undo it — and a 47-card list *is* the overload the
+  product exists to prevent. The constraint was working against the
+  primary goal. What replaced it is a collapsed-but-expandable list,
+  kept mainly so the agent's de-prioritizations stay auditable without
+  re-reading the PDF. That safety argument is contingent on the client
+  getting the raw report independently, and is flagged in `strategy.md`
+  to be revisited if Harbour ever becomes the inspection's front door.
+
+Also settled: the agent never originates a fact (every client-visible
+claim carries provenance), calibration is asymmetric by category rather
+than one caution dial, autonomy is per-tenant state so a realtor
+arriving later still starts at the bottom of the trust ladder, and
+intake is a separate `inspections@` mailbox rather than a filter on
+Britton's main inbox — Gmail API access can't be scoped to a label, so an
+alias would be a cosmetic boundary rather than a real one.
+
 ### Not yet done
 
-- Pilot cohort not yet selected or invited (`npm run invite-client` is
-  ready; no real clients onboarded).
+- Pilot cohort is one client deep (Tara Taylor, onboarded 2026-09-10) and
+  still has no move-up buyer — the case the hypothesis actually turns on.
+  Two more clients needed before the thresholds mean anything.
 - Stage-explainer copy is a first draft — needs broker review and a Fair
   Housing check before any real client sees it.
 - Brokerage name/DRE number in the `agents` row are still placeholders.
@@ -362,8 +403,11 @@ set for **2026-10-26**.
   sending domain — reminder set for 2026-10-26.**
 - Visit data is collected per client but there's no cohort view — the
   median across clients is a manual read for now.
-- Inspection report upload with LLM extraction is still a future idea,
-  deliberately not started.
+- The inspection agent is **designed but not started** as of day 5 — see
+  `strategy.md` for the full scoping, including the deferred pieces
+  (contractor cost ranges, the standalone brief) and the open questions
+  (where calibration comes from, multi-report arrivals, the seller
+  response round).
 - `tours.home_seen_id` exists in the schema but nothing populates it, so
   a tour and its debrief aren't actually linked. The "recent tours — got
   a debrief written?" nudge is date-based, not a real gap calculation.

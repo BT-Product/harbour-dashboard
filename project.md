@@ -36,6 +36,15 @@ won't reliably deliver invites), and the stage-explainer copy, which
 hasn't had broker or Fair Housing review and will be read by a real
 client the moment they log in.
 
+**A second bet is scoped but not started.** As of 2026-09-11 there is a
+full design for an inspection agent — ingesting inspection reports and
+producing a client-facing brief — in `strategy.md`. It is explicitly *not*
+part of Discovery: the pilot tests the dashboard hypothesis, and starting
+a second workstream before those thresholds are read out would muddy both.
+It is written down now because the design was argued through properly and
+would be expensive to re-derive. Unlike the dashboard, it is aimed at many
+realtors from the start rather than at Britton alone.
+
 ## Key stakeholders
 
 - **Britton Taylor** — agent, product owner, sole tenant, and the person
