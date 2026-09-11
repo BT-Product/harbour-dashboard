@@ -181,6 +181,19 @@ expected failure mode, not a bug — the callback page says so and offers
 a fresh link, and the agent can send one from the client's page
 (`resendAccessLink`).
 
+**Verify a send against a throwaway address before emailing a real
+client.** Create a temporary user, ask Supabase to send it a recovery
+mail, check the call succeeds, then delete it. Both failure modes hit
+during the pilot — a redirect silently swapped for localhost, and SMTP
+credentials Gmail rejected — were invisible from the app and would each
+have put another broken link in front of the same client.
+
+**Email currently goes through a personal Gmail account** (custom SMTP,
+App Password — a regular Google password returns `535 BadCredentials`).
+That is a pilot-stage shortcut; a transactional provider on a real
+sending domain is the intended end state, with a reminder set for
+2026-10-26.
+
 **The invite email depends on Supabase's SMTP setup.** The built-in
 email service is for testing: it's rate-limited and won't reliably
 deliver to arbitrary addresses, so custom SMTP has to be configured in

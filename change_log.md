@@ -309,6 +309,45 @@ itself, which arrives from "Supabase Auth" at a supabase.io address with
 `You\'ve been invited` — a literal backslash — as its subject line. None
 of that is what a client should get from their agent.
 
+## Day 5 — 2026-09-11 (Discovery phase)
+
+**Spent the day getting one email to one client.** Yesterday's fix made
+Harbour ask for the right redirect; today was everything downstream of
+that still being wrong.
+
+- **The redirect was being thrown away.** Supabase only honours a
+  redirect that's on the project's allow-list, and ours wasn't, so it
+  silently substituted `http://localhost:3000` again. Caught by probing
+  with a throwaway address before sending anything to Tara — asked for
+  the production callback, got localhost back. Britton fixed Site URL
+  and the allow-list; re-probed and it came back correct.
+- **Then the send itself failed**, 500 on every address, not just hers.
+  The auth log had the real cause: `535 5.7.8 Username and Password not
+  accepted — gsmtp`. Custom SMTP had been switched on and pointed at
+  Gmail with a regular account password, which Google stopped accepting
+  for SMTP years ago. An App Password fixed it.
+- **Tara's link went out** at 17:17 UTC — `recovery_sent_at` populated
+  for the first time, confirming a real dispatch rather than another
+  silent failure.
+
+Worth keeping: **every send was verified against a throwaway address
+first.** Two of the three attempts would otherwise have put a second and
+third broken link in front of a real client who had already had one bad
+experience. The cost of the extra step is seconds; the cost of skipping
+it lands on the person you're trying to onboard.
+
+Also worth noting how the failure was found in the first place: visit
+tracking, built two days earlier for the retention metric, is what
+proved she never reached the dashboard. Her auth record said the invite
+was accepted; only the absence of page views showed the flow died after
+the token was consumed.
+
+**Email is on a personal Gmail on purpose, for the pilot only.** Clients
+currently receive their invites from a gmail.com address with Gmail's
+"via" header, capped near 500/day. A reminder to move to a transactional
+provider (Resend, Postmark, SendGrid, SES) on a real sending domain is
+set for **2026-10-26**.
+
 ### Not yet done
 
 - Pilot cohort not yet selected or invited (`npm run invite-client` is
@@ -316,12 +355,11 @@ of that is what a client should get from their agent.
 - Stage-explainer copy is a first draft — needs broker review and a Fair
   Housing check before any real client sees it.
 - Brokerage name/DRE number in the `agents` row are still placeholders.
-- Custom SMTP is still not configured in Supabase. The first real invite
-  delivered on the built-in service, but it arrives from "Supabase Auth"
-  at a supabase.io address, with a mangled subject line, and that service
-  is rate-limited — don't assume the next few will land.
-- Supabase's Site URL and redirect allow-list still point at localhost.
-  The app no longer depends on them, but they should be corrected.
+- Auth email goes out through a personal Gmail account (App Password),
+  which is a deliberate pilot-stage shortcut, not a finished setup:
+  clients see a gmail.com sender with a "via" header and the account is
+  capped near 500/day. **Move to a transactional provider on a real
+  sending domain — reminder set for 2026-10-26.**
 - Visit data is collected per client but there's no cohort view — the
   median across clients is a manual read for now.
 - Inspection report upload with LLM extraction is still a future idea,
