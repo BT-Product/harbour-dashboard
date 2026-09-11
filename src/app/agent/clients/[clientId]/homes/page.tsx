@@ -29,23 +29,22 @@ export default async function ClientHomesPage({
           <h3 className="text-sm font-semibold text-muted-foreground">Top Contenders</h3>
           <div className="grid gap-3 md:grid-cols-2">
             {topContenders.map((home) => (
-              <div key={home.id} className="relative">
-                <HomeSeenCard
-                  address={home.address}
-                  clientNotes={home.client_notes}
-                  interestLevel={home.interest_level}
-                  seenAt={home.seen_at}
-                  privateNotes={home.private_notes}
-                />
-                <div className="absolute top-3 right-3">
+              <HomeSeenCard
+                key={home.id}
+                address={home.address}
+                clientNotes={home.client_notes}
+                interestLevel={home.interest_level}
+                seenAt={home.seen_at}
+                privateNotes={home.private_notes}
+                action={
                   <DebriefFormDialog
                     clientId={clientId}
                     home={home}
                     triggerLabel="Edit"
                     triggerVariant="ghost"
                   />
-                </div>
-              </div>
+                }
+              />
             ))}
           </div>
         </div>
