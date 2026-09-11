@@ -59,6 +59,49 @@ Deeper architectural notes, the full list of database functions, and the
 conventions to follow when extending any of this live in
 [`CLAUDE.md`](CLAUDE.md).
 
+## In design: the inspection agent
+
+Scoped 2026-09-11, **not built** — deliberately held until the discovery
+thresholds above are read out. The full reasoning is in
+[`strategy.md`](strategy.md); the short version, because the design problem
+turned out to be more interesting than the feature:
+
+A home inspection produces a sixty-page PDF flagging forty-odd
+"deficiencies," most of them routine. The inspector sends it to the client
+and the agent *at the same moment* — the client usually paid for it. So the
+client opens it alone, counts forty-seven problems, and panics. The expensive
+part of an inspection isn't reading the report; it's the hour on the phone
+afterward.
+
+Three things fell out of scoping it that are worth reading the doc for:
+
+**There is no window, so the design splits on judgment.** Any pipeline that
+analyzes, drafts, and *then* waits for the agent's approval delivers its
+brief after the client has already spiraled. A holding message requires no
+per-deal judgment — "the report is in, most of what you'll see is routine,
+I'm reviewing it tonight" is true of every inspection ever conducted — so it
+sends automatically on arrival while everything substantive still waits for a
+human. The throwaway message turns out to be the actual intervention.
+
+**The agent is never the source of a fact.** Realtors aren't licensed to
+assess structures or price repairs. Every client-visible claim carries
+provenance — inspector-stated with citation, base-rate context,
+specialist-required, or the agent's own judgment — and originating a cost
+figure or a severity verdict is prohibited. The counterintuitive consequence
+is that a *longer* brief is safer than a short one, because "minor, don't
+worry about it" is an unlicensed structural opinion in the agent's own voice.
+
+**One core constraint got reversed, and the doc records why.** The design
+originally forbade dropping any finding, on failure-to-disclose grounds.
+That was wrong: the client receives the raw report directly from the
+inspector, so disclosure is already complete and filtering can't undo it —
+and a forty-seven-item list *is* the overload the feature exists to prevent.
+The constraint was working against its own goal. What replaced it keeps the
+filtered items collapsed but present, mainly so the agent's
+de-prioritizations stay auditable. That argument holds only while the client
+receives the raw report independently, which is flagged in the doc as the
+thing to revisit if Harbour ever becomes the inspection's front door.
+
 ## Stack
 
 Next.js (App Router, TypeScript, Tailwind, shadcn/ui on Base UI) deployed on
