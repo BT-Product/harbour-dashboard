@@ -156,18 +156,22 @@ export function HomesSeenDayManager({
         <p className="text-sm text-muted-foreground">No debriefs found for this date.</p>
       )}
       {homes.map((home) => (
-        <div key={home.id} className="relative">
-          <HomeSeenCard
-            address={home.address}
-            clientNotes={home.client_notes}
-            interestLevel={home.interest_level}
-            seenAt={home.seen_at}
-            privateNotes={home.private_notes}
-          />
-          <div className="absolute top-3 right-3">
-            <DebriefFormDialog clientId={clientId} home={home} triggerLabel="Edit" triggerVariant="ghost" />
-          </div>
-        </div>
+        <HomeSeenCard
+          key={home.id}
+          address={home.address}
+          clientNotes={home.client_notes}
+          interestLevel={home.interest_level}
+          seenAt={home.seen_at}
+          privateNotes={home.private_notes}
+          action={
+            <DebriefFormDialog
+              clientId={clientId}
+              home={home}
+              triggerLabel="Edit"
+              triggerVariant="ghost"
+            />
+          }
+        />
       ))}
     </div>
   );
