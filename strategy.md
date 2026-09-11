@@ -208,6 +208,124 @@ Britton personally gets comfortable — a new realtor arriving in month
 eighteen has extended the agent exactly zero trust and must start at the
 bottom of the same ladder.
 
+**It is also per-client, which is less obvious.** Relational damage is
+time-dependent: the same error is close to fatal in week one and a shrug at
+month six, because trust is a buffer that hasn't been accrued yet. A realtor
+who has fully graduated the agent still has a client who hasn't. The first
+brief for any given client stays above the line regardless of the tenant's
+standing.
+
+## What decides the line
+
+The test is reversibility, blast radius, and observability — can the effect
+be seen immediately, or does it fail silently?
+
+Two refinements came out of applying it, and both change answers:
+
+**Blast radius includes the effect on a person, not just on data.** A
+published brief is a reversible artifact; the client's confidence in their
+realtor is not. This matters more here than it would elsewhere, because the
+brief's entire job is to be the credible voice at the client's moment of
+maximum anxiety. An error there doesn't cost a correction — it costs the
+thing the feature exists to produce, and it runs directly into the riskiest
+assumption recorded at the top of this document. The client's read of a
+visible error is not "the software slipped." It is *"he didn't read this."*
+
+**But the damage concentrates in one kind of error.** Judgment errors — an
+item graded "important" that Britton would have called "minor" — read as
+human, and correcting one reads as attentive. Coherence errors — wrong
+address, wrong client, a finding that isn't in the source report, a number
+with no provenance — read as *unattended*, and those are what reveal the
+machine. The relational risk lives almost entirely in the second category,
+which is mechanically checkable rather than a matter of judgment.
+
+That produces the general principle, which is the most useful thing on this
+page:
+
+> **A step doesn't move below the line because the agent earned trust. It
+> moves below because a detector was built for its failure mode.**
+
+Graduation is something to build, not something to wait for. An ungated step
+sits above the line until its gate exists, however well the agent has been
+performing.
+
+## The line, step by step
+
+At full autonomy. A "gate" is a mechanical check that halts or escalates —
+never a human review step.
+
+**Intake**
+
+1. **Detect arrival** — *below.* Trivially reversible, tiny radius, and
+   Britton received the same email, so a miss is visible anyway.
+2. **Match report to client and transaction** — *below, behind a hard gate.*
+   The worst outcome in the pipeline: publishing one client's report to
+   another's dashboard is a cross-client confidentiality breach that neither
+   of them necessarily reports. But it is verification, not judgment —
+   require an exact address and name match against the transaction record
+   and halt otherwise. A human eyeballing this at 9pm is *less* reliable,
+   not more.
+3. **Send the holding message** — *below.* No judgment; the text is true of
+   every inspection ever conducted. The design depends on it not waiting.
+
+**Analysis**
+
+4. **Extract findings** — *below, behind a reconciliation gate.* A missed
+   finding is a silent false negative, so reconcile the extracted count
+   against the report's own summary and flag disagreement.
+5. **Classify findings** — *below.* Judgment, but pre-publish and
+   reversible; the damage from misclassification lands downstream where the
+   gates are.
+6. **Rank and collapse** — *below.* Silent by nature *except* that the
+   collapsed-but-present list makes it auditable. Nothing may be dropped,
+   only collapsed — which is what earns this row its place below the line.
+7. **Assign provenance** — *below, behind a schema gate.* Silent if wrong
+   but mechanically checkable: refuse to publish any untagged claim.
+
+**Drafting**
+
+8. **Draft the client brief** — *below.* Drafting is never the risk;
+   publishing is.
+9. **Draft the internal brief** — *below.* Britton is the only reader.
+10. **Recommend specialists** — *below.* Over-referral costs the client $500
+    and three days; under-referral is caught at 12b. The safe direction is
+    built into the step.
+
+**Escalation**
+
+11. **Flag anomalies to Britton** — *below.* Flagging generously is free,
+    and a human cannot notice what was never surfaced, so a review gate here
+    adds nothing.
+12. **Escalation splits in two, and the split is the point.**
+    - 12a. **Decide how urgently to alert Britton** — *below.* Worst case is
+      a needless 8pm ping.
+    - 12b. **Tell the client their deal may be at risk** — **above.**
+      Irreversible (the objection window closes), deal-sized radius, and the
+      failure mode is silent — nobody calls to say you missed it. The only
+      unconditionally above-the-line step in the workflow.
+
+**Review and publish**
+
+13. **Package for review** — *below.* Assembly, no decision in it.
+14. **Apply Britton's edits** — *below, with a confirmation diff.* A
+    silently dropped edit is the bad case.
+15. **Publish** — *below, behind a coherence gate; **above** for a client's
+    first brief.* The gate checks the machine-legible failures listed above,
+    not the judgment calls. The first-brief exception exists because no
+    trust buffer has accrued yet.
+16. **Notify the client** — *below.* Coupled to 15 and gated with it.
+
+**Learn**
+
+17. **Record Britton's disagreements** — *below, and non-optional.* No risk
+    in doing it; the trust ladder is unmeasurable without it. Alarm if it
+    ever stops recording.
+
+Worth noticing how small the above-the-line set is: one unconditional step
+and one conditional one. That is only defensible because of the gates —
+every qualified "below" above is below *because* a specific detector exists.
+Build the gate or move the row up.
+
 ## Measurement plan
 
 The trust ladder above has no rungs unless disagreement is captured. **Every
