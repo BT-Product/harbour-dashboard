@@ -388,6 +388,37 @@ intake is a separate `inspections@` mailbox rather than a filter on
 Britton's main inbox — Gmail API access can't be scoped to a label, so an
 alias would be a cosmetic boundary rather than a real one.
 
+**Then labeled all 17 workflow steps above or below the autonomy line**,
+scored against Britton's own test: reversibility, blast radius, and
+whether failure is observable or silent. Three results worth keeping:
+
+- **Blast radius has to include the effect on a person.** An initial
+  recommendation to let publishing go below the line was wrong because it
+  scored reversibility of the *artifact* — a brief can be edited, but a
+  client's confidence can't be un-shaken, and the brief's whole job is to
+  be credible at the client's worst moment. What rescued it was noticing
+  the damage concentrates in *coherence* errors (wrong address, a finding
+  absent from the source) rather than judgment errors: the first kind
+  reads as unattended, and is mechanically checkable. Publish went below
+  behind a coherence gate, with a client's first brief still above.
+- **Escalation turned out to be two steps, not one.** Deciding how
+  urgently to ping Britton is cheap and reversible; telling a *client*
+  their deal may be at risk is irreversible, deal-sized, and silent when
+  missed. Only the second is above the line — and it is the only
+  unconditionally above-the-line step in the whole workflow.
+- **Matching a report to the right client is the highest-risk step**, and
+  it had been overlooked because it looks like plumbing. Publishing one
+  client's inspection to another's dashboard is a cross-client breach
+  neither party necessarily reports. It stays below the line because it's
+  verification rather than judgment — a hard exact-match gate beats a
+  human skimming addresses at 9pm.
+
+The general principle that fell out, now the spine of the autonomy model:
+**a step moves below the line because a detector was built for its failure
+mode, not because the agent earned trust.** Graduation is built, not
+waited for — an ungated step sits above the line however well the agent
+has been performing.
+
 ### Not yet done
 
 - Pilot cohort is one client deep (Tara Taylor, onboarded 2026-09-10) and

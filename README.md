@@ -102,6 +102,20 @@ de-prioritizations stay auditable. That argument holds only while the client
 receives the raw report independently, which is flagged in the doc as the
 thing to revisit if Harbour ever becomes the inspection's front door.
 
+**Every step is labeled above or below the autonomy line**, scored on
+reversibility, blast radius, and whether failure is observable or silent.
+Blast radius counts the effect on a person, not just on data — a published
+brief is reversible, but a client's confidence in their realtor isn't, and
+the client's read of a visible error is "he didn't read this." The result is
+counterintuitive: exactly one step is unconditionally above the line
+(telling a client their deal is at risk — irreversible, deal-sized, and
+silent when missed). Which yields the principle the whole model rests on:
+
+> A step doesn't move below the line because the agent earned trust. It
+> moves below because a detector was built for its failure mode.
+
+Graduation is something you build, not something you wait for.
+
 ## Stack
 
 Next.js (App Router, TypeScript, Tailwind, shadcn/ui on Base UI) deployed on
