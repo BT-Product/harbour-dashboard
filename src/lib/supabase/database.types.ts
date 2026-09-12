@@ -121,6 +121,15 @@ export type ClientPageView = {
   viewed_at: string;
 };
 
+export type TourReminder = {
+  id: string;
+  client_id: string;
+  tour_date: string;
+  sent_at: string;
+  recipients: string[];
+  stop_count: number;
+};
+
 export type Database = {
   public: {
     Tables: {
@@ -182,6 +191,14 @@ export type Database = {
         Row: Preapproval;
         Insert: Partial<Preapproval>;
         Update: Partial<Preapproval>;
+        Relationships: [];
+      };
+      // Written only by the tour-reminder cron with the service-role key;
+      // everyone else reads it to see whether a reminder already went out.
+      tour_reminders: {
+        Row: TourReminder;
+        Insert: Partial<TourReminder>;
+        Update: Partial<TourReminder>;
         Relationships: [];
       };
       // Insert is structurally empty: rows only ever arrive through

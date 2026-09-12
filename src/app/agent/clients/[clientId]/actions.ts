@@ -2,6 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { createServiceRoleClient } from "@/lib/supabase/service-role";
+import { getCurrentProfile } from "@/lib/data/dashboard";
+import { getSiteUrl } from "@/lib/site-url";
+import { sendTourReminder } from "@/lib/email/send-tour-reminder";
 import type {
   InterestLevel,
   ItemImportance,
@@ -24,6 +28,44 @@ export async function updateStage(clientId: string, transactionId: string, stage
   });
   if (error) throw new Error(error.message);
   ok(clientId);
+}
+
+/**
+ * Sends the day-before reminder by hand. The nightly cron covers the normal
+ * case, but a tour booked after that run would otherwise get no reminder at
+ * all — which is exactly the situation the evening before a tour booked
+ * today.
+ */
+export async function sendReminderNow(
+  clientId: string,
+  tourDate: string,
+): Promise<{ ok: true; recipients: string[] } | { ok: false; error: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "Not signed in" };
+
+  const profile = await getCurrentProfile(supabase, user.id);
+  if (!profile.is_agent) return { ok: false, error: "Not authorized" };
+
+  // RLS decides whether this client is theirs before the service-role client
+  // is used to read the client's email address and write the reminder row.
+  const { error: ownership } = await supabase
+    .from("profiles")
+    .select("id")
+    .eq("id", clientId)
+    .single();
+  if (ownership) return { ok: false, error: "Not your client" };
+
+  const admin = createServiceRoleClient();
+  const siteUrl = await getSiteUrl();
+  const outcome = await sendTourReminder(admin, { clientId, tourDate, siteUrl });
+
+  if (outcome.status === "skipped") return { ok: false, error: outcome.reason };
+
+  ok(clientId);
+  return { ok: true, recipients: outcome.recipients };
 }
 
 export async function createTransaction(

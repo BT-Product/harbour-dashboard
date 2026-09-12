@@ -1,7 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
-import { getClientTours } from "@/lib/data/agent";
+import { getClientProfile, getClientReminderDates, getClientTours } from "@/lib/data/agent";
 import { formatDateHeading, groupByDateKey } from "@/lib/date-grouping";
 import { TourFormDialog, ToursDayManager } from "../tours-manager";
+import { SendReminderButton } from "../send-reminder-button";
 
 export default async function ClientToursPage({
   params,
@@ -10,7 +11,11 @@ export default async function ClientToursPage({
 }) {
   const { clientId } = await params;
   const supabase = await createClient();
-  const tours = await getClientTours(supabase, clientId);
+  const [tours, reminders, client] = await Promise.all([
+    getClientTours(supabase, clientId),
+    getClientReminderDates(supabase, clientId),
+    getClientProfile(supabase, clientId),
+  ]);
 
   const now = new Date().getTime();
   const upcoming = tours.filter((t) => new Date(t.scheduled_at).getTime() >= now);
@@ -30,12 +35,40 @@ export default async function ClientToursPage({
         </p>
       )}
 
-      {groups.map(([key, items]) => (
-        <div key={key} className="space-y-2">
-          <h3 className="text-sm font-semibold text-muted-foreground">{formatDateHeading(key)}</h3>
-          <ToursDayManager clientId={clientId} dateKeyStr={key} tours={items} />
-        </div>
-      ))}
+      {groups.map(([key, items]) => {
+        const reminder = reminders.get(key);
+        return (
+          <div key={key} className="space-y-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <h3 className="text-sm font-semibold text-muted-foreground">
+                {formatDateHeading(key)}
+              </h3>
+              {/* So you know the client already has the list in their inbox
+                  before you text them about the same tour. */}
+              {reminder ? (
+                <span className="text-xs text-muted-foreground">
+                  · reminder emailed{" "}
+                  {new Date(reminder.sent_at).toLocaleDateString(undefined, {
+                    month: "short",
+                    day: "numeric",
+                  })}{" "}
+                  to{" "}
+                  {reminder.recipients.length === 1
+                    ? "them"
+                    : `${reminder.recipients.length} people`}
+                </span>
+              ) : (
+                <SendReminderButton
+                  clientId={clientId}
+                  tourDate={key}
+                  clientName={client.full_name}
+                />
+              )}
+            </div>
+            <ToursDayManager clientId={clientId} dateKeyStr={key} tours={items} />
+          </div>
+        );
+      })}
     </div>
   );
 }
