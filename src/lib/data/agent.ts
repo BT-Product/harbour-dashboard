@@ -7,6 +7,7 @@ import type {
   InspectionItem,
   HomeSeen,
   Preapproval,
+  TourReminder,
 } from "@/lib/supabase/database.types";
 
 type Client = SupabaseClient<Database>;
@@ -80,6 +81,19 @@ export async function getClientHomesSeen(supabase: Client, clientId: string): Pr
   const { data, error } = await supabase.rpc("agent_list_homes_seen", { p_client_id: clientId });
   if (error) throw error;
   return data ?? [];
+}
+
+/** Tour dates a day-before reminder has already gone out for, as YYYY-MM-DD. */
+export async function getClientReminderDates(
+  supabase: Client,
+  clientId: string,
+): Promise<Map<string, TourReminder>> {
+  const { data, error } = await supabase
+    .from("tour_reminders")
+    .select("*")
+    .eq("client_id", clientId);
+  if (error) throw error;
+  return new Map((data ?? []).map((row) => [row.tour_date, row]));
 }
 
 export async function getClientPreapproval(

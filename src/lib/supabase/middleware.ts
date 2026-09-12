@@ -11,6 +11,10 @@ import type { Database } from "./database.types";
 const PUBLIC_PATHS = [
   "/login",
   "/api/health",
+  // Vercel Cron arrives with no session. The route does its own auth against
+  // CRON_SECRET — without this it just gets redirected to /login and the
+  // reminder silently never sends.
+  "/api/cron",
   "/auth",
   "/forgot-password",
   "/set-password",
