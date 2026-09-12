@@ -419,6 +419,25 @@ mode, not because the agent earned trust.** Graduation is built, not
 waited for — an ungated step sits above the line however well the agent
 has been performing.
 
+**Closed the first of the three open questions: the client cannot ask the
+agent questions.** Permanent, not a v1 scoping call. The decisive reason
+isn't the obvious one — a chat surface would quietly contradict the
+riskiest assumption the pilot is currently measuring, that self-serve
+visibility *increases* felt care rather than substituting for the human
+contact that earns referrals. Answering questions is the purest form of
+that substitution, arriving at the moment the call matters most. The
+origination rule couldn't survive it either: *"is this crack serious?"*
+has no answer that is both useful and licensed.
+
+Logged one candidate against it, wanted rather than shelved: a **"flag
+this for our call"** control on each item, to revisit when the
+client-facing brief UI is designed. It answers nothing and originates
+nothing, so it sits outside the decision. The argument for it is a
+measurement one — Britton's review edits show whether the agent graded an
+item *correctly*, while client flags would show whether it graded the
+item the way a frightened non-expert experiences it. Those are different
+models, and the second one is the actual product.
+
 ### Not yet done
 
 - Pilot cohort is one client deep (Tara Taylor, onboarded 2026-09-10) and
