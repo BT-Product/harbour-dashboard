@@ -576,6 +576,55 @@ path, an unverified sending domain (`brittontaylor.com` wasn't in the
 account at all), and the template question. The one email sent without
 that pre-flight is the one a client had already failed on three times.
 
+### Also day 6 — the inspection agent's most valuable finding, from real work
+
+Not from the design interview. Britton was sitting with a live client's
+actual reports and noticed where his time was going: **figuring out which
+findings in different reports are the same finding.**
+
+A home inspection flags health and safety action items in red and gives
+no repair costs. A wood pest or roof inspector often finds the same
+underlying defect and *does* price it, because they'd be doing the work.
+Match them and the cost arrives for free, from a licensed source, with no
+contractor to chase.
+
+**This overturned an earlier call.** Attributed cost ranges had been
+deferred as a v3 business-development project requiring a contractor
+network. Wrong — the prices are already arriving in the inbox, itemized
+and signed by professionals who carry liability for them. Extraction, not
+relationship-building, and it belongs in v1. It's also the safest
+provenance tier there is: *"the pest company quotes $2,400"* rather than
+*"this costs $2,400."*
+
+It also inverted a gap. Multi-report arrival was filed as a sequencing
+nuisance — reports land over days, so when do you publish? Backwards. The
+correlation *is* the feature; a lone home inspection is the degraded case.
+What survives as a real gap is narrower and sharper: publishing a brief
+before the report that prices it lands means publishing a version about to
+change, and republishing to a client who already read it is its own kind
+of alarming.
+
+Matching is **propose, never merge** — failing to match costs only what it
+costs today, while wrongly merging hides one defect under another's cost,
+silently. Agent proposes, realtor confirms with one tap, confirmations
+become a calibration signal.
+
+**A principle got named that had already decided two questions.** Filtering
+findings, and whether costs belong in the client brief, both dissolved the
+same way: *Harbour never withholds, it only frames.* The client holds every
+source document, so nothing is protected by omission — the brief can only
+change whether they understand what they're looking at. The useful
+corollary is that "make this less scary" can only be answered honestly,
+because there's no withholding option to be tempted by.
+
+Which produced a concrete framing model for repair costs, and closed the
+last of the three open questions along the way: the biggest reason a number
+frightens a client is that they read "$10,700 in repairs" as *a bill I now
+owe*, when at this stage it's what they're **asking the seller to cover**.
+Saying so isn't spin — it's the function of the objection period, and most
+first-time buyers don't know it. That reframe turned out to *be* the
+"what happens next" content the brief was missing. Same question.
+
 ### Not yet done
 
 - Pilot cohort is one client deep (Tara Taylor, onboarded 2026-09-10) and

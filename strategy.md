@@ -186,6 +186,29 @@ The collapsed-but-present list is kept for a second reason that is stronger
 than the liability one: it is the only way Britton can audit what the agent
 de-prioritized without re-reading the PDF. See the measurement plan below.
 
+## Harbour never withholds, it only frames
+
+Stated 2026-09-12, after the same reasoning decided two unrelated questions
+— whether the agent may filter findings, and whether repair costs belong in
+the client brief. Both dissolved the same way:
+
+> **The client holds every source document. Nothing is protected by
+> omission. The only thing the brief can change is whether they understand
+> what they are looking at.**
+
+The inspector sends them the full report; the specialists send them their
+own. Withholding a finding or a dollar figure from the brief does not spare
+the client anything — it only makes Harbour less useful than the PDFs
+already sitting in their inbox, while creating the impression of curation
+that would be doing work it isn't.
+
+The corollary is a useful constraint: **"make this less frightening" can
+only ever be answered honestly here.** There is no withholding option to be
+tempted by, so every available move — context, reframing, sequencing,
+attribution — is one that survives the client reading the source. Design
+against the version of the client who read everything, because that is the
+client.
+
 ## Calibration is asymmetric by category
 
 Not one confidence dial. Health/safety and structural findings must never be
@@ -261,6 +284,106 @@ So: **a report with no usable severity rubric halts and goes above the line
 for that deal.** The realtor grades it themselves, that once. Consistent
 with the general principle — an ungated step sits above the line until its
 gate exists — and it costs nothing in the normal case.
+
+## The same finding appears in several reports, and only one of them prices it
+
+Observed 2026-09-12 from live client work, and it is the highest-value thing
+identified so far — not from the design interview but from Britton actually
+sitting with a real set of reports and noticing where his time went.
+
+A home inspection flags health and safety action items in red and **gives no
+repair costs**. A wood pest or roof inspector often finds the *same
+underlying defect* and does give a price, because they are the ones who
+would do the work. Matching them means the cost arrives for free, from a
+licensed source, without anyone chasing a contractor for a number.
+
+**This overturns an earlier call in this document.** Attributed cost ranges
+were filed under *Deferred deliberately* as a v3 business-development
+project requiring a contractor network. That was wrong. The prices are
+already arriving in the inbox, itemized, signed by professionals who carry
+liability for them. It is an extraction problem, not a relationship-building
+one, and it belongs in v1.
+
+It is also the safest provenance tier in the taxonomy — *"the pest company
+quotes $2,400"* rather than *"this costs $2,400"* — which is exactly the
+distinction the origination rule was written to preserve.
+
+And it reframes what was filed as a gap. Multi-report arrival was recorded
+as a sequencing nuisance: reports land over several days, so when do you
+publish? That is backwards. **The correlation across reports is the
+feature.** A lone home inspection is the degraded case.
+
+### Propose, never merge
+
+The error asymmetry is favorable, and the design should lean on it:
+
+- **Failing to match** costs exactly what it costs today — Britton chases
+  the price himself. Cheap, visible, status quo.
+- **Wrongly merging** two different findings hides one defect underneath
+  another's cost. Silent, and it is a false negative.
+
+So the agent proposes matches and never asserts them. Two quoted lines
+shown side by side, confirmed with one tap — a second's work, because the
+judgment is "same thing or not," not a re-read. Confirmation is also a
+calibration signal, the same way review edits are.
+
+**Corroboration is half the value, separately from cost.** A finding that
+appears in the home inspection *and* independently in the pest report, with
+a licensed price attached, is a far stronger ask than the same item
+mentioned once. Independent professionals agreeing is what makes a repair
+request stick, so the internal brief should surface the corroboration
+explicitly, not just the number it carried in with.
+
+**One caution:** a specialist's figure is often a *bid* from a company that
+wants the job, not a neutral market estimate. Legitimate for negotiation and
+fully documented, but the framing has to stay attributive — which provenance
+already enforces.
+
+### Making a number less frightening without misleading
+
+Five things make a repair figure frightening. All five are honestly
+fixable, and none requires softening anything:
+
+1. **No denominator.** "$10,700" against nothing. Against the purchase
+   price it is under two percent. Context shrinks a number without changing
+   it.
+2. **No sense of who pays.** The largest one. A client reads "$10,700 in
+   repairs" and hears *a bill I now owe*. It is not — at this stage it is
+   what they are **asking the seller to cover**, which is the entire
+   function of the objection period. Most first-time buyers do not know
+   this. Saying so is not spin; it is what the number is for.
+3. **No sense of normal.** Is $10,700 a lot for a 1978 house? They have no
+   idea. The same base-rate framing that works on finding counts works on
+   dollars.
+4. **Undifferentiated urgency.** A termite item due before close reads
+   identically to a roof with eight years left. Splitting *now* from
+   *eventually* turns one frightening number into one manageable number and
+   one future thing — and **that split is already in the documents**: a
+   California pest report separates Section 1 (active damage) from Section 2
+   (conditions likely to lead to it), assigned by the licensed professional.
+   Free structure, nothing originated.
+5. **Presented as settled.** "$2,400" sounds like something that must be
+   accepted. "The pest company quotes $2,400, and we can get a second bid"
+   is equally true and materially less trapping.
+
+The same three findings, unframed and framed:
+
+> Subfloor damage — $2,400. Roof — $6,500. Panel — $1,800. **Total
+> $10,700.**
+
+> Three findings came back with licensed repair quotes attached, totaling
+> $10,700 — about 1.6% of the purchase price. **That is what we will be
+> asking the seller to address or credit, not a bill you are facing.** Two
+> need resolving before closing. The roof has years of life left and is on
+> the list as leverage, not urgency.
+
+Nothing withheld, nothing softened, no number altered.
+
+**This closes a second gap.** The client brief saying nothing about *what
+happens next* was recorded separately, on the grounds that a good share of
+inspection panic is process ignorance rather than defect severity.
+Reframing the total as an ask rather than a bill **is** the what-happens-next
+content. They were the same question.
 
 ## The client cannot ask the agent questions
 
@@ -366,6 +489,13 @@ never a human review step.
 4. **Extract findings** — *below, behind a reconciliation gate.* A missed
    finding is a silent false negative, so reconcile the extracted count
    against the report's own summary and flag disagreement.
+4b. **Correlate findings across reports** — *proposing is below the line;
+   merging is above.* Matching a home inspection's uncosted action item to
+   the pest or roof report that prices it is where the realtor's time
+   currently goes. Failing to match costs only what it costs today;
+   wrongly merging hides one defect under another's cost, silently. So the
+   agent proposes and the realtor confirms with one tap — and the
+   confirmations are a calibration signal.
 5. **Classify findings** — *below, behind a rubric gate.* Severity is read
    from the inspector's own grading rather than derived, so this is mostly
    extraction; remaining judgment is pre-publish and reversible. But a
@@ -442,13 +572,18 @@ central safety claim of the whole design goes unverified.
 
 ## Deferred deliberately
 
-**Attributed contractor cost ranges.** *"Miller Roofing quotes $9–12k for a
-re-roof of this age in this zip"* is both a genuine moat — locally sourced,
-compounding with every deal, not scrapeable — and a liability *reduction*,
-since it replaces an originated number with a sourced one. It is deferred
-because it is a contractor-relationship project rather than an engineering
-one, and building the moat before the product is the classic version of this
-mistake.
+**A contractor network for independent cost ranges** — *substantially
+narrowed on 2026-09-12.* This entry originally deferred all attributed cost
+data as a v3 relationship-building project. That was wrong for the common
+case: the specialists' own reports already carry itemized prices, so the
+usual cost question is answered by extraction rather than by recruiting
+anyone. See "The same finding appears in several reports" above; that part
+is v1.
+
+What remains genuinely deferred is narrower: independent second opinions,
+and market ranges for defects *no* report priced. Still a relationship
+project, still not worth building before the product — but it is now an
+enhancement at the edges rather than the only route to cost data.
 
 **The full standalone brief** with sections and cost ranges. The narrative
 frame plus graded list is the v1 artifact; the standalone document is the
@@ -484,16 +619,23 @@ which is already a below-the-line step in the workflow.
 
 ## Known gaps, not yet resolved
 
-- Reports arrive in pieces — general, roof, sewer, pest — over several days.
-  The current design assumes one PDF and one brief.
+- **Publication timing across a multi-report deal.** The correlation itself
+  is now a designed feature rather than a gap, but the sequencing question
+  survives it and is sharper for it: if the pest report is what prices the
+  home inspection's finding, publishing a brief before it lands means
+  publishing a version that is about to change. Republishing a brief a
+  client has already read is its own kind of alarming. Unresolved.
 - The seller's response round is unmodeled, and client anxiety peaks there
   rather than at the initial report.
-- The client-facing brief says nothing about *what happens next*, though a
-  good share of inspection panic is process ignorance rather than defect
-  severity.
 *Resolved 2026-09-11: whether the client can ask the agent questions. No —
 see "The client cannot ask the agent questions" above. And where calibration
 comes from — see "Where calibration comes from" above.*
+
+*Resolved 2026-09-12: the brief saying nothing about what happens next. It
+turned out to be the same question as how to frame repair costs — telling
+the client the total is an ask rather than a bill is itself the
+what-happens-next content. See "Making a number less frightening without
+misleading" above.*
 
 ## Security posture
 
