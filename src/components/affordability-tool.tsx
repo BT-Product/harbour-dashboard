@@ -11,7 +11,11 @@ const money = (n: number) =>
   n.toLocaleString(undefined, { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 
 export function AffordabilityTool({ preapproval }: { preapproval: Preapproval }) {
-  const [hoa, setHoa] = useState(preapproval.hoa_monthly);
+  // The field holds raw text, not a number. Storing a number meant an empty
+  // box couldn't be represented: clearing it snapped straight back to "0",
+  // so the leading zero could never be deleted and typing 453 left 0453.
+  const [hoaInput, setHoaInput] = useState(String(preapproval.hoa_monthly));
+  const hoa = Math.max(0, Number(hoaInput) || 0);
 
   const budget = useMemo(
     () => monthlyPrincipalAndInterest(preapproval.loan_amount, preapproval.rate),
@@ -49,8 +53,15 @@ export function AffordabilityTool({ preapproval }: { preapproval: Preapproval })
               min={0}
               step={25}
               className="pl-6"
-              value={hoa}
-              onChange={(e) => setHoa(Math.max(0, Number(e.target.value) || 0))}
+              value={hoaInput}
+              onChange={(e) => setHoaInput(e.target.value)}
+              // Select what's there on focus, so typing a figure replaces
+              // it instead of appending to the 0 that's already sitting in
+              // the box.
+              onFocus={(e) => e.target.select()}
+              // Tidy up once they're done rather than while they type:
+              // an empty box becomes 0, and 0453 becomes 453.
+              onBlur={() => setHoaInput(String(hoa))}
             />
           </div>
         </div>
