@@ -199,6 +199,69 @@ E&O. The achievable goal is an architecture where **being wrong is
 survivable**, which is what the origination rule and the collapsed list
 together buy.
 
+## Where calibration comes from
+
+Settled 2026-09-11. The question turned out to be three questions wearing
+one name, and separating them dissolved most of it.
+
+**Severity is read, not derived.** Most inspection reports carry their own
+rubric — "Safety Hazard," "Major Concern," "Recommend Repair," "Monitor,"
+"Maintenance." That is a licensed professional's own classification, already
+in the document. Taking it converts the largest part of calibration from a
+judgment problem into an extraction problem, and it is the only treatment
+consistent with the origination rule: the agent reads severity rather than
+competing with the person qualified to assign it.
+
+**Salience is uniform across clients.** Every client sees the same ranking.
+Harbour knows their pre-approval, down payment and HOA load, and it is
+tempting to reorder on what they can absorb — a $15k roof means something
+different to a client with nothing left after closing. Rejected: a
+pre-approval describes what a lender would lend, not what is in their
+savings, and `project.md` already flags client-varying copy for Fair Housing
+review. The *narrative* may carry personal context; the *order* may not.
+This removes the circumstance-varying treatment almost entirely.
+
+**Framing is a base rate, not calibration at all.** "Forty-seven findings is
+normal for a house this age" generalizes across realtors and markets, which
+is why it is the piece that transfers to a new tenant for free.
+
+What remains as genuine judgment is narrow: which of several equally-graded
+items leads, what gets collapsed despite being flagged, and the negotiation
+angle — and the last of those is internal-only, so it carries the least
+risk.
+
+### Three layers, in order of authority
+
+- **Floor — the inspector's own safety flag.** Anything they designate a
+  safety hazard always surfaces, whatever the model ranked it. No category
+  list to maintain and no second opinion originated. If an inspector
+  soft-pedals a gas issue and the agent passes it through as routine, that
+  miss belongs to the licensed, insured party who made it. Declining to
+  originate a competing opinion is the whole point of the origination rule.
+- **Default ordering — the inspector's grade plus general construction
+  knowledge.** Enough to carry v1 with no history at all.
+- **Refinement — learned from Britton's review edits**, which the
+  measurement plan already captures. Overrides the default as it
+  accumulates.
+
+**No written rules for the middle layer.** Tacit expertise does not survive
+articulation — a week spent writing thresholds produces rules that get
+contradicted on the first real report. Rules are right for the floor
+precisely because the floor is not judgment.
+
+### The gate this creates
+
+Defining the floor in terms of the inspector's rubric defines it in terms of
+a field that may not exist. Britton's inspectors grade consistently; another
+realtor's may not, and no client is obliged to hire a good one. A report
+with no parseable rubric would otherwise have **no floor at all**, which is
+exactly the catastrophic case.
+
+So: **a report with no usable severity rubric halts and goes above the line
+for that deal.** The realtor grades it themselves, that once. Consistent
+with the general principle — an ungated step sits above the line until its
+gate exists — and it costs nothing in the normal case.
+
 ## The client cannot ask the agent questions
 
 Decided 2026-09-11, and not a v1 scoping call — a permanent property of the
@@ -303,9 +366,11 @@ never a human review step.
 4. **Extract findings** — *below, behind a reconciliation gate.* A missed
    finding is a silent false negative, so reconcile the extracted count
    against the report's own summary and flag disagreement.
-5. **Classify findings** — *below.* Judgment, but pre-publish and
-   reversible; the damage from misclassification lands downstream where the
-   gates are.
+5. **Classify findings** — *below, behind a rubric gate.* Severity is read
+   from the inspector's own grading rather than derived, so this is mostly
+   extraction; remaining judgment is pre-publish and reversible. But a
+   report arriving with no parseable rubric has no floor, so that case
+   halts and goes above the line for that deal.
 6. **Rank and collapse** — *below.* Silent by nature *except* that the
    collapsed-but-present list makes it auditable. Nothing may be dropped,
    only collapsed — which is what earns this row its place below the line.
@@ -426,11 +491,9 @@ which is already a below-the-line step in the workflow.
 - The client-facing brief says nothing about *what happens next*, though a
   good share of inspection panic is process ignorance rather than defect
   severity.
-- Where calibration comes from — general model knowledge, rules written down
-  once, or learned from Britton's graded history in Harbour — is open.
-
 *Resolved 2026-09-11: whether the client can ask the agent questions. No —
-see "The client cannot ask the agent questions" above.*
+see "The client cannot ask the agent questions" above. And where calibration
+comes from — see "Where calibration comes from" above.*
 
 ## Security posture
 
