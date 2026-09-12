@@ -199,6 +199,36 @@ E&O. The achievable goal is an architecture where **being wrong is
 survivable**, which is what the origination rule and the collapsed list
 together buy.
 
+## The client cannot ask the agent questions
+
+Decided 2026-09-11, and not a v1 scoping call — a permanent property of the
+product. There is no chat surface, no question box, no "ask about this item."
+
+Three reasons, in ascending order of how much they matter:
+
+The origination rule could not survive it. *"Is this foundation crack
+serious?"* has no safe answer — anything useful is an unlicensed opinion and
+anything safe is useless. A free-text surface cannot be held inside the
+provenance taxonomy the rest of the design depends on.
+
+The realtor calls the client to walk through the report anyway. Questions
+have a natural home, staffed by a licensed human who knows the deal. The
+brief's job is to make that call shorter and better, not to pre-empt it.
+
+And most importantly, it would contradict the hypothesis this whole product
+is being tested against. The riskiest assumption recorded at the top of this
+document is that self-serve visibility *increases* felt care rather than
+substituting for the human contact that actually earns referrals. A
+dashboard that answers questions is the purest form of that substitution,
+arriving at the moment in the transaction when the call matters most. Had
+this gone the other way it would have quietly falsified the thing the pilot
+is measuring.
+
+**What this does not foreclose is capture without answer** — see the flag
+control under *Deferred deliberately*. Letting a client mark an item as
+worrying is a different act from answering them, and it does not weaken any
+of the three reasons above.
+
 ## Autonomy is a per-tenant setting, not a build stage
 
 Every realtor starts at *show me the reasoning with citations* and graduates
@@ -359,6 +389,34 @@ mistake.
 frame plus graded list is the v1 artifact; the standalone document is the
 destination. The architecture should not foreclose it.
 
+**A "flag this for our call" control on each item — wanted, not merely
+shelved.** Revisit trigger: when the client-facing brief UI is designed.
+Britton liked this on first hearing (2026-09-11) and it should not be lost
+in the gap between design and build.
+
+It answers nothing and originates nothing, so it sits outside the decision
+above. The client reads the brief at 9pm; the call is at noon tomorrow.
+Today their questions go one of two places — into the anxiety this feature
+exists to prevent, or into a 9pm text that is the interruption it exists to
+reduce. A flag gives them a third.
+
+Three things it buys, the last being the real argument:
+
+- The client feels registered immediately. Anxiety relief does not require
+  an answer; being heard is most of it.
+- Britton enters the call already knowing the four items they are worried
+  about. That is less preparation, not more.
+- **It is a calibration signal available no other way.** Britton's review
+  edits measure whether the agent graded items *correctly*. Client flags
+  measure whether it graded them the way a frightened non-expert
+  experiences them — and that second model is the actual product. If
+  clients keep flagging items graded "minor," the ranking is wrong about
+  fear even when it is right about severity.
+
+One edge case to handle at build time: a genuinely urgent flag sitting
+unseen until noon. Route the flag to Britton as a notification on arrival,
+which is already a below-the-line step in the workflow.
+
 ## Known gaps, not yet resolved
 
 - Reports arrive in pieces — general, roof, sewer, pest — over several days.
@@ -370,8 +428,9 @@ destination. The architecture should not foreclose it.
   severity.
 - Where calibration comes from — general model knowledge, rules written down
   once, or learned from Britton's graded history in Harbour — is open.
-- Whether the client can ask questions back, and whether the agent answers
-  or routes to Britton, is open.
+
+*Resolved 2026-09-11: whether the client can ask the agent questions. No —
+see "The client cannot ask the agent questions" above.*
 
 ## Security posture
 
