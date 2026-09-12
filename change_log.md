@@ -473,6 +473,30 @@ well; another realtor's may not, and no client is obliged to hire a good
 one. **A report with no parseable rubric halts and goes above the line
 for that deal.**
 
+### Also day 5 — two display bugs on the homes-seen card
+
+Britton spotted the Edit button sitting on top of the interest badge on
+the agent side. Both agent-side homes views were absolutely positioning
+Edit at `top-3 right-3`, which is exactly where `HomeSeenCard` draws its
+badge — two components independently claiming the same corner, neither
+aware of the other. Fixed by giving the card an optional `action` slot
+rendered in the header row beside the badge, so the two sit in normal
+flow instead of stacking. The client-side views never overlaid anything
+and were unaffected, which is why it only showed on the agent dash.
+
+The screenshot he sent contained a second bug he hadn't flagged: the
+debrief notes were rendering as one run-on sentence — "Great backyard
+Front room for entertaining Needs a bit of work" — because the newlines
+he'd typed in the textarea were being collapsed. Both of Tara's debriefs
+have multi-line notes, so this was on every card, and it was the one
+that mattered more: the overlap is ugly on the agent's own screen, but
+the run-on text is what a client reads on hers. Now rendered with
+`whitespace-pre-line`, private notes included.
+
+Both verified against Tara's real debriefs at 1280px and 375px before
+deploying, rather than against seeded data — the multi-line notes only
+exist in what he actually typed.
+
 ### Not yet done
 
 - Pilot cohort is one client deep (Tara Taylor, onboarded 2026-09-10) and
