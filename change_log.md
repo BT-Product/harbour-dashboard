@@ -497,6 +497,85 @@ Both verified against Tara's real debriefs at 1280px and 375px before
 deploying, rather than against seeded data — the multi-line notes only
 exist in what he actually typed.
 
+## Day 6 — 2026-09-12 (Discovery phase)
+
+Ran from the evening of the 11th. Two threads: Harbour became an email
+sender in its own right, and the first client's login finally worked
+after three separate failures.
+
+**Day-before tour reminders.** The evening before a tour, each client
+gets one email listing every stop with times and notes. One email per
+client per date, not per stop — a tour is an outing of five or six
+addresses, and five emails would be absurd.
+
+This required Harbour to send email at all for the first time.
+Supabase's mailer only sends its own auth templates, so anything the
+product writes needs its own path; that's now Resend on
+`brittontaylor.com`. Choosing it now rather than at the planned
+2026-10-26 review avoided building the feature on the Gmail shortcut and
+migrating it twice.
+
+Three decisions worth keeping:
+
+- **The reminder row is claimed before the send**, with a unique
+  `(client_id, tour_date)` constraint. A cron retry, a double
+  invocation, or the manual button can't double-email anyone. A failed
+  send releases the claim, so failure retries rather than silently never
+  sending — inserting first means a crash skips a client instead of
+  re-sending them, which is the safer direction to fail when the
+  recipient is a real person.
+- **"Tomorrow" means tomorrow where the tour happens.** Parsing the day
+  boundary in the server's timezone — UTC on Vercel — would shift the
+  window by the offset and, on the Pacific coast, miss every tour before
+  5pm while picking up the previous evening's.
+- **A manual "Email reminder now"** exists because cron can only see
+  tours that already exist when it runs. A tour booked the same day gets
+  nothing otherwise, which was exactly the situation for the first real
+  tour: it was booked the evening before, after the send window.
+
+Caught before deploy: the middleware was redirecting `/api/cron` to
+`/login`, so Vercel Cron would have hit a 307 and the reminder would
+never have sent. Invisible from the outside — the job would simply have
+done nothing every night.
+
+**The login saga ended, three failures deep.** Getting one client into
+her dashboard took three unrelated fixes, each hiding behind the last:
+
+1. **Site URL pointed at localhost** (day 4–5). Fixed by sending an
+   explicit redirect, then by correcting the project setting.
+2. **SMTP rejected the password** (day 5). Gmail stopped accepting
+   regular account passwords; an App Password fixed it.
+3. **Her employer's scanner stripped the token.** Supabase's stock
+   templates put the token after a `#`, and corporate link rewriters
+   drop everything after the fragment. She got "that link didn't carry a
+   sign-in token" — accurate, and completely opaque to her.
+
+The fix for the third is to have Supabase put the token in the query
+string (`?token_hash=…&type=recovery`) pointed at `/auth/callback`,
+which the app already supported. Query parameters survive rewriting;
+fragments don't. **Both the invite and reset templates were changed** —
+the invite one matters just as much, since every future client whose
+employer scans mail would hit the identical wall.
+
+Worth recording as a pattern, not an anecdote: none of the three were
+visible from the app. Every request Harbour served returned 2xx
+throughout; a log query across the whole window found zero errors. What
+found them was checking the layer below — the generated link's redirect
+target, the auth log's SMTP error, and the shape of the URL in the
+delivered email. **When a user reports a failure the application logs
+deny, the bug is underneath the application.**
+
+Also worth recording: visit tracking, built on day 3 for the retention
+metric, is what proved she never reached the dashboard on each attempt.
+Her auth record said the invite was accepted every time.
+
+**A note on verification discipline.** Every send today was tested
+against a throwaway address or the agent's own inbox first — and caught
+a problem each time: an invalid Resend key surfaced the claim-rollback
+path, an unverified sending domain (`brittontaylor.com` wasn't in the
+account at all), and the template question. The one email sent without
+that pre-flight is the one a client had already failed on three times.
+
 ### Not yet done
 
 - Pilot cohort is one client deep (Tara Taylor, onboarded 2026-09-10) and
@@ -505,11 +584,22 @@ exist in what he actually typed.
 - Stage-explainer copy is a first draft — needs broker review and a Fair
   Housing check before any real client sees it.
 - Brokerage name/DRE number in the `agents` row are still placeholders.
-- Auth email goes out through a personal Gmail account (App Password),
-  which is a deliberate pilot-stage shortcut, not a finished setup:
-  clients see a gmail.com sender with a "via" header and the account is
-  capped near 500/day. **Move to a transactional provider on a real
-  sending domain — reminder set for 2026-10-26.**
+- **Email now comes from two places, which clients will notice.** Tour
+  reminders go through Resend as `updates@brittontaylor.com`; Supabase's
+  auth email (invites, password resets) still goes through the personal
+  Gmail App Password, so those arrive from a gmail.com address with a
+  "via" header. Pointing Supabase's SMTP at Resend as well would put one
+  consistent sender in front of clients — same settings page, small
+  change. The 2026-10-26 reminder now covers only this half.
+- A tour edited *after* its reminder has gone out doesn't re-send —
+  the idempotency guard treats it as already sent. Deliberate for now
+  (it's what stops double-emails); revisit if plans change often enough
+  in practice to matter.
+- An auth user with no `profiles` row crashes the client dashboard with
+  a raw server error instead of anything useful. Can't happen through
+  normal onboarding — `inviteClient` rolls back a failed profile insert
+  — and it was only reachable by constructing it during debugging, but
+  it's an ugly failure for a cheap fix.
 - Visit data is collected per client but there's no cohort view — the
   median across clients is a manual read for now.
 - The inspection agent is **designed but not started** as of day 5 — see
