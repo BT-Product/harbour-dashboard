@@ -438,6 +438,41 @@ item *correctly*, while client flags would show whether it graded the
 item the way a frightened non-expert experiences it. Those are different
 models, and the second one is the actual product.
 
+**Closed the second open question: where calibration comes from.** It was
+three questions wearing one name, and separating them dissolved most of
+it.
+
+- **Severity is read, not derived.** Inspection reports already carry a
+  rubric — "Safety Hazard," "Major Concern," "Monitor" — assigned by the
+  licensed professional who wrote them. Taking it turns the largest part
+  of calibration from a judgment problem into an extraction problem, and
+  it's the only treatment consistent with the origination rule. Britton
+  confirmed his inspectors grade consistently enough to lean on.
+- **Salience is uniform across clients.** Harbour knows their pre-approval
+  and down payment, and reordering findings by what they can absorb was
+  tempting — but a pre-approval says what a lender would lend, not what's
+  in savings, and `project.md` already flags client-varying copy for Fair
+  Housing review. The narrative may carry personal context; the order may
+  not.
+- **Framing is a base rate**, not calibration — which is why it's the
+  piece that transfers to a new realtor for free.
+
+Floor is the inspector's safety flag alone, with no category list to
+maintain: if an inspector soft-pedals something, that miss belongs to the
+licensed and insured party who made it, and declining to originate a
+competing opinion is the entire point of the origination rule. Default
+ordering is that grade plus general construction knowledge, enough to
+carry v1 with no history. Refinement comes from Britton's review edits,
+already captured by the measurement plan. **No written rules for the
+middle layer** — tacit expertise doesn't survive articulation, and rules
+work for the floor precisely because the floor isn't judgment.
+
+One new gate fell out: defining the floor by the inspector's rubric
+defines it by a field that may not exist. Britton's inspectors grade
+well; another realtor's may not, and no client is obliged to hire a good
+one. **A report with no parseable rubric halts and goes above the line
+for that deal.**
+
 ### Not yet done
 
 - Pilot cohort is one client deep (Tara Taylor, onboarded 2026-09-10) and
