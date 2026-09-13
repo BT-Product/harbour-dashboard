@@ -385,6 +385,103 @@ inspection panic is process ignorance rather than defect severity.
 Reframing the total as an ask rather than a bill **is** the what-happens-next
 content. They were the same question.
 
+## A narrative for the realtor's call
+
+Added 2026-09-12, from Britton working a live inspection by hand with a
+general-purpose assistant and noticing which part of its output he actually
+valued: not a list, but **a story about the house** to tell on the call.
+
+Normally he walks a client through findings one by one. This time the
+findings were grouped by root cause into two clusters and a handful of
+one-offs. One cluster was moisture beneath a raised foundation, with
+fungus damage, wood-destroying insects, earth-to-wood contact and the
+ductwork lying on wet soil all flowing from it. The other was an aging roof
+that three separate inspectors had independently reached. Fourteen items
+that read as fourteen crises became one problem with one fix, plus a roof
+decision, plus a short list of safety items.
+
+**What he shared was an illustration, not a template.** The pattern is what
+carries over; the section order, time budgets and headings of that one
+outline do not need to be followed.
+
+### Why it's worth having
+
+- **It explains the house instead of listing it.** Line-by-line review makes
+  the client do the synthesis themselves, and they can't. Grouping by cause
+  is the strongest panic reducer found so far — stronger than base rates,
+  because "volume is not the signal, pattern is" changes what the client
+  thinks the problem *is*.
+- **It is the proof-of-competence goal made audible.** The client hears an
+  advisor who understands their house, not someone reading a report aloud.
+- **It is the lowest-risk output the agent produces.** Everything else it
+  writes reaches the client directly. This passes through a licensed human
+  who retells it in their own words, with judgment. That filter is the
+  strongest safeguard in the whole design, so call prep sits below the line.
+
+This is distinct from matching (step 4b). Matching finds *the same finding*
+in two reports. Clustering groups *different findings that share a cause*.
+
+Things the illustration did well that are worth keeping as instincts rather
+than rules: it named what is still unknown out loud (disclaimed areas, a
+partially viewed attic, a disclosure that did not mention documented
+stains, an unverified addition), and presented that as where trust gets
+built. It flagged repair dependencies — fumigation crews walk the roof, so
+sequence the work or pay for it twice. It pre-briefed the likely next
+surprise before the bid that would deliver it. It stated every option
+plainly without steering, and held the recommendation until bids were in.
+And it named the bids still pending, which is most of the answer to the
+publication-timing gap: later numbers arrive as confirmations, not
+revisions.
+
+### The risk narrative introduces
+
+A cluster is a causal claim, which is where origination can slip back in.
+And a compelling story is exactly how a misfiled finding disappears — a
+termite problem with an unrelated source, absorbed into "moisture under the
+house," vanishes inside a good narrative. It is the step-4b asymmetry again:
+
+- Every causal link carries provenance. A link no inspector stated is marked
+  as inference.
+- The agent proposes cluster membership; it does not assert it.
+- A finding that doesn't fit stays a one-off rather than being forced in.
+
+### Legal watch list
+
+Not legal advice — these were identified in design and are to be confirmed
+by Britton's broker and a real estate attorney. None of them blocks the
+idea; all are addressable by extending the origination rule from the
+written brief to **the spoken narrative.**
+
+1. **Stating causes outside the realtor's license.** "Moisture caused the
+   subfloor damage" is a structural and pest opinion. Relayed from an
+   inspector, it is theirs; inferred by the narrative, it becomes the
+   realtor's. Provenance has to survive into the words said aloud — "the
+   inspectors tie these together," not "the cause is."
+2. **Framing that minimizes.** "Pattern, not volume" is fine. Implying that
+   findings outside a cluster don't matter, or that fixing a root cause
+   resolves everything downstream, gives a client who relied on a tidy story
+   a misrepresentation argument. Predictions must be an inspector's.
+3. **Advice outside the realtor's role.** Negotiation strategy is the job.
+   Construction recommendations stay attributed to whoever made them. The
+   legal consequences of exiting under a contingency belong to an attorney.
+4. **Discouraging further investigation.** Where an inspector disclaimed an
+   area, the narrative always recommends follow-up. Smoothing over a
+   disclaimed area is a well-known source of agent liability.
+5. **Seller disclosure discrepancies.** Flagging a gap between the
+   disclosure and the evidence is duty-aligned. Implying concealment is a
+   separate claim. "We're asking" is the phrasing.
+6. **The realtor owns what they say.** A repeated wrong narrative is the
+   realtor's error; "the software said so" is not a defense. Call prep saved
+   in Harbour is also a written record that may be discoverable, which
+   argues for provenance on every causal link and for considering whether
+   call prep is kept as working notes rather than a permanent record.
+
+### Precondition
+
+**Broker and real estate attorney review of the narrative's framing rules
+before this is built.** Same shape as the existing gate on the
+stage-explainer copy, and reviewed once as rules rather than per deal.
+
 ## The client cannot ask the agent questions
 
 Decided 2026-09-11, and not a v1 scoping call — a permanent property of the
@@ -511,7 +608,10 @@ never a human review step.
 
 8. **Draft the client brief** — *below.* Drafting is never the risk;
    publishing is.
-9. **Draft the internal brief** — *below.* Britton is the only reader.
+9. **Draft the internal brief and call narrative** — *below.* Only the
+   realtor reads them, and reading the narrative before the call is its
+   review. Cluster membership is proposed with provenance on each causal
+   link; see "A narrative for the realtor's call."
 10. **Recommend specialists** — *below.* Over-referral costs the client $500
     and three days; under-referral is caught at 12b. The safe direction is
     built into the step.
@@ -627,6 +727,9 @@ which is already a below-the-line step in the workflow.
   client has already read is its own kind of alarming. Unresolved.
 - The seller's response round is unmodeled, and client anxiety peaks there
   rather than at the initial report.
+- **Precondition, not a gap:** broker and real estate attorney review of the
+  call narrative's framing rules before it is built. See the legal watch
+  list under "A narrative for the realtor's call."
 *Resolved 2026-09-11: whether the client can ask the agent questions. No —
 see "The client cannot ask the agent questions" above. And where calibration
 comes from — see "Where calibration comes from" above.*
