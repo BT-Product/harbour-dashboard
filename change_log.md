@@ -750,11 +750,11 @@ arranging it.
   it's an ugly failure for a cheap fix.
 - Visit data is collected per client but there's no cohort view — the
   median across clients is a manual read for now.
-- The inspection agent is **designed but not started** as of day 5 — see
-  `strategy.md` for the full scoping, including the deferred pieces
-  (contractor cost ranges, the standalone brief) and the open questions
-  (where calibration comes from, multi-report arrivals, the seller
-  response round).
+- The inspection agent is **designed but not started** — see
+  `strategy.md`. Still open: when to publish while specialist reports are
+  still arriving, and the seller's response round. Deferred: independent
+  contractor cost ranges and the standalone brief. Precondition: broker
+  and real estate attorney review of the call narrative's framing rules.
 - `tours.home_seen_id` exists in the schema but nothing populates it, so
   a tour and its debrief aren't actually linked. The "recent tours — got
   a debrief written?" nudge is date-based, not a real gap calculation.
