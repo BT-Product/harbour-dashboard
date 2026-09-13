@@ -29,12 +29,22 @@ on a phone as of day 2. See `change_log.md`.
 As of 2026-09-08 the agent can run a client's whole lifecycle from the
 app — invite them, create and edit their transactions, keep tours,
 debriefs, inspections and pre-approvals current, and remove them —
-with nothing left in Supabase Studio. **Real pilot clients are planned
-to be invited on 2026-09-09**, which makes two things load-bearing that
-weren't before: custom SMTP in Supabase (the built-in email service
-won't reliably deliver invites), and the stage-explainer copy, which
-hasn't had broker or Fair Housing review and will be read by a real
-client the moment they log in.
+with nothing left in Supabase Studio.
+
+**The first real client used the dashboard on 2026-09-11.** Getting her
+there took three days and three unrelated failures (a redirect pointing
+at localhost, SMTP credentials Gmail rejected, and an email template
+whose token her employer's mail scanner stripped — see `change_log.md`
+days 4–6). Her first session then produced the first real product
+finding: she opened all six sections in 37 seconds looking for what was
+in them, which is what prompted rebuilding the overview into a
+dashboard.
+
+Two things that gating made load-bearing are now partly settled: client
+email runs through Resend on Britton's own domain, while Supabase's auth
+email still goes through a personal Gmail account. The stage-explainer
+copy still has **not** had broker or Fair Housing review, and a real
+client is reading it today.
 
 **A second bet is scoped but not started.** As of 2026-09-11 there is a
 full design for an inspection agent — ingesting inspection reports and
@@ -51,9 +61,12 @@ realtors from the start rather than at Britton alone.
   the pilot cohort's experience runs through day to day.
 - **Pilot cohort clients** — 2–3 active clients, prioritizing at least one
   move-up buyer (the primary persona the product is designed around).
-  **First real client onboarded 2026-09-10** (Tara Taylor — invited,
-  password set, signed in the same morning). Still short of a move-up
-  buyer, which is the case the hypothesis actually turns on.
+  **First real client onboarded 2026-09-10, first actually signed in
+  2026-09-11** (Tara Taylor). The gap is not a typo: her invite link
+  verified her account and then dead-ended, and it took three fixes
+  before she could set a password. Still short of a move-up buyer, which
+  is the case the hypothesis actually turns on — with one client, no
+  threshold in `strategy.md` can be read yet.
 - **Brokerage** — not yet engaged; broker review of the stage-explainer
   copy (and a Fair Housing check on any copy that varies by client
   circumstance) is a pre-launch gate before a real client sees the app.
