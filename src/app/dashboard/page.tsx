@@ -12,11 +12,6 @@ import {
   overviewStatus,
   primaryTransaction,
 } from "@/lib/data/dashboard";
-import {
-  maxPriceWithAssistance,
-  maxPrincipalForPayment,
-  monthlyPrincipalAndInterest,
-} from "@/lib/finance";
 import { CoordinationView } from "@/components/coordination-view";
 import { OverviewCard } from "@/components/overview-card";
 
@@ -84,17 +79,6 @@ export default async function DashboardOverviewPage() {
   const contenders = homesSeen.filter((h) => h.interest_level === "strong");
   const openItems = items.filter((i) => !i.resolved);
   const dealbreakers = openItems.filter((i) => i.importance_to_client === "dealbreaker");
-
-  const budget = preapproval
-    ? monthlyPrincipalAndInterest(preapproval.loan_amount, preapproval.rate)
-    : 0;
-  const maxPrice = preapproval
-    ? maxPriceWithAssistance(
-        maxPrincipalForPayment(Math.max(budget - preapproval.hoa_monthly, 0), preapproval.rate),
-        preapproval.down_payment,
-        preapproval.assistance_percent ?? 0,
-      )
-    : 0;
 
   return (
     <div className="space-y-6">
@@ -248,15 +232,16 @@ export default async function DashboardOverviewPage() {
             icon={Wallet}
             href="/dashboard/financials"
             linkLabel="Run the numbers"
-            headline={money(maxPrice)}
+            headline={preapproval ? money(preapproval.purchase_price) : ""}
           >
             <div className="space-y-1 text-sm text-muted-foreground">
               <p>
-                What you&apos;re pre-approved to offer, before HOA dues are taken into account.
+                {preapproval?.percent_down}% down
+                {preapproval?.loan_type && <> · {preapproval.loan_type}</>}
+                {preapproval?.lender && <> · {preapproval.lender}</>}
               </p>
               <p>
-                A home with HOA dues lowers that ceiling — the calculator shows by how much for
-                any home you&apos;re considering.
+                A home with HOA dues lowers what you can offer — open this to see by how much.
               </p>
             </div>
           </OverviewCard>

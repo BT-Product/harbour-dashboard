@@ -6,16 +6,18 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  maxPriceWithAssistance,
-  maxPrincipalForPayment,
-  monthlyPrincipalAndInterest,
-} from "@/lib/finance";
+import { hoaAdjustedPurchasePrice } from "@/lib/finance";
 import type { Preapproval } from "@/lib/supabase/database.types";
 import { deletePreapproval, savePreapproval } from "./actions";
 
 const money = (n: number) => `$${Math.round(n).toLocaleString()}`;
 
+/**
+ * What a lender's pre-approval letter actually says: a purchase price, a
+ * percent down, and a loan type. Nothing here is derived, and the price the
+ * client sees is the price typed in here — if the two ever disagree, this
+ * app is wrong.
+ */
 export function PreapprovalManager({
   clientId,
   preapproval,
@@ -27,32 +29,25 @@ export function PreapprovalManager({
 
   function handleSubmit(formData: FormData) {
     const num = (name: string) => Number(formData.get(name));
-    const loanAmount = num("loan_amount");
-    const downPayment = num("down_payment");
-    const rate = num("rate");
+    const purchasePrice = num("purchase_price");
+    const percentDown = num("percent_down") || 0;
+    const rate = num("rate") || 0;
     const hoaMonthly = num("hoa_monthly") || 0;
-    const assistancePercent = num("assistance_percent") || 0;
-    const assistanceDeferred = formData.get("assistance_deferred") === "on";
 
-    if (
-      [loanAmount, downPayment, rate, hoaMonthly, assistancePercent].some(
-        (v) => !Number.isFinite(v) || v < 0,
-      )
-    ) {
-      toast.error("Amounts and rate must be positive numbers");
+    if ([purchasePrice, percentDown, rate, hoaMonthly].some((v) => !Number.isFinite(v) || v < 0)) {
+      toast.error("Amounts must be positive numbers");
       return;
     }
 
     startTransition(async () => {
       try {
         await savePreapproval(clientId, {
-          loanAmount,
-          downPayment,
+          purchasePrice,
+          percentDown,
+          loanType: String(formData.get("loan_type") || "").trim() || null,
           rate,
           lender: String(formData.get("lender") || "").trim() || null,
           hoaMonthly,
-          assistancePercent,
-          assistanceDeferred,
         });
         toast.success("Pre-approval saved");
       } catch (e) {
@@ -75,18 +70,16 @@ export function PreapprovalManager({
     });
   }
 
-  // Mirrors AffordabilityTool exactly: the approved P&I is the fixed budget,
-  // and HOA dues come out of it rather than being added on top.
-  const budget = preapproval
-    ? monthlyPrincipalAndInterest(preapproval.loan_amount, preapproval.rate)
-    : 0;
-  const maxPriceAtStoredHoa = preapproval
-    ? maxPriceWithAssistance(
-        maxPrincipalForPayment(Math.max(budget - preapproval.hoa_monthly, 0), preapproval.rate),
-        preapproval.down_payment,
-        preapproval.assistance_percent ?? 0,
-      )
-    : 0;
+  const sampleHoa = 400;
+  const atSampleHoa =
+    preapproval && preapproval.rate > 0
+      ? hoaAdjustedPurchasePrice(
+          preapproval.purchase_price,
+          preapproval.percent_down,
+          preapproval.rate,
+          sampleHoa,
+        )
+      : null;
 
   return (
     <div className="grid gap-4 lg:grid-cols-3">
@@ -96,106 +89,85 @@ export function PreapprovalManager({
             {preapproval ? "Pre-approval" : "Add a pre-approval"}
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            Drives the client&apos;s Financials page and their affordability calculator. Leave it
-            off until the lender has actually confirmed the numbers.
+            Straight off the lender&apos;s letter. The client sees this price as written — it is
+            never recalculated.
           </p>
         </CardHeader>
         <CardContent>
-          {/* Remount on save: the inputs are uncontrolled, so without a key
-              their defaultValue changes under them when the saved row comes
-              back and Base UI warns about it. */}
-          <form
-            key={preapproval?.updated_at ?? "new"}
-            action={handleSubmit}
-            className="space-y-4"
-          >
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <form key={preapproval?.updated_at ?? "new"} action={handleSubmit} className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-3">
               <div className="space-y-2">
-                <Label htmlFor="loan_amount">Loan amount</Label>
+                <Label htmlFor="purchase_price">Purchase price</Label>
                 <Input
-                  id="loan_amount"
-                  name="loan_amount"
+                  id="purchase_price"
+                  name="purchase_price"
                   type="number"
                   min="0"
                   step="1000"
                   required
-                  defaultValue={preapproval?.loan_amount ?? ""}
+                  defaultValue={preapproval?.purchase_price ?? ""}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="down_payment">Down payment</Label>
+                <Label htmlFor="percent_down">Percent down</Label>
                 <Input
-                  id="down_payment"
-                  name="down_payment"
+                  id="percent_down"
+                  name="percent_down"
                   type="number"
                   min="0"
-                  step="1000"
-                  required
-                  defaultValue={preapproval?.down_payment ?? ""}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="rate">Rate (%)</Label>
-                <Input
-                  id="rate"
-                  name="rate"
-                  type="number"
-                  min="0"
-                  max="30"
-                  step="0.001"
-                  required
-                  defaultValue={preapproval?.rate ?? ""}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="lender">Lender</Label>
-                <Input id="lender" name="lender" defaultValue={preapproval?.lender ?? ""} />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="hoa_monthly">HOA / month</Label>
-                <Input
-                  id="hoa_monthly"
-                  name="hoa_monthly"
-                  type="number"
-                  min="0"
-                  step="10"
-                  defaultValue={preapproval?.hoa_monthly ?? 0}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="assistance_percent">Down payment assistance (%)</Label>
-                <Input
-                  id="assistance_percent"
-                  name="assistance_percent"
-                  type="number"
-                  min="0"
-                  max="50"
+                  max="100"
                   step="0.1"
-                  defaultValue={preapproval?.assistance_percent ?? 0}
+                  required
+                  defaultValue={preapproval?.percent_down ?? ""}
                 />
-                <p className="text-xs text-muted-foreground">
-                  CalHFA MyHome, Dream For All, city programs. Percent of purchase price, 0 if
-                  none. The loan amount above stays the first loan only.
-                </p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="loan_type">Loan type</Label>
+                <Input
+                  id="loan_type"
+                  name="loan_type"
+                  placeholder="FHA, VA, Conventional, CalHFA"
+                  defaultValue={preapproval?.loan_type ?? ""}
+                />
               </div>
             </div>
 
-            <label className="flex items-start gap-2 text-sm">
-              <input
-                type="checkbox"
-                name="assistance_deferred"
-                className="mt-0.5"
-                defaultChecked={preapproval?.assistance_deferred ?? false}
-              />
-              <span>
-                Assistance payment is deferred
-                <span className="block text-xs text-muted-foreground">
-                  No monthly payment until sale or refinance. Leave unchecked for a second loan
-                  the client pays monthly — the lender will already have reduced the first-loan
-                  approval to absorb it.
-                </span>
-              </span>
-            </label>
+            <div className="space-y-3 rounded-lg border border-dashed p-3">
+              <p className="text-sm font-medium">Only used for the HOA estimate</p>
+              <p className="text-xs text-muted-foreground">
+                The HOA calculator needs a rate to turn monthly dues into a price. It isn&apos;t
+                shown to the client, and leaving it blank simply hides that calculator.
+              </p>
+              <div className="grid gap-4 sm:grid-cols-3">
+                <div className="space-y-2">
+                  <Label htmlFor="rate">Rate (%)</Label>
+                  <Input
+                    id="rate"
+                    name="rate"
+                    type="number"
+                    min="0"
+                    max="30"
+                    step="0.001"
+                    defaultValue={preapproval?.rate ?? ""}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="lender">Lender</Label>
+                  <Input id="lender" name="lender" defaultValue={preapproval?.lender ?? ""} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="hoa_monthly">Default HOA / month</Label>
+                  <Input
+                    id="hoa_monthly"
+                    name="hoa_monthly"
+                    type="number"
+                    min="0"
+                    step="10"
+                    defaultValue={preapproval?.hoa_monthly ?? 0}
+                  />
+                </div>
+              </div>
+            </div>
 
             <div className="flex flex-wrap gap-2">
               <Button type="submit" disabled={isPending} size="sm">
@@ -231,19 +203,27 @@ export function PreapprovalManager({
           {preapproval && (
             <>
               <div className="flex justify-between gap-3">
-                <span className="text-muted-foreground">Approved monthly budget</span>
-                <span className="font-semibold">{money(budget)}/mo</span>
+                <span className="text-muted-foreground">Pre-approved for</span>
+                <span className="font-semibold">{money(preapproval.purchase_price)}</span>
               </div>
               <div className="flex justify-between gap-3">
-                <span className="text-muted-foreground">
-                  Max price at {money(preapproval.hoa_monthly)} HOA
-                </span>
-                <span className="font-semibold">{money(maxPriceAtStoredHoa)}</span>
+                <span className="text-muted-foreground">Down</span>
+                <span className="font-semibold">{preapproval.percent_down}%</span>
               </div>
-              <p className="text-xs text-muted-foreground">
-                Their calculator holds that budget fixed and back-solves the price as HOA dues
-                change, so a higher-HOA home shows a lower ceiling.
-              </p>
+              <div className="flex justify-between gap-3">
+                <span className="text-muted-foreground">Loan type</span>
+                <span className="font-semibold">{preapproval.loan_type ?? "—"}</span>
+              </div>
+              {atSampleHoa !== null ? (
+                <p className="border-t pt-3 text-xs text-muted-foreground">
+                  With {money(sampleHoa)}/mo HOA dues their ceiling shows as{" "}
+                  {money(atSampleHoa)}.
+                </p>
+              ) : (
+                <p className="border-t pt-3 text-xs text-muted-foreground">
+                  No rate on file, so the HOA calculator is hidden from them.
+                </p>
+              )}
             </>
           )}
         </CardContent>
