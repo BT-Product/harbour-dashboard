@@ -46,6 +46,21 @@ most closely, not just the visit-frequency number.
   - Per-client counts are visible on the agent's client page (last visit,
     visits this week, week before, pages opened). The cohort-level
     median is a manual read for now — there's no analytics view.
+  - **First real data 2026-09-11**: one client, two visits in one
+    evening. Nothing about the threshold can be read from that, and it
+    shouldn't be — a cohort of one produces a median of one client's
+    habits. The instrument works; the sample doesn't exist yet.
+
+**What the instrument produced first was not the metric.** Its first
+useful output was a usability finding: the visit trace showed the client
+opening all six sections in 37 seconds, three to eight seconds each, then
+returning to where she started. That is the signature of someone hunting
+for what a menu contains, and it prompted rebuilding the overview (day
+6). Worth noting for its own sake — per-page visit data turns out to earn
+its keep as behavioural evidence long before there are enough clients for
+the retention curve it was built for. It also means the honest read on
+early visit counts is ambiguous: a client clicking everywhere may be
+engaged, or may be lost, and only the path distinguishes them.
 - At close: "How would you feel if this dashboard had not been available?"
   (Sean Ellis disappointment framing.)
 - One qualitative note per client at close: did it change how they talked

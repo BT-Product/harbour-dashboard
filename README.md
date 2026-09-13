@@ -38,6 +38,33 @@ and tours needing debriefs, a per-client page (overview, upcoming tours, homes
 seen, inspections, financials), and a standalone fast-entry debrief form
 designed for a phone in a parking lot between showings.
 
+## What the first real client changed
+
+The pilot's first client signed in on 2026-09-11. Her session produced a
+finding within two minutes that no amount of looking at our own screens
+would have:
+
+```
+21:11:47  /dashboard            21:12:37  /dashboard/escrow
+21:12:19  /dashboard/tours      21:12:41  /dashboard/inspections
+21:12:22  /dashboard/homes      21:12:56  /dashboard/financials
+21:12:29  /dashboard/homes/…    21:13:52  /dashboard   (back to the start)
+```
+
+Six sections in 37 seconds, three to eight seconds each, then back where
+she started. That is not reading — it is opening doors to find out what
+is behind them. The overview told her where she stood but nothing about
+what lived in the menu beside it, so the only way to find out was to
+click all six. It is now a dashboard: one plain sentence of status, then
+a card per section showing what is actually inside, each linking into
+the full view.
+
+The trace came from `client_page_views`, built three days earlier for the
+retention metric in [`strategy.md`](strategy.md) — a usage counter that
+paid for itself first as usability evidence, before the cohort was large
+enough to read the metric it was built for. We could never have seen this
+ourselves, because we already knew what was in each section.
+
 ## Two things worth knowing before you read the code
 
 **Private notes are unreachable to clients at the database level, not in app
