@@ -807,6 +807,41 @@ the model now has two always-human steps and two conditional ones rather
 than one of each. The README's autonomy summary was corrected to match. The
 one remaining gap is the seller's response round.
 
+### Also day 6 — the inspection agent's triggers
+
+Britton asked whether triggers had been decided. Only partly: the design
+named the events that should start work but not how they're detected, and
+it had places where nothing would start at all. Those silent non-starts
+were the real finding — nothing errors, the flow just never happens, and a
+client sits alone with a report.
+
+- **Kickoff:** entering the wave 1 list (with inspection dates) starts a
+  deal's flow. A report arriving for an in-contract client with no list is
+  the safety net: the flow starts anyway with a generic holding message and
+  a prompt for the list. Moving to the Inspection stage only prompts.
+- **A stalled wave** — a listed report 48 hours past its inspection date —
+  alerts the realtor, who chases it or presses publish now. The agent never
+  publishes a partial set itself, since only the realtor can judge whether
+  the missing report changes the story. The deadline watch was widened to
+  cover wave 1 as well as the bids.
+- **Unmatched reports** halt and alert immediately; assigning one is above
+  the line. **Cancelled inspections** can be removed from the expected list,
+  or a cancelled roof inspection would hold wave 1 open forever.
+- **Mail arrives by push, not polling.** The `inspections@` mailbox forwards
+  to an inbound email service that posts each message to Harbour, so the
+  agent has no mailbox access at all — a stronger boundary than the
+  dedicated mailbox it replaces. Britton asked whether that meant no
+  heartbeat on the email; right, but push fails silently, so the *pipeline*
+  gets one: a daily test email through the real path, the same idea as
+  `/api/health`. Receiving is idempotent by message ID, and the endpoint has
+  to verify the inbound service's signature or anyone could post a fake
+  report.
+
+Step 1 of the workflow model had justified itself with "Britton received
+the same email, so a miss is visible anyway." With forwarding, that's no
+longer something to assume, so the pipeline test was added as step 0 to
+carry that guarantee instead.
+
 ### Not yet done
 
 - Pilot cohort is one client deep (Tara Taylor, onboarded 2026-09-10) and
