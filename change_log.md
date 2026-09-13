@@ -685,6 +685,39 @@ table was meant to count visits per week; what it produced first was a
 usability finding that no amount of looking at our own screens would
 have surfaced, because we already knew what was in each section.
 
+### Also day 6 — a narrative for the realtor's call
+
+Britton worked a live inspection by hand with a general-purpose assistant
+and came back with the part he actually valued: not a list of findings but
+**a story about the house.** The findings had been grouped by root cause
+into two clusters and a few one-offs — moisture under a raised foundation
+explaining most of the damage, and an aging roof three inspectors had
+independently reached. That let him explain the whole house on the call
+instead of walking item by item, the way he normally does.
+
+Recorded in `strategy.md` as a realtor-facing call narrative, with the
+outline he shared treated as an illustration of the pattern rather than a
+template. Details from the real deal were left out of the repo.
+
+Two clarifications along the way worth keeping, both corrections of
+over-reach: it was never meant as the client brief, and never meant to be
+followed section by section. The design had started hardening one good
+example into a spec.
+
+Why it's worth building: grouping by cause changes what the client thinks
+the problem *is*, which calms more than any base rate — and it's the
+lowest-risk output the agent can produce, because a licensed human retells
+it. Risk it adds: a cluster is a causal claim, and a compelling story is how
+a misfiled finding disappears, so causal links carry provenance and cluster
+membership is proposed, not asserted.
+
+Also drafted a six-item legal watch list — stating causes outside the
+license, framing that minimizes, advice beyond the role, discouraging
+further investigation, implying seller concealment, and the realtor owning
+what they repeat. **Broker and real estate attorney review of the framing
+rules is now a precondition** before the feature is built; Britton is
+arranging it.
+
 ### Not yet done
 
 - Pilot cohort is one client deep (Tara Taylor, onboarded 2026-09-10) and

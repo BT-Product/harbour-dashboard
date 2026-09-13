@@ -57,6 +57,10 @@ realtors from the start rather than at Britton alone.
 - **Brokerage** — not yet engaged; broker review of the stage-explainer
   copy (and a Fair Housing check on any copy that varies by client
   circumstance) is a pre-launch gate before a real client sees the app.
+- **Broker and real estate attorney** — review of the inspection agent's
+  call-narrative framing rules is a precondition before that feature is
+  built (added 2026-09-12). Britton to arrange. The questions to bring are
+  the legal watch list in `strategy.md`.
 
 ## Links
 
