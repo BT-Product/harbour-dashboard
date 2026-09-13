@@ -26,29 +26,29 @@ export function maxPrincipalForPayment(
 }
 
 /**
- * The purchase price a first loan supports when a down payment assistance
- * program covers a percentage of that price.
+ * How far a home's HOA dues move the pre-approved purchase price.
  *
- * The assistance is a percentage *of the purchase price*, not of the loan,
- * so this has to be solved rather than added:
+ * Works from the lender's own figures rather than rebuilding them: the loan
+ * implied by the stated price and percent down sets the approved payment,
+ * HOA dues come out of that payment, and the smaller loan that remains is
+ * scaled back up by the same percent down.
  *
- *   price = loan + cash + (assistancePct × price)
- *   price = (loan + cash) / (1 − assistancePct)
- *
- * Adding the assistance to the loan instead — the obvious-looking version —
- * understates the price, because the assistance grows with the price it is
- * helping to buy.
- *
- * Note what this deliberately does *not* do: subtract a payment for the
- * second loan. For a non-deferred program the lender has already reduced
- * the approved first loan to absorb that payment, so modelling it again
- * here would count it twice.
+ * The starting price is never recalculated — with no HOA dues this returns
+ * the lender's number unchanged.
  */
-export function maxPriceWithAssistance(
-  loanAmount: number,
-  cashDown: number,
-  assistancePercent: number,
+export function hoaAdjustedPurchasePrice(
+  purchasePrice: number,
+  percentDown: number,
+  annualRatePct: number,
+  hoaMonthly: number,
 ): number {
-  const pct = Math.min(Math.max(assistancePercent, 0), 99) / 100;
-  return (loanAmount + cashDown) / (1 - pct);
+  if (hoaMonthly <= 0) return purchasePrice;
+
+  const downFraction = Math.min(Math.max(percentDown, 0), 99) / 100;
+  const loan = purchasePrice * (1 - downFraction);
+  const approvedPayment = monthlyPrincipalAndInterest(loan, annualRatePct);
+  const remaining = Math.max(approvedPayment - hoaMonthly, 0);
+  const adjustedLoan = maxPrincipalForPayment(remaining, annualRatePct);
+
+  return adjustedLoan / (1 - downFraction);
 }

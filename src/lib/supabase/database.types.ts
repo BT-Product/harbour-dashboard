@@ -106,16 +106,19 @@ export type InspectionItem = {
 export type Preapproval = {
   id: string;
   client_id: string;
-  loan_amount: number;
-  down_payment: number;
+  /** Exactly as the lender's letter states it. Never recomputed. */
+  purchase_price: number;
+  percent_down: number;
+  loan_type: string | null;
+  /** Only used to estimate how HOA dues move the price. */
   rate: number;
   lender: string | null;
   hoa_monthly: number;
-  /** Down payment assistance as a percent of purchase price (0 when none). */
-  assistance_percent: number;
-  /** True when the assistance defers payment until sale or refinance. */
-  assistance_deferred: boolean;
   updated_at: string;
+  /** @deprecated Legacy columns from when this table modelled the loan. */
+  loan_amount: number;
+  /** @deprecated */
+  down_payment: number;
 };
 
 export type ClientPageView = {
@@ -287,13 +290,12 @@ export type Database = {
       agent_upsert_preapproval: {
         Args: {
           p_client_id: string;
-          p_loan_amount: number;
-          p_down_payment: number;
+          p_purchase_price: number;
+          p_percent_down: number;
+          p_loan_type: string | null;
           p_rate: number;
           p_lender: string | null;
           p_hoa_monthly: number;
-          p_assistance_percent: number;
-          p_assistance_deferred: boolean;
         };
         Returns: Preapproval;
       };

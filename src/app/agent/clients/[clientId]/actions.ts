@@ -105,25 +105,23 @@ export async function updateKeyDates(clientId: string, transactionId: string, ke
 export async function savePreapproval(
   clientId: string,
   preapproval: {
-    loanAmount: number;
-    downPayment: number;
+    purchasePrice: number;
+    percentDown: number;
+    loanType: string | null;
     rate: number;
     lender: string | null;
     hoaMonthly: number;
-    assistancePercent: number;
-    assistanceDeferred: boolean;
   },
 ) {
   const supabase = await createClient();
   const { error } = await supabase.rpc("agent_upsert_preapproval", {
     p_client_id: clientId,
-    p_loan_amount: preapproval.loanAmount,
-    p_down_payment: preapproval.downPayment,
+    p_purchase_price: preapproval.purchasePrice,
+    p_percent_down: preapproval.percentDown,
+    p_loan_type: preapproval.loanType,
     p_rate: preapproval.rate,
     p_lender: preapproval.lender,
     p_hoa_monthly: preapproval.hoaMonthly,
-    p_assistance_percent: preapproval.assistancePercent,
-    p_assistance_deferred: preapproval.assistanceDeferred,
   });
   if (error) throw new Error(error.message);
   // The client's Financials page and affordability calculator read this.
