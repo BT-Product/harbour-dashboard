@@ -111,6 +111,10 @@ export type Preapproval = {
   rate: number;
   lender: string | null;
   hoa_monthly: number;
+  /** Down payment assistance as a percent of purchase price (0 when none). */
+  assistance_percent: number;
+  /** True when the assistance defers payment until sale or refinance. */
+  assistance_deferred: boolean;
   updated_at: string;
 };
 
@@ -288,6 +292,8 @@ export type Database = {
           p_rate: number;
           p_lender: string | null;
           p_hoa_monthly: number;
+          p_assistance_percent: number;
+          p_assistance_deferred: boolean;
         };
         Returns: Preapproval;
       };

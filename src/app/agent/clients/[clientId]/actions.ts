@@ -110,6 +110,8 @@ export async function savePreapproval(
     rate: number;
     lender: string | null;
     hoaMonthly: number;
+    assistancePercent: number;
+    assistanceDeferred: boolean;
   },
 ) {
   const supabase = await createClient();
@@ -120,6 +122,8 @@ export async function savePreapproval(
     p_rate: preapproval.rate,
     p_lender: preapproval.lender,
     p_hoa_monthly: preapproval.hoaMonthly,
+    p_assistance_percent: preapproval.assistancePercent,
+    p_assistance_deferred: preapproval.assistanceDeferred,
   });
   if (error) throw new Error(error.message);
   // The client's Financials page and affordability calculator read this.

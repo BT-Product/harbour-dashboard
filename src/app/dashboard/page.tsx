@@ -12,7 +12,11 @@ import {
   overviewStatus,
   primaryTransaction,
 } from "@/lib/data/dashboard";
-import { maxPrincipalForPayment, monthlyPrincipalAndInterest } from "@/lib/finance";
+import {
+  maxPriceWithAssistance,
+  maxPrincipalForPayment,
+  monthlyPrincipalAndInterest,
+} from "@/lib/finance";
 import { CoordinationView } from "@/components/coordination-view";
 import { OverviewCard } from "@/components/overview-card";
 
@@ -85,8 +89,11 @@ export default async function DashboardOverviewPage() {
     ? monthlyPrincipalAndInterest(preapproval.loan_amount, preapproval.rate)
     : 0;
   const maxPrice = preapproval
-    ? maxPrincipalForPayment(Math.max(budget - preapproval.hoa_monthly, 0), preapproval.rate) +
-      preapproval.down_payment
+    ? maxPriceWithAssistance(
+        maxPrincipalForPayment(Math.max(budget - preapproval.hoa_monthly, 0), preapproval.rate),
+        preapproval.down_payment,
+        preapproval.assistance_percent ?? 0,
+      )
     : 0;
 
   return (
@@ -245,8 +252,12 @@ export default async function DashboardOverviewPage() {
           >
             <div className="space-y-1 text-sm text-muted-foreground">
               <p>
-                Approved for {money(preapproval.loan_amount)} at {preapproval.rate}%, plus your{" "}
-                {money(preapproval.down_payment)} down.
+                First loan of {money(preapproval.loan_amount)} at {preapproval.rate}%
+                {preapproval.down_payment > 0 && <>, plus {money(preapproval.down_payment)} down</>}
+                {(preapproval.assistance_percent ?? 0) > 0 && (
+                  <>, with {preapproval.assistance_percent}% down payment assistance</>
+                )}
+                .
               </p>
               <p>
                 That&apos;s about {money(budget)} a month — HOA dues come out of it, so the
