@@ -252,16 +252,11 @@ export default async function DashboardOverviewPage() {
           >
             <div className="space-y-1 text-sm text-muted-foreground">
               <p>
-                First loan of {money(preapproval.loan_amount)} at {preapproval.rate}%
-                {preapproval.down_payment > 0 && <>, plus {money(preapproval.down_payment)} down</>}
-                {(preapproval.assistance_percent ?? 0) > 0 && (
-                  <>, with {preapproval.assistance_percent}% down payment assistance</>
-                )}
-                .
+                What you&apos;re pre-approved to offer, before HOA dues are taken into account.
               </p>
               <p>
-                That&apos;s about {money(budget)} a month — HOA dues come out of it, so the
-                calculator shows how a specific home changes the ceiling.
+                A home with HOA dues lowers that ceiling — the calculator shows by how much for
+                any home you&apos;re considering.
               </p>
             </div>
           </OverviewCard>

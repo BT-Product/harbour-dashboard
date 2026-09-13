@@ -45,12 +45,11 @@ export function AffordabilityTool({ preapproval }: { preapproval: Preapproval })
     assistancePct,
   );
   const priceReduction = fullPrice - adjustedMaxPrice;
-  const assistanceAmount = adjustedMaxPrice * (assistancePct / 100);
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>HOA-Adjusted Affordability</CardTitle>
+        <CardTitle>How HOA dues change it</CardTitle>
         <CardDescription>
           Your approved payment covers principal, interest, and HOA together. A home with higher
           HOA dues leaves less room for loan payment — this shows how much less.
@@ -99,35 +98,10 @@ export function AffordabilityTool({ preapproval }: { preapproval: Preapproval })
           </div>
         </div>
 
-        {assistancePct > 0 && (
-          <div className="rounded-lg border bg-muted/30 p-3 text-sm">
-            <p className="font-medium">
-              Includes {assistancePct}% down payment assistance
-              {assistanceAmount > 0 && <> — about {money(assistanceAmount)} at this price</>}
-            </p>
-            <p className="mt-1 text-muted-foreground">
-              Your {money(preapproval.loan_amount)} approval is the first loan on its own. The
-              assistance covers the down payment as a second loan, which is why the price you can
-              offer is higher than the first loan by itself.
-              {!preapproval.assistance_deferred && (
-                <>
-                  {" "}
-                  That second loan carries its own payment, and{" "}
-                  {preapproval.lender ?? "your lender"} has already accounted for it in the
-                  approval amount above.
-                </>
-              )}
-            </p>
-          </div>
-        )}
-
         <p className="text-xs text-muted-foreground">
-          Estimate only, based on your current approval ({money(preapproval.loan_amount)} first
-          loan at {preapproval.rate}%, 30-year fixed)
-          {preapproval.down_payment > 0 && <> plus your {money(preapproval.down_payment)} down</>}
-          {assistancePct > 0 && <> and {assistancePct}% down payment assistance</>}. Actual
-          qualifying payment may also include taxes, insurance and mortgage insurance — talk to{" "}
-          {preapproval.lender ?? "your lender"} before making an offer.
+          An estimate based on the pre-approval {preapproval.lender ?? "your lender"} has on
+          file, not a quote. The exact figure depends on taxes, insurance and the details of your
+          loan — {preapproval.lender ?? "your lender"} is the one to ask.
         </p>
       </CardContent>
     </Card>
