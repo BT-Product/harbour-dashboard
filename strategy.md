@@ -497,6 +497,102 @@ written brief to **the spoken narrative.**
 before this is built.** Same shape as the existing gate on the
 stage-explainer copy, and reviewed once as rules rather than per deal.
 
+## Publication timing: two waves, two publication points
+
+Settled 2026-09-12. The worry was that reports arrive over several days, so
+a brief published early is a version about to change, and republishing to a
+client who already read it is its own kind of alarming.
+
+**The reframe: updating a brief is not what alarms a client. Changing it
+without warning is.** A brief that says up front "the roof and pest reports
+are still coming, expected Thursday" makes the update something the client
+was told to expect. So the design question was never "publish once or many
+times." It was what may change between publications, and how the change is
+announced.
+
+### How reports actually arrive
+
+In two waves. **Wave 1** is the inspection reports (home, pest, roof),
+landing within a day or two of each other. **Wave 2** is contractor bids
+(HVAC, electrical, plumbing) ordered *because* of what wave 1 found, arriving
+over the following days.
+
+The waves line up with the two calls the call-narrative illustration already
+implied: an orientation call once the inspections are in, and a
+recommendation once the bids are. That gives two publication points instead
+of a stream of updates:
+
+- **After wave 1:** the client brief and the orientation call prep.
+  Waiting for wave 2 would leave the client alone with the raw reports for
+  days, which is the exact failure this feature exists to prevent.
+- **After wave 2:** the negotiation brief and the realtor's recommendation.
+
+**Within wave 1**, a holding message goes out as each report lands and names
+what is still coming ("the roof report is in, the pest report is still on its
+way, I'll put it together when both are here"). No partial brief.
+
+### Knowing what is still expected
+
+Harbour cannot tell when a wave is complete, or name what is pending, unless
+it knows what was ordered.
+
+- **Wave 1 is entered by the realtor**, who scheduled those inspections
+  anyway.
+- **Wave 2 is proposed by the agent** from the reports' own "recommend
+  evaluation by a licensed…" lines, and the realtor confirms.
+
+A side effect worth more than the convenience: every recommended follow-up
+becomes a tracked pending item, so none can quietly fall off. That is legal
+watch item 4 (never discourage further investigation) enforced structurally
+rather than by care.
+
+**Bid intake** uses the same `inspections@` mailbox. The realtor orders the
+bids and can tell contractors where to send them.
+
+### Between the waves: additions and revisions
+
+A wave-2 bid does one of two things, and they are treated differently:
+
+- **An addition** puts a price on a finding the client has already seen. It
+  updates the brief, behind the coherence gate. Calm, provided it was
+  announced as pending.
+- **A revision** changes the story — the HVAC contractor recommends a whole
+  new system rather than duct replacement. It goes to the realtor first, so
+  the client hears it from a person before reading it. This is the
+  relational blast-radius point: a surprise revision read alone at 9pm does
+  real damage.
+
+The wave-1 brief should **pre-brief likely revisions** where the reports
+point to them ("the furnace is near the end of its life, so the HVAC bid may
+recommend replacing the system"). Warned in advance, a revision arrives as a
+confirmation.
+
+**The client is not notified bid by bid.** The brief shows every item as
+pending or priced, with new items marked, and one notification goes out when
+wave 2 is complete. A drip of emails would recreate the anxiety one bid at a
+time.
+
+### When the deadline won't wait
+
+Britton's practice when bids won't all arrive before the inspection
+objection deadline: **ask the seller for an extension, and prepare a fallback
+ask built on what is already quoted** in case it is refused.
+
+- The agent watches pending wave-2 items against the objection deadline,
+  which Harbour already stores as a key date, and alerts the realtor when the
+  bids won't arrive with enough margin. The margin is a per-tenant setting.
+- The agent drafts the extension request, and in parallel prepares the
+  fallback negotiation brief, with every unpriced item named plainly rather
+  than estimated.
+- **Sending the extension request is above the line.** It goes to the other
+  side of the deal.
+
+Under the reversibility, blast-radius and observability test, a missed
+objection deadline is irreversible, deal-sized, and silent until it is too
+late. **The deadline watch is therefore the gate that makes the rest of this
+section safe to automate**, and it is non-optional in the same way that
+recording review edits is.
+
 ## The client cannot ask the agent questions
 
 Decided 2026-09-11, and not a v1 scoping call — a permanent property of the
@@ -595,6 +691,12 @@ never a human review step.
    not more.
 3. **Send the holding message** — *below.* No judgment; the text is true of
    every inspection ever conducted. The design depends on it not waiting.
+   Sent per report during wave 1, naming what is still coming.
+3b. **Track what is still expected** — *wave 1 entered by the realtor; wave 2
+   proposed below the line, confirmed by the realtor.* The list is what makes
+   "wave complete" and "pending" checkable, so it is the gate for publishing
+   and notifying, and it keeps every recommended follow-up from quietly
+   falling off. See "Publication timing."
 
 **Analysis**
 
@@ -641,8 +743,17 @@ never a human review step.
       a needless 8pm ping.
     - 12b. **Tell the client their deal may be at risk** — **above.**
       Irreversible (the objection window closes), deal-sized radius, and the
-      failure mode is silent — nobody calls to say you missed it. The only
-      unconditionally above-the-line step in the workflow.
+      failure mode is silent — nobody calls to say you missed it.
+    - 12c. **Watch pending bids against the objection deadline** — *below,
+      and non-optional.* Alerts the realtor when bids won't arrive with
+      enough margin. A missed deadline is irreversible and silent, so this
+      watch is the gate that lets the rest of the timing design run
+      unattended.
+    - 12d. **Draft the extension request and the fallback ask** — *below.*
+      Drafting, and the fallback names unpriced items rather than estimating
+      them.
+    - 12e. **Send the extension request** — **above.** It goes to the other
+      side of the deal.
 
 **Review and publish**
 
@@ -650,10 +761,14 @@ never a human review step.
 14. **Apply Britton's edits** — *below, with a confirmation diff.* A
     silently dropped edit is the bad case.
 15. **Publish** — *below, behind a coherence gate; **above** for a client's
-    first brief.* The gate checks the machine-legible failures listed above,
-    not the judgment calls. The first-brief exception exists because no
-    trust buffer has accrued yet.
-16. **Notify the client** — *below.* Coupled to 15 and gated with it.
+    first brief, and for a revision.* Publication happens at two points:
+    after wave 1 and after wave 2. The gate checks the machine-legible
+    failures listed above, not the judgment calls. The first-brief exception
+    exists because no trust buffer has accrued yet. A bid that adds a price
+    updates the brief; a bid that changes the story goes to the realtor
+    first, so the client hears it from a person.
+16. **Notify the client** — *below.* Coupled to 15 and gated with it. Once
+    per completed wave, never once per bid.
 
 **Learn**
 
@@ -661,8 +776,11 @@ never a human review step.
     in doing it; the trust ladder is unmeasurable without it. Alarm if it
     ever stops recording.
 
-Worth noticing how small the above-the-line set is: one unconditional step
-and one conditional one. That is only defensible because of the gates —
+Worth noticing how small the above-the-line set is: two unconditional steps
+(telling a client their deal is at risk, and sending an extension request to
+the other side) and two conditional ones (a client's first brief, and a
+revision to a brief the client has already read). That is only defensible
+because of the gates —
 every qualified "below" above is below *because* a specific detector exists.
 Build the gate or move the row up.
 
@@ -734,17 +852,13 @@ which is already a below-the-line step in the workflow.
 
 ## Known gaps, not yet resolved
 
-- **Publication timing across a multi-report deal.** The correlation itself
-  is now a designed feature rather than a gap, but the sequencing question
-  survives it and is sharper for it: if the pest report is what prices the
-  home inspection's finding, publishing a brief before it lands means
-  publishing a version that is about to change. Republishing a brief a
-  client has already read is its own kind of alarming. Unresolved.
 - The seller's response round is unmodeled, and client anxiety peaks there
-  rather than at the initial report.
+  rather than at the initial report. The natural starting point is the
+  fallback ask from "When the deadline won't wait."
 - **Precondition, not a gap:** broker and real estate attorney review of the
   call narrative's framing rules before it is built. See the legal watch
   list under "A narrative for the realtor's call."
+
 *Resolved 2026-09-11: whether the client can ask the agent questions. No —
 see "The client cannot ask the agent questions" above. And where calibration
 comes from — see "Where calibration comes from" above.*
@@ -754,6 +868,11 @@ turned out to be the same question as how to frame repair costs — telling
 the client the total is an ask rather than a bill is itself the
 what-happens-next content. See "Making a number less frightening without
 misleading" above.*
+
+*Resolved 2026-09-12: publication timing across a multi-report deal. Reports
+arrive in two waves, so there are two publication points, with additions
+updating the brief and revisions going to the realtor first. See
+"Publication timing: two waves, two publication points" above.*
 
 ## Security posture
 

@@ -153,10 +153,12 @@ hour on the phone afterward.
 - **Autonomy comes from detectors, not from trust.** Each workflow step was
   scored on how reversible it is, how far the damage spreads (including the
   damage to a client's confidence in their agent), and whether a failure would
-  be visible or silent. Only one step is always a human's: telling a client
-  their deal may be at risk. The only other exception is the first brief for
-  any new client. Everything else runs automatically *because* a specific check
-  catches its failure mode, and a step with no check stays with a human.
+  be visible or silent. Only two steps are always a human's: telling a client
+  their deal may be at risk, and sending an extension request to the other side
+  of the deal. Two more go to a human in specific cases: a new client's first
+  brief, and any change to a brief the client has already read. Everything else
+  runs automatically *because* a specific check catches its failure mode, and a
+  step with no check stays with a human.
 
 **The two most valuable parts came from working a real inspection, not from
 the design sessions:**
@@ -177,9 +179,12 @@ the design sessions:**
 agent questions, because that would replace the call and contradict the
 riskiest assumption above. Severity comes from the inspector's own grading
 rather than the model's judgment, and a report without usable grading goes to
-a human. One design question is still open: when to publish while specialist
-reports are still arriving. Before anything is built, a broker and a real
-estate attorney will review the rules for how the narrative is framed.
+a human. Reports and repair quotes arrive in two waves, so the client hears
+from Harbour twice: once the inspections are in, and again once the quotes
+are. A quote that only adds a price updates the brief; one that changes the
+story goes to the agent first. The one remaining gap is the seller's
+response round. Before anything is built, a broker and a real estate
+attorney will review the rules for how the narrative is framed.
 
 ## Stack
 
