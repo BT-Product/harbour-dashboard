@@ -1,7 +1,16 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/server";
 import { AffordabilityTool } from "@/components/affordability-tool";
 
+/**
+ * Two things only: what they can offer, and how HOA dues change it.
+ *
+ * This page used to lead with a breakdown of the loan, down payment, rate
+ * and lender, and later gained an explanation of how down payment
+ * assistance factors in. None of it helped the client decide anything —
+ * the mechanics are the lender's job, and putting them on the client's
+ * dashboard invites questions Britton isn't licensed to answer. The
+ * assistance still shapes the number; it just isn't narrated.
+ */
 export default async function FinancialsPage() {
   const supabase = await createClient();
   const { data: preapproval, error } = await supabase
@@ -13,7 +22,7 @@ export default async function FinancialsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="font-heading text-3xl font-semibold tracking-tight">Financials</h1>
+      <h1 className="font-heading text-3xl font-semibold tracking-tight">What you can spend</h1>
 
       {!preapproval && (
         <p className="text-sm text-muted-foreground">
@@ -21,39 +30,7 @@ export default async function FinancialsPage() {
         </p>
       )}
 
-      {preapproval && (
-        <>
-          <Card>
-            <CardHeader>
-              <CardTitle>Pre-Approval</CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <div>
-                <p className="text-sm text-muted-foreground">Loan amount</p>
-                <p className="text-lg font-semibold">
-                  ${preapproval.loan_amount.toLocaleString()}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Down payment</p>
-                <p className="text-lg font-semibold">
-                  ${preapproval.down_payment.toLocaleString()}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Rate</p>
-                <p className="text-lg font-semibold">{preapproval.rate}%</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Lender</p>
-                <p className="text-lg font-semibold">{preapproval.lender ?? "—"}</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <AffordabilityTool preapproval={preapproval} />
-        </>
-      )}
+      {preapproval && <AffordabilityTool preapproval={preapproval} />}
     </div>
   );
 }
