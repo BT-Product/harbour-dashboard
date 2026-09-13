@@ -578,9 +578,11 @@ Britton's practice when bids won't all arrive before the inspection
 objection deadline: **ask the seller for an extension, and prepare a fallback
 ask built on what is already quoted** in case it is refused.
 
-- The agent watches pending wave-2 items against the objection deadline,
-  which Harbour already stores as a key date, and alerts the realtor when the
-  bids won't arrive with enough margin. The margin is a per-tenant setting.
+- The agent watches pending items from **both waves** against the objection
+  deadline, which Harbour already stores as a key date, and alerts the
+  realtor when they won't arrive with enough margin. The margin is a
+  per-tenant setting. (Originally wave 2 only; widened when triggers were
+  settled, since a stalled wave 1 near the deadline is the worse case.)
 - The agent drafts the extension request, and in parallel prepares the
   fallback negotiation brief, with every unpriced item named plainly rather
   than estimated.
@@ -592,6 +594,98 @@ objection deadline is irreversible, deal-sized, and silent until it is too
 late. **The deadline watch is therefore the gate that makes the rest of this
 section safe to automate**, and it is non-optional in the same way that
 recording review edits is.
+
+## Triggers
+
+Settled 2026-09-12. The design had named most of the events that should
+start work without deciding how they are detected, and it had places where
+nothing would start at all. Silent non-starts are the dangerous kind: nothing
+errors, the flow just never happens, and a client sits alone with a report.
+
+### What starts a deal's inspection flow
+
+**Entering the wave 1 list is the normal start**, with each inspection's
+scheduled date. The realtor is scheduling those inspections anyway, and it
+happens before any report can arrive, so the first holding message can name
+what is still coming.
+
+**A report arriving is the safety net.** If a report matches an in-contract
+transaction and no list exists, the flow starts anyway: a generic holding
+message goes out and the realtor is prompted for the list. Wave 1 cannot be
+judged complete without the list, so publishing waits until it is entered.
+
+**Moving a transaction to the Inspection stage prompts the realtor for the
+list.** A nudge, not a trigger, because stage changes are manual and only as
+reliable as the realtor's updates.
+
+### A wave that never completes
+
+If one listed inspector never sends a report, wave 1 never completes and
+nothing publishes. So: **when a listed report is a set window past its
+inspection date (default 48 hours, per-tenant), the realtor is alerted.**
+They chase the inspector or press **publish now**, and the brief goes out
+naming the missing report as still to come. The agent never publishes a
+partial set on its own, because only the realtor can judge whether the
+missing report is likely to change the story.
+
+The deadline watch covers **both** waves, not only wave 2's bids. A stalled
+wave 1 close to the objection deadline is the worse case.
+
+### Derived from existing rules
+
+- **A report that matches no client** halts and alerts the realtor
+  immediately, with the report and the likeliest matches. The agent proposes;
+  the realtor assigns, above the line, because a wrong match is the
+  cross-client breach. No holding message goes out until then — a delayed
+  holding message is a far smaller harm than one sent to the wrong client.
+- **The expected list stays editable.** Besides publish now, the realtor can
+  remove a cancelled inspection; otherwise a cancelled roof inspection would
+  hold wave 1 open forever. A realtor-triggered publish still passes the
+  coherence gate, which is a mechanical check, not a review.
+- **A late or unlisted report** is proposed as an addition to the expected
+  list and confirmed by the realtor. If its wave has already published, it is
+  handled like a bid: an added price updates the brief, a changed story goes
+  to the realtor first.
+
+### How mail gets in: push, not polling
+
+The holding message is meant to go out within seconds, so receiving has to be
+push. **Inspectors send to `inspections@brittontaylor.com`, which
+automatically forwards each message to an inbound email service, which posts
+it — attachments included — to Harbour.** No timer checks a mailbox, and
+Harbour holds no mailbox access at all.
+
+Push trades a visible cost for a silent failure. If the forwarding rule is
+switched off, the inbound service changes, or Harbour's receiving endpoint
+breaks, reports stop arriving and nothing errors. So the email needs no
+heartbeat, but **the pipeline does:**
+
+- **A daily test email through the real path.** Harbour sends a test message
+  to `inspections@` and expects it back at its receiving endpoint, alerting
+  the realtor if it doesn't arrive. The same pattern as `/api/health`, which
+  proves a real round trip rather than reporting "up."
+- **The stall alert is a second backstop, but only mid-deal.** It would not
+  catch a broken pipeline between deals, or the first report of a deal that
+  started without a list. The daily test covers those.
+- **Receiving is idempotent.** Inbound services retry failed deliveries, so
+  each message is stored by its ID before processing, and a retry cannot send
+  a second holding message. The same claim-before-act rule as tour reminders.
+
+### The full set
+
+| Trigger | What starts |
+|---|---|
+| Realtor enters the wave 1 list, with dates | The deal's inspection flow |
+| Report arrives for an in-contract client, no list | The flow anyway; generic holding message; prompt for the list |
+| Transaction moves to the Inspection stage | Prompt for the list |
+| Report arrives, matched | Holding message, extraction, wave 2 proposals |
+| Report arrives, unmatched | Halt; immediate alert; proposed matches; realtor assigns |
+| Every listed wave 1 report received | Client brief and call prep publish |
+| Listed report past its window (48h default) | Alert; realtor chases it or presses publish now |
+| Bid or late report arrives | Added price updates the brief; changed story goes to the realtor |
+| Every confirmed wave 2 bid received | Negotiation brief; one client notification |
+| Nightly | Deadline watch across both waves |
+| Daily | Pipeline test email; alert if it doesn't come back |
 
 ## The client cannot ask the agent questions
 
@@ -680,15 +774,20 @@ never a human review step.
 
 **Intake**
 
-1. **Detect arrival** — *below.* Trivially reversible, tiny radius, and
-   Britton received the same email, so a miss is visible anyway.
+0. **Prove the pipeline works** — *below, and non-optional.* A daily test
+   email through the real forwarding path, alerting if it doesn't arrive.
+   Push delivery fails silently, so this is what makes step 1 trustworthy.
+1. **Detect arrival** — *below.* Trivially reversible and tiny radius. A miss
+   is made visible by the pipeline test (step 0) and, mid-deal, the stall
+   alert — not by assuming the realtor also received the email.
 2. **Match report to client and transaction** — *below, behind a hard gate.*
    The worst outcome in the pipeline: publishing one client's report to
    another's dashboard is a cross-client confidentiality breach that neither
    of them necessarily reports. But it is verification, not judgment —
    require an exact address and name match against the transaction record
    and halt otherwise. A human eyeballing this at 9pm is *less* reliable,
-   not more.
+   not more. On a halt, the realtor is alerted immediately with proposed
+   matches, and assigning the report is above the line.
 3. **Send the holding message** — *below.* No judgment; the text is true of
    every inspection ever conducted. The design depends on it not waiting.
    Sent per report during wave 1, naming what is still coming.
@@ -744,9 +843,9 @@ never a human review step.
     - 12b. **Tell the client their deal may be at risk** — **above.**
       Irreversible (the objection window closes), deal-sized radius, and the
       failure mode is silent — nobody calls to say you missed it.
-    - 12c. **Watch pending bids against the objection deadline** — *below,
-      and non-optional.* Alerts the realtor when bids won't arrive with
-      enough margin. A missed deadline is irreversible and silent, so this
+    - 12c. **Watch pending items against the objection deadline** — *below,
+      and non-optional.* Covers both waves. Alerts the realtor when reports
+      or bids won't arrive with enough margin. A missed deadline is irreversible and silent, so this
       watch is the gate that lets the rest of the timing design run
       unattended.
     - 12d. **Draft the extension request and the fallback ask** — *below.*
@@ -874,21 +973,35 @@ arrive in two waves, so there are two publication points, with additions
 updating the brief and revisions going to the realtor first. See
 "Publication timing: two waves, two publication points" above.*
 
+*Resolved 2026-09-12: triggers — what starts a deal's flow, what happens when
+a wave stalls or a report matches no one, and how mail reaches Harbour. See
+"Triggers" above.*
+
 ## Security posture
 
-The intake is a dedicated mailbox (`inspections@brittontaylor.com`) that
-inspectors send to directly, not a filter or alias on Britton's main inbox.
-This is a real boundary rather than a cosmetic one: Gmail API access cannot
-be scoped to a label, so an alias would grant the agent read access to the
-entire mailbox — including other clients' confidential positions, which
-raises fiduciary problems, and regulated financial data, which raises
-compliance ones. The separate mailbox is worth its monthly cost for that
-reason alone.
+The intake address is a dedicated mailbox (`inspections@brittontaylor.com`)
+that inspectors send to directly, never a filter or alias on Britton's main
+inbox. The original reason still holds: Gmail API access cannot be scoped to
+a label, so an alias would expose the entire mailbox — other clients'
+confidential positions, a fiduciary problem, and regulated financial data, a
+compliance one.
+
+**Revised 2026-09-12: Harbour does not read that mailbox either.** The
+mailbox forwards each message to an inbound email service, which posts it to
+Harbour. The agent holds no mailbox credentials or API access of any kind,
+which is a stronger boundary than the dedicated mailbox alone. Two
+consequences to build for:
+
+- **The receiving endpoint must verify the inbound service's signature** on
+  every post. An unauthenticated endpoint would let anyone submit a fake
+  "report" straight into the pipeline.
+- **The inbound service becomes a processor of client documents.** Choose one
+  with controllable retention, and keep it to receiving and passing on.
 
 Inspection reports are **untrusted input**. Real estate is the most targeted
 sector for business-email-compromise fraud, and a PDF arriving from an
 outside party can carry text addressed to the agent rather than to the
 reader. The agent treats document contents as data and never as
 instructions, and never acts on directives found inside a report. The narrow
-mailbox reduces this exposure but does not eliminate it — the reports
+intake reduces this exposure but does not eliminate it — the reports
 themselves are the vector.
