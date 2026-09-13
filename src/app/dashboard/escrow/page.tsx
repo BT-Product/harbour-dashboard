@@ -12,7 +12,12 @@ export default async function EscrowPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="font-heading text-3xl font-semibold tracking-tight">Escrow</h1>
+      <div>
+        <h1 className="font-heading text-3xl font-semibold tracking-tight">Your timeline</h1>
+        <p className="mt-2 text-muted-foreground">
+          Every step from here to the keys, and what each one means.
+        </p>
+      </div>
       <div className="grid gap-4 md:grid-cols-2">
         {transactions.map((t) => (
           <StageStepper key={t.id} transaction={t} stages={stages} />
