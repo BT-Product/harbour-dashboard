@@ -718,13 +718,68 @@ what they repeat. **Broker and real estate attorney review of the framing
 rules is now a precondition** before the feature is built; Britton is
 arranging it.
 
+### Also day 6 — sections unlock as the transaction earns them
+
+The open question from the overview rebuild — whether to hide the three
+sections a house hunter has no use for — resolved into a better frame
+than hiding. Britton's: clients *unlock* areas as they move through the
+journey, and nothing is taken away once it appears.
+
+What a buyer starts with is Overview, Upcoming Tours and Timeline. Homes
+Seen appears with the first debrief, Inspections with the first item,
+Financials with the pre-approval. Every gate is a condition that only
+ever becomes true, so the menu grows through the transaction and never
+shrinks — which is what makes this progressive disclosure rather than
+conditional hiding.
+
+**Financials is the case worth recording, because the first instinct was
+wrong.** It looks like an escrow-stage concern, and the first draft
+gated it accordingly. Britton corrected it: a house hunter is exactly
+who needs it, because they are comparing homes right now and HOA dues
+move what they can afford against a fixed approved payment. So the gate
+is the pre-approval existing, not the stage. The practical consequence
+is that the pilot client's Financials section is hidden today only
+because no pre-approval has been entered for them — the fix is entering
+it, not loosening the gate.
+
+**"Escrow" became "Timeline."** The page covers the whole journey
+including the stages before a contract exists, and a house hunter is not
+in escrow. The route is unchanged, so the visit data stays comparable
+across the rename.
+
+**The "new" badge needed a sharper definition than it first got.** The
+first version badged any unlocked section the client had never opened —
+which lit up Tours and Timeline, both present since their first login.
+Unopened is not new. It now compares when a section came into existence
+(from when its underlying data was created) against when that client
+first signed in, so only genuinely new areas are flagged, and a
+first-ever sign-in gets none at all: when everything is new, marking
+everything new says nothing.
+
+No new state was needed for any of it. The visit data already recorded
+for the retention metric answers both halves — what they have opened,
+and when they first arrived — so the badge follows a client across
+devices and is switched off by the page view that gets recorded when
+they open the section. That is the third distinct job `client_page_views`
+has done since it was built three days ago for a metric that still
+cannot be read.
+
+The badge pulses under `motion-safe` only. A blinking element shown to
+someone who has asked their device to reduce motion is an accessibility
+problem, not a delight.
+
 ### Not yet done
 
 - Pilot cohort is one client deep (Tara Taylor, onboarded 2026-09-10) and
   still has no move-up buyer — the case the hypothesis actually turns on.
   Two more clients needed before the thresholds mean anything.
 - Stage-explainer copy is a first draft — needs broker review and a Fair
-  Housing check before any real client sees it.
+  Housing check. **A real client is reading it daily now**, which moves
+  this from a pre-launch gate to an overdue one.
+- The pilot client has no pre-approval on file, so their Financials
+  section stays locked and the affordability calculator — the thing a
+  house hunter benefits from most — is unavailable to them. Entering the
+  numbers unlocks it.
 - Brokerage name/DRE number in the `agents` row are still placeholders.
 - **Email now comes from two places, which clients will notice.** Tour
   reminders go through Resend as `updates@brittontaylor.com`; Supabase's
@@ -737,12 +792,6 @@ arranging it.
   the idempotency guard treats it as already sent. Deliberate for now
   (it's what stops double-emails); revisit if plans change often enough
   in practice to matter.
-- A house-hunting buyer's nav still shows Escrow, Inspections and
-  Financials, all empty until they're in contract. Escrow arguably earns
-  its place (the timeline shows what's coming); the other two are empty
-  rooms, and they were three of the six doors the first client tried.
-  Gating them on having content would change navigation semantics, so
-  it's a decision rather than a cleanup.
 - An auth user with no `profiles` row crashes the client dashboard with
   a raw server error instead of anything useful. Can't happen through
   normal onboarding — `inviteClient` rolls back a failed profile insert
