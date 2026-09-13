@@ -9,6 +9,7 @@ import type {
   Preapproval,
   TourReminder,
 } from "@/lib/supabase/database.types";
+import { dateKey } from "@/lib/date-grouping";
 
 type Client = SupabaseClient<Database>;
 
@@ -189,4 +190,38 @@ export async function getInspectionItemsForTransactions(
     .order("created_at", { ascending: false });
   if (error) throw error;
   return data ?? [];
+}
+
+/** Whitespace and casing vary between the tour and the debrief; the address doesn't. */
+function addressKey(address: string): string {
+  return address.trim().toLowerCase().replace(/\s+/g, " ");
+}
+
+/**
+ * Tours that have already happened and still have no debrief written.
+ *
+ * Derived at read time rather than stored, so the threshold stays a display
+ * decision: a tour counts as done once its start time has passed. Two things
+ * settle a tour. The explicit `home_seen_id` link, written when the debrief
+ * is saved from the tour itself, is the real mechanism and survives the agent
+ * editing the address while writing it up. Matching address and day is the
+ * fallback, and it covers the two cases the link can't: tours scheduled
+ * before this link existed, and debriefs typed from scratch with "Add
+ * debrief" instead of from the tour.
+ *
+ * Newest first — the tour you just got back from is the one you're about to
+ * write up.
+ */
+export function pendingDebriefTours(
+  tours: Tour[],
+  homes: Pick<HomeSeen, "address" | "seen_at">[],
+  now: Date = new Date(),
+): Tour[] {
+  const debriefed = new Set(homes.map((h) => `${dateKey(h.seen_at)}|${addressKey(h.address)}`));
+
+  return tours
+    .filter((tour) => new Date(tour.scheduled_at).getTime() < now.getTime())
+    .filter((tour) => tour.home_seen_id === null)
+    .filter((tour) => !debriefed.has(`${dateKey(tour.scheduled_at)}|${addressKey(tour.address)}`))
+    .sort((a, b) => new Date(b.scheduled_at).getTime() - new Date(a.scheduled_at).getTime());
 }

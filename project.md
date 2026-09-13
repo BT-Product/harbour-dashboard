@@ -67,9 +67,12 @@ realtors from the start rather than at Britton alone.
   before they could set a password. Still short of a move-up buyer, which
   is the case the hypothesis actually turns on — with one client, no
   threshold in `strategy.md` can be read yet.
-- **Brokerage** — not yet engaged; broker review of the stage-explainer
-  copy (and a Fair Housing check on any copy that varies by client
-  circumstance) is a pre-launch gate before a real client sees the app.
+- **Brokerage** — not yet engaged. The review packet is written and
+  waiting: six items of client-facing copy, one marked urgent (a stage
+  explainer instructs the client to wire closing funds with no fraud
+  warning anywhere in the product). Britton to find a broker to walk it
+  through. This was a pre-launch gate that a real client has now been
+  past for weeks, so it is overdue rather than pending.
 - **Broker and real estate attorney** — review of the inspection agent's
   call-narrative framing rules is a precondition before that feature is
   built (added 2026-09-12). Britton to arrange. The questions to bring are
@@ -79,3 +82,7 @@ realtors from the start rather than at Britton alone.
 
 - Live app: https://harbour-dashboard-ten.vercel.app
 - Repo: this repository (`RE-Transaction-Dash`)
+- Broker review packet (2026-09-13): https://claude.ai/code/artifact/2f05d3c8-08ee-45ab-a6cb-ecb2f51637f4
+  Six items needing a broker's sign-off, each with the exact copy as the
+  client sees it and a verdict field. Private until shared from the
+  page's share menu.

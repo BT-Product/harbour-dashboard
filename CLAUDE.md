@@ -78,6 +78,10 @@ commit messages, and code comments.
     just the next one; the UI uses it as a general stage setter
   - `agent_update_key_dates`, `agent_upsert_tour`, `agent_delete_tour`,
     `agent_upsert_inspection_item`, `agent_delete_inspection_item` (0005)
+  - `agent_link_tour_to_home` (0014) — marks a tour as debriefed by
+    pointing it at the `homes_seen` row just written. Re-derives
+    authorization from the tour's own `client_id` and refuses a link
+    across two different clients
   - `agent_onboard_client` (0009) — creates a new client's transactions
     from the buying/selling/both answer in one call, so a move-up client
     can't end up with one leg saved, the other failed, and no link
@@ -106,6 +110,16 @@ commit messages, and code comments.
   name through `transactionLabel()` (`src/lib/data/dashboard.ts`), never
   `property_address` directly — a house-hunting buyer shows as "Home
   search".
+- **A tour that has happened is derived, not stored.** Which past tours
+  still need a debrief is computed at read time by `pendingDebriefTours`
+  (`src/lib/data/agent.ts`) — never by a job that creates `homes_seen`
+  rows when a tour's start time passes. `homes_seen` is client-readable,
+  so materialising it would put a blank entry on the *client's* Homes
+  Seen page for a showing that may have been cancelled or never reached.
+  `tours.home_seen_id` is the authoritative signal and survives the agent
+  editing an address mid-debrief; matching address and day is a fallback
+  for tours predating the link and for debriefs written outside the tour
+  flow. Keep both — dropping the fallback silently strands old rows.
 - **`client_page_views` records raw views, not visits** (migration
   `0008`). A visit is derived at read time as a run of views with no gap
   over 30 minutes (`collapseToVisits` in `src/lib/data/agent.ts`), so the

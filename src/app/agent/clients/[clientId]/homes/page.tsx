@@ -1,9 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
-import { getClientHomesSeen } from "@/lib/data/agent";
+import { getClientHomesSeen, getClientTours, pendingDebriefTours } from "@/lib/data/agent";
 import { HomeSeenCard } from "@/components/home-seen-card";
 import { DateGroupCard } from "@/components/date-group-card";
 import { groupByDateKey } from "@/lib/date-grouping";
-import { DebriefFormDialog } from "../home-debriefs-manager";
+import { DebriefFormDialog, PendingDebriefs } from "../home-debriefs-manager";
 
 export default async function ClientHomesPage({
   params,
@@ -12,8 +12,14 @@ export default async function ClientHomesPage({
 }) {
   const { clientId } = await params;
   const supabase = await createClient();
-  const homes = await getClientHomesSeen(supabase, clientId);
+  const [homes, tours] = await Promise.all([
+    getClientHomesSeen(supabase, clientId),
+    getClientTours(supabase, clientId),
+  ]);
 
+  // Where a finished tour lands. Before this it landed nowhere: it dropped
+  // out of Upcoming Tours the moment its start time passed.
+  const pending = pendingDebriefTours(tours, homes);
   const topContenders = homes.filter((h) => h.interest_level === "strong");
   const groups = [...groupByDateKey(homes, (h) => h.seen_at).entries()];
 
@@ -23,6 +29,18 @@ export default async function ClientHomesPage({
         <h2 className="text-lg font-semibold">Homes Seen</h2>
         <DebriefFormDialog clientId={clientId} triggerLabel="Add debrief" />
       </div>
+
+      {pending.length > 0 && (
+        <div className="space-y-3">
+          <div className="flex flex-wrap items-baseline gap-x-2">
+            <h3 className="text-sm font-semibold">Toured — needs a debrief</h3>
+            <span className="text-xs text-muted-foreground">
+              {pending.length} {pending.length === 1 ? "home" : "homes"}
+            </span>
+          </div>
+          <PendingDebriefs clientId={clientId} tours={pending} />
+        </div>
+      )}
 
       {topContenders.length > 0 && (
         <div className="space-y-3">
@@ -52,7 +70,13 @@ export default async function ClientHomesPage({
 
       <div className="space-y-3">
         <h3 className="text-sm font-semibold text-muted-foreground">All Homes Seen</h3>
-        {groups.length === 0 && <p className="text-sm text-muted-foreground">No debriefs yet.</p>}
+        {groups.length === 0 && (
+          <p className="text-sm text-muted-foreground">
+            {pending.length > 0
+              ? "Nothing written up yet — the tours above are waiting on one."
+              : "No debriefs yet."}
+          </p>
+        )}
         {groups.map(([key, items]) => (
           <DateGroupCard
             key={key}

@@ -200,10 +200,12 @@ export async function saveDebriefInterest(
     privateNotes: string | null;
     interestLevel: InterestLevel | null;
     seenAt: string;
+    /** Set when this debrief is being written from a tour that has happened. */
+    tourId?: string | null;
   },
 ) {
   const supabase = await createClient();
-  const { error } = await supabase.rpc("agent_upsert_home_debrief", {
+  const { data, error } = await supabase.rpc("agent_upsert_home_debrief", {
     p_home_id: home.id,
     p_client_id: clientId,
     p_address: home.address,
@@ -213,5 +215,18 @@ export async function saveDebriefInterest(
     p_seen_at: home.seenAt,
   });
   if (error) throw new Error(error.message);
+
+  // Linking is a second call rather than another parameter on the upsert, and
+  // a failure here is deliberately not thrown: the debrief itself is already
+  // saved, and an unlinked tour just stays on the needs-a-debrief list, where
+  // matching address and date will settle it anyway. Throwing would report a
+  // write that actually succeeded as a failure.
+  if (home.tourId && data?.id) {
+    await supabase.rpc("agent_link_tour_to_home", {
+      p_tour_id: home.tourId,
+      p_home_id: data.id,
+    });
+  }
+
   ok(clientId);
 }
