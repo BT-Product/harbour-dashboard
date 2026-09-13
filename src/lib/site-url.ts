@@ -5,7 +5,7 @@ import { headers } from "next/headers";
  *
  * Supabase falls back to the project's Site URL when a link carries no
  * explicit redirect, and that default is http://localhost:3000 — which is
- * how the first real client's invite link dead-ended on her machine. Every
+ * how the first real client's invite link dead-ended on their machine. Every
  * link this app generates now names its own origin instead of relying on
  * that setting.
  *

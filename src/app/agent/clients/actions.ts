@@ -74,8 +74,8 @@ export async function inviteClient(input: {
     //
     // redirectTo is not optional. Without it Supabase falls back to the
     // project's Site URL, which defaults to http://localhost:3000 — the
-    // first real client's link verified her account and then sent her
-    // browser to a dead address on her own machine.
+    // first real client's link verified their account and then sent
+    // their browser to a dead address on their own machine.
     const { data, error } = await admin.auth.admin.inviteUserByEmail(email, {
       data: { full_name: fullName },
       redirectTo: `${siteUrl}/auth/callback`,
