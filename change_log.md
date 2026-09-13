@@ -768,6 +768,45 @@ The badge pulses under `motion-safe` only. A blinking element shown to
 someone who has asked their device to reduce motion is an accessibility
 problem, not a delight.
 
+### Also day 6 — the inspection agent's publication timing
+
+Closed the last question left over from the original design: when to
+publish while reports are still arriving, given that republishing a brief a
+client has already read is its own kind of alarming.
+
+The reframe that dissolved most of it: **updating a brief isn't what alarms
+a client, changing it without warning is.** A brief that names what's still
+coming makes the update something they were told to expect.
+
+Britton's answer on how reports actually arrive settled the rest. They come
+in **two waves**: the inspection reports within a day or two, then contractor
+bids ordered because of what the inspections found. That gives two
+publication points, matching the orientation call and the recommendation
+call, instead of a stream of updates. Within wave 1, a holding message per
+report names what's still coming; no partial brief.
+
+- **What's expected is tracked, not guessed.** The realtor lists the
+  inspections they ordered; the agent proposes the wave-2 bids from the
+  reports' own "recommend evaluation by a licensed…" lines. That also makes
+  every recommended follow-up a tracked item, so none can quietly fall off —
+  one of the legal watch items, now enforced by structure.
+- **Additions and revisions are treated differently.** A bid that prices a
+  finding the client already saw updates the brief. A bid that changes the
+  story goes to the realtor first, so the client hears it from a person.
+- **One notification per wave, not per bid.** A drip of emails would
+  recreate the anxiety one bid at a time.
+- **The deadline is watched.** When bids won't arrive before the objection
+  deadline, Britton's practice is to ask for an extension and prepare a
+  fallback ask on what's already quoted. The agent alerts, drafts both, and
+  leaves sending the extension request to the realtor, since it goes to the
+  other side of the deal.
+
+This moved two rows above the line in the workflow model — sending the
+extension request, and revising a brief the client has already read — so
+the model now has two always-human steps and two conditional ones rather
+than one of each. The README's autonomy summary was corrected to match. The
+one remaining gap is the seller's response round.
+
 ### Not yet done
 
 - Pilot cohort is one client deep (Tara Taylor, onboarded 2026-09-10) and
@@ -801,8 +840,7 @@ problem, not a delight.
 - Visit data is collected per client but there's no cohort view — the
   median across clients is a manual read for now.
 - The inspection agent is **designed but not started** — see
-  `strategy.md`. Still open: when to publish while specialist reports are
-  still arriving, and the seller's response round. Deferred: independent
+  `strategy.md`. Still open: the seller's response round. Deferred: independent
   contractor cost ranges and the standalone brief. Precondition: broker
   and real estate attorney review of the call narrative's framing rules.
 - `tours.home_seen_id` exists in the schema but nothing populates it, so
