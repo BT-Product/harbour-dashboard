@@ -737,10 +737,10 @@ wrong.** It looks like an escrow-stage concern, and the first draft
 gated it accordingly. Britton corrected it: a house hunter is exactly
 who needs it, because they are comparing homes right now and HOA dues
 move what they can afford against a fixed approved payment. So the gate
-is the pre-approval existing, not the stage. The practical consequence
-is that the pilot client's Financials section is hidden today only
-because no pre-approval has been entered for them — the fix is entering
-it, not loosening the gate.
+is the pre-approval existing, not the stage. (Checked afterwards: the pilot client's pre-approval
+was already on file, entered the morning before their first sign-in, so
+Financials was never locked for them — an assumption stated here as fact
+before it was verified.)
 
 **"Escrow" became "Timeline."** The page covers the whole journey
 including the stages before a contract exists, and a house hunter is not
@@ -776,10 +776,11 @@ problem, not a delight.
 - Stage-explainer copy is a first draft — needs broker review and a Fair
   Housing check. **A real client is reading it daily now**, which moves
   this from a pre-launch gate to an overdue one.
-- The pilot client has no pre-approval on file, so their Financials
-  section stays locked and the affordability calculator — the thing a
-  house hunter benefits from most — is unavailable to them. Entering the
-  numbers unlocks it.
+- The pilot client's pre-approval is on file with a **$0 down payment**,
+  which makes their max price equal to the loan amount. That is correct
+  for a zero-down program and wrong if the field was simply left at its
+  default — and the client has already opened the page, so whichever it
+  is, they have seen it.
 - Brokerage name/DRE number in the `agents` row are still placeholders.
 - **Email now comes from two places, which clients will notice.** Tour
   reminders go through Resend as `updates@brittontaylor.com`; Supabase's
