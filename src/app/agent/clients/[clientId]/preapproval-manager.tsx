@@ -6,7 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { maxPrincipalForPayment, monthlyPrincipalAndInterest } from "@/lib/finance";
+import {
+  maxPriceWithAssistance,
+  maxPrincipalForPayment,
+  monthlyPrincipalAndInterest,
+} from "@/lib/finance";
 import type { Preapproval } from "@/lib/supabase/database.types";
 import { deletePreapproval, savePreapproval } from "./actions";
 
@@ -27,8 +31,14 @@ export function PreapprovalManager({
     const downPayment = num("down_payment");
     const rate = num("rate");
     const hoaMonthly = num("hoa_monthly") || 0;
+    const assistancePercent = num("assistance_percent") || 0;
+    const assistanceDeferred = formData.get("assistance_deferred") === "on";
 
-    if ([loanAmount, downPayment, rate, hoaMonthly].some((v) => !Number.isFinite(v) || v < 0)) {
+    if (
+      [loanAmount, downPayment, rate, hoaMonthly, assistancePercent].some(
+        (v) => !Number.isFinite(v) || v < 0,
+      )
+    ) {
       toast.error("Amounts and rate must be positive numbers");
       return;
     }
@@ -41,6 +51,8 @@ export function PreapprovalManager({
           rate,
           lender: String(formData.get("lender") || "").trim() || null,
           hoaMonthly,
+          assistancePercent,
+          assistanceDeferred,
         });
         toast.success("Pre-approval saved");
       } catch (e) {
@@ -69,8 +81,11 @@ export function PreapprovalManager({
     ? monthlyPrincipalAndInterest(preapproval.loan_amount, preapproval.rate)
     : 0;
   const maxPriceAtStoredHoa = preapproval
-    ? maxPrincipalForPayment(Math.max(budget - preapproval.hoa_monthly, 0), preapproval.rate) +
-      preapproval.down_payment
+    ? maxPriceWithAssistance(
+        maxPrincipalForPayment(Math.max(budget - preapproval.hoa_monthly, 0), preapproval.rate),
+        preapproval.down_payment,
+        preapproval.assistance_percent ?? 0,
+      )
     : 0;
 
   return (
@@ -147,7 +162,40 @@ export function PreapprovalManager({
                   defaultValue={preapproval?.hoa_monthly ?? 0}
                 />
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="assistance_percent">Down payment assistance (%)</Label>
+                <Input
+                  id="assistance_percent"
+                  name="assistance_percent"
+                  type="number"
+                  min="0"
+                  max="50"
+                  step="0.1"
+                  defaultValue={preapproval?.assistance_percent ?? 0}
+                />
+                <p className="text-xs text-muted-foreground">
+                  CalHFA MyHome, Dream For All, city programs. Percent of purchase price, 0 if
+                  none. The loan amount above stays the first loan only.
+                </p>
+              </div>
             </div>
+
+            <label className="flex items-start gap-2 text-sm">
+              <input
+                type="checkbox"
+                name="assistance_deferred"
+                className="mt-0.5"
+                defaultChecked={preapproval?.assistance_deferred ?? false}
+              />
+              <span>
+                Assistance payment is deferred
+                <span className="block text-xs text-muted-foreground">
+                  No monthly payment until sale or refinance. Leave unchecked for a second loan
+                  the client pays monthly — the lender will already have reduced the first-loan
+                  approval to absorb it.
+                </span>
+              </span>
+            </label>
 
             <div className="flex flex-wrap gap-2">
               <Button type="submit" disabled={isPending} size="sm">

@@ -4,7 +4,11 @@ import { useMemo, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { maxPrincipalForPayment, monthlyPrincipalAndInterest } from "@/lib/finance";
+import {
+  maxPriceWithAssistance,
+  maxPrincipalForPayment,
+  monthlyPrincipalAndInterest,
+} from "@/lib/finance";
 import type { Preapproval } from "@/lib/supabase/database.types";
 
 const money = (n: number) =>
@@ -27,9 +31,21 @@ export function AffordabilityTool({ preapproval }: { preapproval: Preapproval })
     return maxPrincipalForPayment(remaining, preapproval.rate);
   }, [budget, hoa, preapproval.rate]);
 
-  const adjustedMaxPrice = adjustedLoan + preapproval.down_payment;
-  const fullPrice = preapproval.loan_amount + preapproval.down_payment;
+  // Assistance is a percentage of the purchase price, so it scales with the
+  // price it helps buy — including when HOA dues shrink the loan underneath it.
+  const assistancePct = preapproval.assistance_percent ?? 0;
+  const adjustedMaxPrice = maxPriceWithAssistance(
+    adjustedLoan,
+    preapproval.down_payment,
+    assistancePct,
+  );
+  const fullPrice = maxPriceWithAssistance(
+    preapproval.loan_amount,
+    preapproval.down_payment,
+    assistancePct,
+  );
   const priceReduction = fullPrice - adjustedMaxPrice;
+  const assistanceAmount = adjustedMaxPrice * (assistancePct / 100);
 
   return (
     <Card>
@@ -83,10 +99,34 @@ export function AffordabilityTool({ preapproval }: { preapproval: Preapproval })
           </div>
         </div>
 
+        {assistancePct > 0 && (
+          <div className="rounded-lg border bg-muted/30 p-3 text-sm">
+            <p className="font-medium">
+              Includes {assistancePct}% down payment assistance
+              {assistanceAmount > 0 && <> — about {money(assistanceAmount)} at this price</>}
+            </p>
+            <p className="mt-1 text-muted-foreground">
+              Your {money(preapproval.loan_amount)} approval is the first loan on its own. The
+              assistance covers the down payment as a second loan, which is why the price you can
+              offer is higher than the first loan by itself.
+              {!preapproval.assistance_deferred && (
+                <>
+                  {" "}
+                  That second loan carries its own payment, and{" "}
+                  {preapproval.lender ?? "your lender"} has already accounted for it in the
+                  approval amount above.
+                </>
+              )}
+            </p>
+          </div>
+        )}
+
         <p className="text-xs text-muted-foreground">
-          Estimate only, based on your current approval ({money(preapproval.loan_amount)} loan at{" "}
-          {preapproval.rate}%, 30-year fixed) plus your {money(preapproval.down_payment)} down
-          payment. Actual qualifying payment may also include taxes and insurance — talk to{" "}
+          Estimate only, based on your current approval ({money(preapproval.loan_amount)} first
+          loan at {preapproval.rate}%, 30-year fixed)
+          {preapproval.down_payment > 0 && <> plus your {money(preapproval.down_payment)} down</>}
+          {assistancePct > 0 && <> and {assistancePct}% down payment assistance</>}. Actual
+          qualifying payment may also include taxes, insurance and mortgage insurance — talk to{" "}
           {preapproval.lender ?? "your lender"} before making an offer.
         </p>
       </CardContent>
