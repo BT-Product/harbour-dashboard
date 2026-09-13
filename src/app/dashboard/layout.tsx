@@ -24,6 +24,48 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const stages = await getStageDefinitions(supabase);
 
   const hasBuy = transactions.some((t) => t.type === "buy");
+  const transactionIds = transactions.map((t) => t.id);
+
+  // Which sections have anything to say yet, and when each one first had
+  // something — a section is only "new" if it appeared after this client
+  // had already started using the app.
+  const [homesSeen, inspectionItems, preapproval, pageViews] = await Promise.all([
+    supabase.from("homes_seen").select("created_at").order("created_at").limit(1),
+    transactionIds.length
+      ? supabase
+          .from("inspection_items")
+          .select("created_at")
+          .in("transaction_id", transactionIds)
+          .order("created_at")
+          .limit(1)
+      : Promise.resolve({ data: [] }),
+    supabase.from("preapproval").select("updated_at").limit(1),
+    supabase.from("client_page_views").select("path, viewed_at").order("viewed_at").limit(500),
+  ]);
+
+  const views = pageViews.data ?? [];
+  const visitedPaths = new Set(views.map((row) => row.path));
+  const firstVisitAt = views[0]?.viewed_at ?? null;
+
+  const unlockedAt = {
+    "/dashboard/homes": homesSeen.data?.[0]?.created_at ?? null,
+    "/dashboard/inspections": inspectionItems.data?.[0]?.created_at ?? null,
+    "/dashboard/financials": preapproval.data?.[0]?.updated_at ?? null,
+  };
+
+  // Appeared since they first signed in, and still unopened. A client on
+  // their very first visit gets no badges at all — everything is new then,
+  // so marking everything new says nothing.
+  const newSections = Object.entries(unlockedAt)
+    .filter(
+      ([path, at]) =>
+        at !== null &&
+        firstVisitAt !== null &&
+        !visitedPaths.has(path) &&
+        new Date(at) > new Date(firstVisitAt),
+    )
+    .map(([path]) => path);
+
   const primary = primaryTransaction(transactions);
   const linkedSell =
     primary?.type === "buy" ? linkedTransaction(transactions, primary) : undefined;
@@ -33,7 +75,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
       sidebar={
         <DashboardSidebar
           fullName={profile.full_name}
-          hasBuy={hasBuy}
+          unlocked={{
+            hasBuy,
+            hasHomesSeen: Boolean(unlockedAt["/dashboard/homes"]),
+            hasInspectionItems: Boolean(unlockedAt["/dashboard/inspections"]),
+            hasPreapproval: Boolean(unlockedAt["/dashboard/financials"]),
+          }}
+          newSections={newSections}
           partnerName={profile.partner_name}
           partnerEmail={profile.partner_email}
         />
