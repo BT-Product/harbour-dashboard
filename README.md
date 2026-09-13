@@ -57,7 +57,7 @@ client's first session:
 
 Six sections in 37 seconds, three to eight seconds each, then back to the
 start. That isn't reading. It's opening doors to see what's behind them. The
-overview said where she stood but nothing about what the menu contained, so the
+overview said where they stood but nothing about what the menu contained, so the
 only way to find out was to click everything. It's now a map: one plain
 sentence of status, then a card per section showing what's inside. We could
 never have spotted this ourselves, because we already knew what each section
@@ -113,8 +113,8 @@ Harbour served returned success throughout. The causes were all one layer down:
 a Supabase redirect silently replaced with localhost, SMTP rejecting a
 password, and the client's employer's email scanner stripping the sign-in token
 from the URL fragment. Moving the token into the query string fixed the last
-one. Visit tracking is what proved she never reached the dashboard, even
-though her auth record said the invite was accepted.
+one. Visit tracking is what proved they never reached the dashboard, even
+though their auth record said the invite was accepted.
 
 More architectural notes, the full list of database functions, and the
 conventions for extending any of this are in [`CLAUDE.md`](CLAUDE.md).

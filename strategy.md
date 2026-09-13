@@ -54,7 +54,7 @@ most closely, not just the visit-frequency number.
 **What the instrument produced first was not the metric.** Its first
 useful output was a usability finding: the visit trace showed the client
 opening all six sections in 37 seconds, three to eight seconds each, then
-returning to where she started. That is the signature of someone hunting
+returning to where they started. That is the signature of someone hunting
 for what a menu contains, and it prompted rebuilding the overview (day
 6). Worth noting for its own sake — per-page visit data turns out to earn
 its keep as behavioural evidence long before there are enough clients for

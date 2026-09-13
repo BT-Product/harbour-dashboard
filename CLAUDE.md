@@ -41,6 +41,9 @@ and PMs, who will not open `strategy.md`. It doesn't need every detail, but
 it should never be *wrong* about the current state, and a significant piece
 of product reasoning shouldn't exist only in the tracking docs.
 
+**Refer to pilot clients as "they," never "she" or "he,"** in all four docs,
+commit messages, and code comments.
+
 ## Architecture notes worth knowing before changing the schema
 
 - **Multi-tenant from day one**: every client-owned row traces back to
@@ -181,8 +184,8 @@ password, and no password ever passes through the app).
 **Auth email links must carry an explicit `redirectTo`.** Supabase falls
 back to the project's Site URL when a link doesn't name one, and that
 default is `http://localhost:3000` — the first real client's invite
-verified her account and then sent her browser to a dead address on her
-own machine. Every link the app generates goes through `getSiteUrl()`
+verified their account and then sent their browser to a dead address on
+their own machine. Every link the app generates goes through `getSiteUrl()`
 (`src/lib/site-url.ts`) and points at `/auth/callback`, which reads the
 tokens Supabase puts in the URL fragment, establishes the session in the
 browser client, and forwards to `/set-password`. The origin still has to

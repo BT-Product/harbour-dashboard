@@ -31,12 +31,12 @@ app — invite them, create and edit their transactions, keep tours,
 debriefs, inspections and pre-approvals current, and remove them —
 with nothing left in Supabase Studio.
 
-**The first real client used the dashboard on 2026-09-11.** Getting her
+**The first real client used the dashboard on 2026-09-11.** Getting them
 there took three days and three unrelated failures (a redirect pointing
 at localhost, SMTP credentials Gmail rejected, and an email template
-whose token her employer's mail scanner stripped — see `change_log.md`
-days 4–6). Her first session then produced the first real product
-finding: she opened all six sections in 37 seconds looking for what was
+whose token their employer's mail scanner stripped — see `change_log.md`
+days 4–6). Their first session then produced the first real product
+finding: they opened all six sections in 37 seconds looking for what was
 in them, which is what prompted rebuilding the overview into a
 dashboard.
 
@@ -62,9 +62,9 @@ realtors from the start rather than at Britton alone.
 - **Pilot cohort clients** — 2–3 active clients, prioritizing at least one
   move-up buyer (the primary persona the product is designed around).
   **First real client onboarded 2026-09-10, first actually signed in
-  2026-09-11** (Tara Taylor). The gap is not a typo: her invite link
-  verified her account and then dead-ended, and it took three fixes
-  before she could set a password. Still short of a move-up buyer, which
+  2026-09-11** (Tara Taylor). The gap is not a typo: their invite link
+  verified their account and then dead-ended, and it took three fixes
+  before they could set a password. Still short of a move-up buyer, which
   is the case the hypothesis actually turns on — with one client, no
   threshold in `strategy.md` can be read yet.
 - **Brokerage** — not yet engaged; broker review of the stage-explainer

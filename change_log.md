@@ -274,12 +274,12 @@ double-tapped link would. Visit counts were never affected — only the
 finer-grained "pages opened" number.
 
 **The first real client's invite link dead-ended, and it was our bug.**
-Tara clicked "Accept invitation" and got an error. Her auth record
+Tara clicked "Accept invitation" and got an error. Their auth record
 showed the token was consumed — account confirmed, session created — but
-visit tracking showed she never reached the dashboard. Probing the auth
+visit tracking showed they never reached the dashboard. Probing the auth
 API confirmed why: the project's Site URL is still Supabase's default,
 `http://localhost:3000`, and the invite carried no explicit redirect, so
-Supabase verified her account and then sent her browser to an address
+Supabase verified their account and then sent their browser to an address
 that only exists on a developer's laptop.
 
 Two things were wrong, and both are fixed:
@@ -321,7 +321,7 @@ that still being wrong.
   with a throwaway address before sending anything to Tara — asked for
   the production callback, got localhost back. Britton fixed Site URL
   and the allow-list; re-probed and it came back correct.
-- **Then the send itself failed**, 500 on every address, not just hers.
+- **Then the send itself failed**, 500 on every address, not just theirs.
   The auth log had the real cause: `535 5.7.8 Username and Password not
   accepted — gsmtp`. Custom SMTP had been switched on and pointed at
   Gmail with a regular account password, which Google stopped accepting
@@ -338,7 +338,7 @@ it lands on the person you're trying to onboard.
 
 Also worth noting how the failure was found in the first place: visit
 tracking, built two days earlier for the retention metric, is what
-proved she never reached the dashboard. Her auth record said the invite
+proved they never reached the dashboard. Their auth record said the invite
 was accepted; only the absence of page views showed the flow died after
 the token was consumed.
 
@@ -490,7 +490,7 @@ Front room for entertaining Needs a bit of work" — because the newlines
 he'd typed in the textarea were being collapsed. Both of Tara's debriefs
 have multi-line notes, so this was on every card, and it was the one
 that mattered more: the overlap is ugly on the agent's own screen, but
-the run-on text is what a client reads on hers. Now rendered with
+the run-on text is what a client reads on theirs. Now rendered with
 `whitespace-pre-line`, private notes included.
 
 Both verified against Tara's real debriefs at 1280px and 375px before
@@ -539,16 +539,16 @@ never have sent. Invisible from the outside — the job would simply have
 done nothing every night.
 
 **The login saga ended, three failures deep.** Getting one client into
-her dashboard took three unrelated fixes, each hiding behind the last:
+their dashboard took three unrelated fixes, each hiding behind the last:
 
 1. **Site URL pointed at localhost** (day 4–5). Fixed by sending an
    explicit redirect, then by correcting the project setting.
 2. **SMTP rejected the password** (day 5). Gmail stopped accepting
    regular account passwords; an App Password fixed it.
-3. **Her employer's scanner stripped the token.** Supabase's stock
+3. **Their employer's scanner stripped the token.** Supabase's stock
    templates put the token after a `#`, and corporate link rewriters
-   drop everything after the fragment. She got "that link didn't carry a
-   sign-in token" — accurate, and completely opaque to her.
+   drop everything after the fragment. They got "that link didn't carry a
+   sign-in token" — accurate, and completely opaque to them.
 
 The fix for the third is to have Supabase put the token in the query
 string (`?token_hash=…&type=recovery`) pointed at `/auth/callback`,
@@ -566,8 +566,8 @@ delivered email. **When a user reports a failure the application logs
 deny, the bug is underneath the application.**
 
 Also worth recording: visit tracking, built on day 3 for the retention
-metric, is what proved she never reached the dashboard on each attempt.
-Her auth record said the invite was accepted every time.
+metric, is what proved they never reached the dashboard on each attempt.
+Their auth record said the invite was accepted every time.
 
 **A note on verification discipline.** Every send today was tested
 against a throwaway address or the agent's own inbox first — and caught
@@ -628,7 +628,7 @@ first-time buyers don't know it. That reframe turned out to *be* the
 ### Also day 6 — the client overview, rebuilt from watching a client use it
 
 **The first real client signed in**, 9:11pm on the 11th, minutes after
-the email template fix. Her session, straight out of the visit table:
+the email template fix. Their session, straight out of the visit table:
 
 ```
 21:11:47  /dashboard
@@ -643,9 +643,9 @@ the email template fix. Her session, straight out of the visit table:
 21:20:46  /dashboard/tours
 ```
 
-She opened **every section in 37 seconds**, three to eight seconds each,
-then went back where she started. That is not reading; it is opening
-doors to find out what is behind them. Her own words afterwards were
+They opened **every section in 37 seconds**, three to eight seconds each,
+then went back where they started. That is not reading; it is opening
+doors to find out what is behind them. Their own words afterwards were
 that signing in was confusing.
 
 The overview was the cause. It opened with a stage badge and an
