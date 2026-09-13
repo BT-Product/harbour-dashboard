@@ -625,6 +625,66 @@ Saying so isn't spin — it's the function of the objection period, and most
 first-time buyers don't know it. That reframe turned out to *be* the
 "what happens next" content the brief was missing. Same question.
 
+### Also day 6 — the client overview, rebuilt from watching a client use it
+
+**The first real client signed in**, 9:11pm on the 11th, minutes after
+the email template fix. Her session, straight out of the visit table:
+
+```
+21:11:47  /dashboard
+21:12:19  /dashboard/tours          (32s on the overview)
+21:12:22  /dashboard/homes          (3s)
+21:12:29  /dashboard/homes/09-06    (7s)
+21:12:37  /dashboard/escrow         (8s)
+21:12:41  /dashboard/inspections    (4s)
+21:12:56  /dashboard/financials     (15s)
+21:13:52  /dashboard                (back to the start)
+21:20:35  /dashboard                (returned 7 minutes later)
+21:20:46  /dashboard/tours
+```
+
+She opened **every section in 37 seconds**, three to eight seconds each,
+then went back where she started. That is not reading; it is opening
+doors to find out what is behind them. Her own words afterwards were
+that signing in was confusing.
+
+The overview was the cause. It opened with a stage badge and an
+explainer paragraph — which assumes you already know what a stage is —
+and said nothing about what lived in the six menu items beside it. So
+the only way to find out was to click all six.
+
+**It is now a dashboard.** One plain sentence about where things stand
+("You're house hunting. Your next tour is Sunday, September 13"), then a
+card per section showing what is actually inside: the next tour with its
+stops and times, homes seen with favorites marked, each transaction's
+stage and step count, open inspection items, what they can spend. Every
+card links into its full section, so the overview is a map rather than a
+dead end.
+
+**Two things were removed rather than added**, which is most of why it
+reads more calmly:
+
+- The move-up coordination card had been embedding a full card per
+  transaction, and the grid below now shows each one too — a move-up
+  client was reading the same stage and closing date twice. The
+  coordination card keeps only the thing nothing else says: how the two
+  timelines relate.
+- A seller with no closing date got the stage explainer in the header
+  and again in the card below. The same paragraph twice was the
+  sparsest, most confusing version of the page.
+
+Also fixed copy that rendered as two unlabelled numbers for a move-up
+client: `closing in 34 days · closing in 25 days` became "Your sale
+closes in 34 days and your purchase in 25 days."
+
+**Worth recording as a method, not just a fix.** This is the first
+change driven by watching a client rather than by our own judgment, and
+the evidence was a byproduct of instrumentation built three days earlier
+for a completely different purpose — the retention metric. The visit
+table was meant to count visits per week; what it produced first was a
+usability finding that no amount of looking at our own screens would
+have surfaced, because we already knew what was in each section.
+
 ### Not yet done
 
 - Pilot cohort is one client deep (Tara Taylor, onboarded 2026-09-10) and
@@ -644,6 +704,12 @@ first-time buyers don't know it. That reframe turned out to *be* the
   the idempotency guard treats it as already sent. Deliberate for now
   (it's what stops double-emails); revisit if plans change often enough
   in practice to matter.
+- A house-hunting buyer's nav still shows Escrow, Inspections and
+  Financials, all empty until they're in contract. Escrow arguably earns
+  its place (the timeline shows what's coming); the other two are empty
+  rooms, and they were three of the six doors the first client tried.
+  Gating them on having content would change navigation semantics, so
+  it's a decision rather than a cleanup.
 - An auth user with no `profiles` row crashes the client dashboard with
   a raw server error instead of anything useful. Can't happen through
   normal onboarding — `inviteClient` rolls back a failed profile insert
