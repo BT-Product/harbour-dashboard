@@ -842,6 +842,65 @@ the same email, so a miss is visible anyway." With forwarding, that's no
 longer something to assume, so the pipeline test was added as step 0 to
 carry that guarantee instead.
 
+### Also day 6 — the pre-approval shows the lender's letter, not our model of it
+
+Started as "enter the pilot client's pre-approval," became three
+corrections in a row, and the corrections are the useful part.
+
+The table had quietly become a small mortgage model: loan amount, cash
+down, rate, and — added during this session — a down payment assistance
+percentage and a deferred flag, from which the app *derived* a purchase
+price. The arithmetic was correct. Adding assistance to the loan
+understates the answer, because the assistance is a percentage of the
+price it is helping to buy, so the price has to be solved rather than
+summed:
+
+```
+price = (loan + cash) / (1 - assistancePct)
+```
+
+That produced $492,228 for a client whose pre-approval letter says
+$475,000. Britton's correction: **the letter is the number.** A lender
+hands an agent three facts — purchase price, percent down, loan type —
+and a figure this app calculated instead of that price is wrong by
+definition, however good the derivation. Correct arithmetic on the wrong
+premise is still the wrong answer, and a client comparing their dashboard
+to their letter would find the dashboard inflating what they can offer by
+seventeen thousand dollars.
+
+Two earlier corrections in the same thread pointed the same way. The
+client view had grown a breakdown of loan amount, down payment, rate and
+lender, and then a paragraph explaining how assistance factors in —
+detail that helps a client decide nothing and invites questions a realtor
+is not licensed to answer. **Let the lender own the mechanics.**
+
+So the model is now the letter: `purchase_price`, `percent_down`,
+`loan_type`, plus the lender's name. The client sees those four and one
+estimate — how a home's HOA dues change what they could offer — because
+that is the number that actually shapes a search. At $400/month of dues
+this client's ceiling moves by $64,000, which is the difference between
+browsing listings they can offer on and listings they cannot.
+
+**The property that makes the estimate honest:** it can only ever reduce
+from the stated price, and at zero dues it returns the lender's number
+unchanged. Any future calculator on a client-facing figure should pass
+that same test — the authoritative document is the floor of what we
+display, and our arithmetic is only allowed to qualify it downward, never
+to restate it.
+
+One deliberate exception survives. The HOA estimate cannot convert
+monthly dues into a price without a rate, so `rate` stays as an
+agent-only field, labelled for exactly that purpose, never shown to the
+client, and blank simply hides the calculator rather than assuming a
+number. Britton kept it on the grounds that the HOA adjustment matters
+most while a buyer is still searching — which is the same reasoning that
+puts Financials in front of a house hunter in the first place.
+
+Worth carrying into the inspection agent, where the same temptation
+appears with higher stakes: the inspector's report is the authoritative
+document, and anything the product computes about it can qualify a
+finding but must not restate one.
+
 ### Not yet done
 
 - Pilot cohort is one client deep (Tara Taylor, onboarded 2026-09-10) and
@@ -850,11 +909,11 @@ carry that guarantee instead.
 - Stage-explainer copy is a first draft — needs broker review and a Fair
   Housing check. **A real client is reading it daily now**, which moves
   this from a pre-launch gate to an overdue one.
-- The pilot client's pre-approval is on file with a **$0 down payment**,
-  which makes their max price equal to the loan amount. That is correct
-  for a zero-down program and wrong if the field was simply left at its
-  default — and the client has already opened the page, so whichever it
-  is, they have seen it.
+- The `preapproval` table still carries the columns from when it modelled
+  the loan (`loan_amount`, `down_payment`, `assistance_percent`,
+  `assistance_deferred`). Nothing client-facing reads them; they were left
+  in place rather than dropping columns on a live table with a real client
+  on it. Worth a cleanup once it is clear nothing is wanted back.
 - Brokerage name/DRE number in the `agents` row are still placeholders.
 - **Email now comes from two places, which clients will notice.** Tour
   reminders go through Resend as `updates@brittontaylor.com`; Supabase's
