@@ -85,6 +85,12 @@ seen, inspections, financials), and a standalone debrief form built for a phone
 in a parking lot between showings. A client's whole lifecycle, from invite to
 removal, runs from the app, with nothing left to do by hand in the database.
 
+Once a tour's time has passed it stops being upcoming and turns up under Homes
+Seen as a home waiting on a debrief, carrying its address and time into the
+form. That sounds like housekeeping and isn't: the debrief is the one thing the
+product asks of the agent, and it gets written hours later, from memory, on a
+phone. Anything it has to ask them to retype is a reason it doesn't get done.
+
 ## Engineering decisions worth knowing
 
 **Private notes are unreachable to clients at the database level, not in app

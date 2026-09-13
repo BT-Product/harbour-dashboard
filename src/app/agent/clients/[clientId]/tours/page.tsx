@@ -1,5 +1,12 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { getClientProfile, getClientReminderDates, getClientTours } from "@/lib/data/agent";
+import {
+  getClientHomesSeen,
+  getClientProfile,
+  getClientReminderDates,
+  getClientTours,
+  pendingDebriefTours,
+} from "@/lib/data/agent";
 import { formatDateHeading, groupByDateKey } from "@/lib/date-grouping";
 import { TourFormDialog, ToursDayManager } from "../tours-manager";
 import { SendReminderButton } from "../send-reminder-button";
@@ -11,8 +18,9 @@ export default async function ClientToursPage({
 }) {
   const { clientId } = await params;
   const supabase = await createClient();
-  const [tours, reminders, client] = await Promise.all([
+  const [tours, homes, reminders, client] = await Promise.all([
     getClientTours(supabase, clientId),
+    getClientHomesSeen(supabase, clientId),
     getClientReminderDates(supabase, clientId),
     getClientProfile(supabase, clientId),
   ]);
@@ -21,6 +29,10 @@ export default async function ClientToursPage({
   const upcoming = tours.filter((t) => new Date(t.scheduled_at).getTime() >= now);
   const groups = [...groupByDateKey(upcoming, (t) => t.scheduled_at).entries()];
 
+  // This tab is deliberately still upcoming-only, but a tour that has happened
+  // used to vanish from the app entirely at that point. Say where it went.
+  const pending = pendingDebriefTours(tours, homes);
+
   return (
     <div className="space-y-6 pt-4">
       <div className="flex items-center justify-between">
@@ -28,10 +40,21 @@ export default async function ClientToursPage({
         <TourFormDialog clientId={clientId} triggerLabel="Schedule a tour" />
       </div>
 
+      {pending.length > 0 && (
+        <p className="text-sm text-muted-foreground">
+          {pending.length} toured {pending.length === 1 ? "home is" : "homes are"} waiting on a
+          debrief under{" "}
+          <Link href={`/agent/clients/${clientId}/homes`} className="font-medium underline">
+            Homes Seen
+          </Link>
+          .
+        </p>
+      )}
+
       {groups.length === 0 && (
         <p className="text-sm text-muted-foreground">
           Nothing scheduled. Once a tour&apos;s on the books, the stops show up here — after it
-          happens, debrief it under Homes Seen.
+          happens, it moves to Homes Seen to be debriefed.
         </p>
       )}
 

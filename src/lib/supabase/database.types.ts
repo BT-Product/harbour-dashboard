@@ -86,6 +86,7 @@ export type HomeSeen = HomeSeenClientSafe & {
 export type Tour = {
   id: string;
   client_id: string;
+  /** Set once a debrief is written from this tour. Null = still needs one. */
   home_seen_id: string | null;
   address: string;
   scheduled_at: string;
@@ -267,6 +268,10 @@ export type Database = {
       agent_delete_tour: {
         Args: { p_tour_id: string };
         Returns: undefined;
+      };
+      agent_link_tour_to_home: {
+        Args: { p_tour_id: string; p_home_id: string };
+        Returns: Tour;
       };
       agent_upsert_inspection_item: {
         Args: {

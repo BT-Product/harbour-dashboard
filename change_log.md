@@ -901,14 +901,120 @@ appears with higher stakes: the inspector's report is the authoritative
 document, and anything the product computes about it can qualify a
 finding but must not restate one.
 
+## Day 7 — 2026-09-13 (Discovery phase)
+
+### The compliance review packet — scoping what only a broker can answer
+
+Worked through what in Harbour actually needs a broker or a real estate
+attorney to sign off, reading the client-facing copy rather than
+recalling it. The review had been an open item since day 1 phrased as
+"stage-explainer copy needs broker review," which turned out to
+understate it in one direction and overstate it in another: the
+explainers are the bulk of the work, but they are not the most urgent
+thing, and several surfaces nobody had flagged carry more risk.
+
+**The finding that changed the priority.** Searching the codebase for
+"wire" returns exactly one line — `supabase/seed.sql:13`, the Clear to
+Close explainer, instructing the client to *"schedule a final walkthrough
+and wire your closing funds."* The only time the product mentions wiring
+money, it is telling the client to do it, with no fraud warning anywhere
+in the app. That is the precise setup a wire-fraud attempt exploits: a
+client told by a channel they trust that wiring is the next step, then
+sent instructions that appear to come from escrow. It is going in as a
+fix regardless of the review; what the broker owns is the wording, not
+the decision.
+
+**Six items, not five.** Assembled as a reviewable packet rather than a
+repo link, since the broker is not going to read source:
+
+1. The wire instruction above — marked urgent, with proposed interim
+   copy for them to correct rather than a blank box.
+2. All fourteen stage explainers, buy and sell, quoted in full. Two make
+   affirmative all-clears (*"no action needed from you"*) — a statement a
+   client can rely on, sitting in a database row nobody re-reads. Folded
+   in the key-dates question: `transaction-card.tsx` renders contract
+   dates as bare fact with nothing saying the contract governs.
+3. `coordination.ts:56` names loan products — *"bridge financing or a
+   contingency-backed loan"* — then refers to the lender second.
+4. The HOA affordability estimate. Defensible framing already (never
+   restates the letter, names the lender, says it is not a second
+   pre-approval), but it models principal and interest only — no taxes,
+   insurance, or MIP, and the pilot client is on an FHA loan.
+5. The debrief note fields. `private_notes` is genuinely unreachable to
+   clients at the database level, but *private* in that sense is not
+   *privileged* in the legal sense — those notes are producible. The form
+   is optimized for speed, typed on a phone between showings, which is
+   exactly when a careless phrase gets written down.
+6. No license number or brokerage name appears anywhere a client can
+   see. `scripts/seed.ts:53–54` hold "TBD Brokerage" and "TBD", and
+   neither field is read by any client-facing code. The automated tour
+   reminder emails are the stronger case of the two surfaces.
+
+Packet: https://claude.ai/code/artifact/2f05d3c8-08ee-45ab-a6cb-ecb2f51637f4
+
+Attorney-side items (discoverability and retention of agent notes, no
+terms or privacy policy while `client_page_views` records every client
+page view undisclosed, data ownership if the brokerage changes, and
+whether the E&O carrier knows a client-facing app exists) were
+deliberately kept out of the broker packet and left for a separate
+conversation once the pilot is past one client.
+
+### A finished tour had nowhere to go
+
+Britton got back from a tour with the pilot client, opened the dashboard
+to write the debriefs, and the tour was gone.
+
+`tours/page.tsx` filtered to `scheduled_at >= now` and dropped everything
+older on the floor. A past tour did not move anywhere — it disappeared
+from the only tab that had ever shown it. The addresses then had to be
+retyped into a fresh debrief from memory, hours after the showing, which
+is both the worst time to recall them and the exact moment the product is
+supposed to be earning its keep.
+
+The schema had anticipated this and then never used it: `tours.home_seen_id`
+has existed since migration `0001` and nothing has ever written to it. It
+was on this list as an open item.
+
+**Which tours still need a debrief is derived at read time**, not
+materialised by a scheduled job. `homes_seen` is client-readable, so
+auto-creating a row the moment a tour's start time passed would put a
+blank entry on the *client's* own Homes Seen page for a showing that may
+have been cancelled, rescheduled, or never reached — the same reasoning
+that keeps `client_page_views` collapsing into visits at read time
+instead of being stored as visits.
+
+- Past tours with no debrief now appear at the top of the agent's Homes
+  Seen tab under "Toured — needs a debrief", grouped by day, newest
+  first, each carrying its address and time straight into the debrief
+  form. The Tours tab stays upcoming-only but now says where they went.
+- Saving a debrief from a tour links the two rows through
+  `agent_link_tour_to_home` (migration `0014`), finally populating the
+  column from `0001`.
+- Matching address and day is a **fallback**, not the mechanism. It
+  covers the two cases the link cannot: tours from before the link
+  existed — including the one Britton had just got back from — and
+  debriefs typed from scratch with "Add debrief" instead of from the
+  tour. The link is what survives the agent editing an address while
+  writing it up.
+- The link call deliberately does not throw on failure. The debrief is
+  already saved at that point; an unlinked tour simply stays on the list,
+  where address matching settles it anyway. Throwing would report a write
+  that succeeded as a failure — and it means the feature degrades
+  correctly on a database where `0014` has not been applied yet.
+- Added "Didn't happen" to clear a tour that was cancelled or never
+  reached. Without it, past tours appear nowhere else, so there would be
+  no way left to remove one.
+
 ### Not yet done
 
 - Pilot cohort is one client deep (Tara Taylor, onboarded 2026-09-10) and
   still has no move-up buyer — the case the hypothesis actually turns on.
   Two more clients needed before the thresholds mean anything.
-- Stage-explainer copy is a first draft — needs broker review and a Fair
-  Housing check. **A real client is reading it daily now**, which moves
-  this from a pre-launch gate to an overdue one.
+- **The broker review packet is written and waiting on a broker.** Six
+  items, one marked urgent (the wire-fraud line). Nothing in it is
+  answered until a broker is actually engaged, and a real client is
+  reading the unreviewed copy daily in the meantime. The urgent item is
+  being fixed without waiting; the rest genuinely blocks on someone else.
 - The `preapproval` table still carries the columns from when it modelled
   the loan (`loan_amount`, `down_payment`, `assistance_percent`,
   `assistance_deferred`). Nothing client-facing reads them; they were left
@@ -937,8 +1043,15 @@ finding but must not restate one.
   `strategy.md`. Still open: the seller's response round. Deferred: independent
   contractor cost ranges and the standalone brief. Precondition: broker
   and real estate attorney review of the call narrative's framing rules.
-- `tours.home_seen_id` exists in the schema but nothing populates it, so
-  a tour and its debrief aren't actually linked. The "recent tours — got
-  a debrief written?" nudge is date-based, not a real gap calculation.
+- **Migration `0014` is written but not applied to the live database.**
+  The Supabase CLI on this machine isn't authenticated and can't be from
+  a non-interactive session, so it needs pasting into the SQL editor.
+  Until then the tour/debrief handoff runs on address-and-date matching
+  alone, which is the designed fallback — nothing is broken, but a tour
+  whose address gets edited during the debrief will linger on the list.
+- The "recent tours — got a debrief written?" nudge on `/agent` is still
+  date-based rather than a real gap calculation. Now that pending
+  debriefs are computed properly, that nudge could use the same helper
+  instead of its own heuristic.
 - Dark mode colors are defined but not wired up (nothing sets the `.dark`
   class), so the app is light-only.
