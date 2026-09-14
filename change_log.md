@@ -1069,6 +1069,40 @@ A second lesson, cheaper: this is twice now that reading the code beat
 recalling it. The first was asserting a pre-approval didn't exist when it
 had since September 11.
 
+### The migrations didn't run the first time, and nothing said so
+
+Both `0014` and `0015` were reported applied and neither had been. The
+check that caught it was routine — query the function, read the row back —
+and it cost nothing, which is the argument for doing it every time rather
+than when something feels wrong.
+
+Ruling out the boring explanations first turned out to matter. Production
+and local `.env.local` were compared and both point at the same Supabase
+project, so the checks weren't aimed at the wrong database; both
+`clear_to_close` rows were read, buy and sell, in case the update had hit
+the other one. Only after that did "the SQL didn't run" become the answer
+rather than a guess. A schema-cache lag could have explained the missing
+function on its own — but not the explainer, which is an ordinary row
+read, and it was the two failing *together* that ruled that out.
+
+The cause is worth recording because it will recur: **the Supabase CLI is
+linked to the project but not authenticated, so `supabase db push` exits
+without applying anything and without an error loud enough to notice.**
+Migrations are therefore pasted into the dashboard SQL editor by hand,
+which means they can land in the wrong project, or not land at all, with
+the same silence either way.
+
+Applied on the second attempt from a project-scoped SQL editor link, with
+a verification `select` appended to the same paste so the editor itself
+reported `migration_0014_ok` and `migration_0015_ok` rather than leaving
+it to be checked afterwards. Both confirmed independently against the API:
+the link function now exists and raises its own `tour or home not found`
+guard, and the explainer no longer instructs anyone to wire anything.
+
+The generated paste file was deliberately not kept. `supabase/migrations/`
+is the authoritative copy; a saved query in the Supabase dashboard would
+be a second one with nothing keeping the two in sync.
+
 ### Also day 8 — the inspection agent's seller response round
 
 Closed the last design gap. The round differs from everything before it
@@ -1149,17 +1183,12 @@ now describes the design as complete.
   `strategy.md`. No open design questions. Deferred: independent
   contractor cost ranges and the standalone brief. Precondition: broker
   and real estate attorney review of the call narrative's framing rules.
-- **Migrations `0014` and `0015` are written but not applied to the live
-  database.** `0015` matters more than it looks: the component half of the
-  wire-fraud fix ships with a deploy, but the sentence telling the client
-  to wire their closing funds lives in a database row, and it stays exactly
-  as it was until that migration runs.
-- **Migration `0014` specifically is still pending.**
-  The Supabase CLI on this machine isn't authenticated and can't be from
-  a non-interactive session, so it needs pasting into the SQL editor.
-  Until then the tour/debrief handoff runs on address-and-date matching
-  alone, which is the designed fallback — nothing is broken, but a tour
-  whose address gets edited during the debrief will linger on the list.
+- **Applying a migration is a manual paste, and it has now failed
+  silently once.** The Supabase CLI is linked to the project but not
+  logged in, so `supabase db push` does nothing rather than erroring in a
+  way anyone would notice. `supabase login` once would make pushes real
+  and tracked; until then every migration is copied into the dashboard
+  SQL editor by hand, with no record of what has run.
 - The "recent tours — got a debrief written?" nudge on `/agent` is still
   date-based rather than a real gap calculation. Now that pending
   debriefs are computed properly, that nudge could use the same helper
