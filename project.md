@@ -46,8 +46,10 @@ email still goes through a personal Gmail account. The stage-explainer
 copy still has **not** had broker or Fair Housing review, and a real
 client is reading it today.
 
-**A second bet is scoped but not started.** As of 2026-09-11 there is a
-full design for an inspection agent — ingesting inspection reports and
+**A second bet is designed but not started.** As of 2026-09-14 the design
+has no open questions; the remaining precondition is broker and real estate
+attorney review of the call narrative's framing rules. Scoped from 2026-09-11,
+it is a full design for an inspection agent — ingesting inspection reports and
 producing a client-facing brief — in `strategy.md`. It is explicitly *not*
 part of Discovery: the pilot tests the dashboard hypothesis, and starting
 a second workstream before those thresholds are read out would muddy both.

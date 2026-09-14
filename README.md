@@ -159,10 +159,11 @@ hour on the phone afterward.
 - **Autonomy comes from detectors, not from trust.** Each workflow step was
   scored on how reversible it is, how far the damage spreads (including the
   damage to a client's confidence in their agent), and whether a failure would
-  be visible or silent. Only two steps are always a human's: telling a client
-  their deal may be at risk, and sending an extension request to the other side
-  of the deal. Two more go to a human in specific cases: a new client's first
-  brief, and any change to a brief the client has already read. Everything else
+  be visible or silent. Only two kinds of step are always a human's: telling a
+  client their deal may be at risk, and sending anything to the other side of
+  the deal, like an extension request or a counteroffer. Two more go to a human
+  in specific cases: a new client's first brief, and any change to a brief the
+  client has already read. Everything else
   runs automatically *because* a specific check catches its failure mode, and a
   step with no check stays with a human.
 
@@ -181,16 +182,19 @@ the design sessions:**
   also the lowest-risk thing the agent produces, because a licensed human retells
   it in their own words.
 
-**Where it stands.** Several questions are settled. The client can't ask the
-agent questions, because that would replace the call and contradict the
-riskiest assumption above. Severity comes from the inspector's own grading
-rather than the model's judgment, and a report without usable grading goes to
-a human. Reports and repair quotes arrive in two waves, so the client hears
-from Harbour twice: once the inspections are in, and again once the quotes
-are. A quote that only adds a price updates the brief; one that changes the
-story goes to the agent first. The one remaining gap is the seller's
-response round. Before anything is built, a broker and a real estate
-attorney will review the rules for how the narrative is framed.
+**Where it stands.** The design is complete, with no open questions. The
+client can't ask the agent questions, because that would replace the call and
+contradict the riskiest assumption above. Severity comes from the inspector's
+own grading rather than the model's judgment, and a report without usable
+grading goes to a human. Reports and repair quotes arrive in two waves, so the
+client hears from Harbour twice: once the inspections are in, and again once
+the quotes are. When the seller responds, the client sees where the
+negotiation stands while they wait, and the item-by-item outcome only after
+their agent has talked it through with them. After terms are agreed, the agent
+checks that each repair was actually done and each credit appears on the
+closing statement, because neither can be fixed after closing. Before anything
+is built, a broker and a real estate attorney will review the rules for how
+the narrative is framed.
 
 ## Stack
 
