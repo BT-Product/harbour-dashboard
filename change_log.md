@@ -1005,16 +1005,84 @@ instead of being stored as visits.
   reached. Without it, past tours appear nowhere else, so there would be
   no way left to remove one.
 
+## Day 8 — 2026-09-14 (Discovery phase)
+
+### The packet went to the managing broker
+
+Sent, with a cover note that leads on the wire-fraud finding rather than on
+the product. The reasoning is that an email opening "I built a tool, would
+you take a look" reads as a favour request and waits; one opening "I audited
+something my client reads daily and found an exposure" reads as an agent
+taking supervision seriously. The rest of the packet rides in behind it.
+
+Worth recording that this email is also a disclosure: the broker is learning
+for the first time that one of their agents has been running a client-facing
+app with a live client. Handled by saying so in the first sentence rather
+than letting them find it in item 06.
+
+### The wire-fraud warning shipped without waiting for an answer
+
+The packet argued this shouldn't wait on the review, and the cover email
+committed to it in writing, so it went in the same day.
+
+Two separate changes, and the split is the point:
+
+- **The explainer no longer instructs anyone to wire anything.** Escrow sends
+  the instructions; the client is told to call escrow at a number they
+  already have and confirm by voice before sending. Migration `0015` updates
+  the live row, `seed.sql` updates fresh databases.
+- **The warning a client actually reads is a component, not prose.**
+  `WireFraudNotice` renders on both the overview and the timeline, outside
+  the stage narration, with its own visual treatment. Explainer text is
+  narration and gets skimmed — which is exactly what this cannot afford to
+  be. Burying the warning in the paragraph would have been a gesture rather
+  than a fix.
+
+It shows **from Offer Accepted onward, not only at Clear to Close**. The
+earnest money deposit is wired right after acceptance, well before the
+closing funds everyone pictures. The broker was asked which boundary they
+want; until they answer, warning too early costs a client nothing and
+warning too late costs them everything.
+
+All of it is marked interim in the code, the migration, and the packet
+itself. The brokerage's wording replaces it verbatim when it arrives rather
+than being merged with it.
+
+### A correction to a document already in front of a broker
+
+While placing the warning, found that `TransactionCard` is **dead code** —
+nothing imports it. It renders contract date, contingency removal date and
+close of escrow, which is where the packet's claim that "the dashboard
+displays contract dates as plain facts" came from.
+
+What the client actually sees is narrower: the closing date only, on the
+overview card. Contract date and contingency removal date are recorded by
+the agent and shown to nobody.
+
+The underlying question survives — a date displayed as bare fact with
+nothing saying the contract governs — but it was overstated, in a document
+someone is reviewing right now. Corrected in the packet at the same URL,
+along with a note that item 01 has shipped. Republishing rather than
+emailing a correction keeps one version in front of them.
+
+A second lesson, cheaper: this is twice now that reading the code beat
+recalling it. The first was asserting a pre-approval didn't exist when it
+had since September 11.
+
 ### Not yet done
 
 - Pilot cohort is one client deep (Tara Taylor, onboarded 2026-09-10) and
   still has no move-up buyer — the case the hypothesis actually turns on.
   Two more clients needed before the thresholds mean anything.
-- **The broker review packet is written and waiting on a broker.** Six
-  items, one marked urgent (the wire-fraud line). Nothing in it is
-  answered until a broker is actually engaged, and a real client is
-  reading the unreviewed copy daily in the meantime. The urgent item is
-  being fixed without waiting; the rest genuinely blocks on someone else.
+- **The packet is with the managing broker (sent 2026-09-14), awaiting a
+  response.** Item 01 is fixed on our side and needs only their wording.
+  The other five genuinely block on them, and a real client is reading the
+  unreviewed copy daily in the meantime. No follow-up date set yet — worth
+  one if nothing comes back within a week.
+- `TransactionCard` (`src/components/transaction-card.tsx`) is dead code —
+  nothing imports it. Either delete it or wire it up; leaving it invites
+  exactly the mistake it already caused, which was reasoning about client-
+  facing behaviour from a component no client can reach.
 - The `preapproval` table still carries the columns from when it modelled
   the loan (`loan_amount`, `down_payment`, `assistance_percent`,
   `assistance_deferred`). Nothing client-facing reads them; they were left
@@ -1043,7 +1111,12 @@ instead of being stored as visits.
   `strategy.md`. Still open: the seller's response round. Deferred: independent
   contractor cost ranges and the standalone brief. Precondition: broker
   and real estate attorney review of the call narrative's framing rules.
-- **Migration `0014` is written but not applied to the live database.**
+- **Migrations `0014` and `0015` are written but not applied to the live
+  database.** `0015` matters more than it looks: the component half of the
+  wire-fraud fix ships with a deploy, but the sentence telling the client
+  to wire their closing funds lives in a database row, and it stays exactly
+  as it was until that migration runs.
+- **Migration `0014` specifically is still pending.**
   The Supabase CLI on this machine isn't authenticated and can't be from
   a non-interactive session, so it needs pasting into the SQL editor.
   Until then the tour/debrief handoff runs on address-and-date matching

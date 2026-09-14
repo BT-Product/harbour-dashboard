@@ -10,7 +10,7 @@ insert into stage_definitions (stage_key, transaction_type, sort_order, label, e
   ('inspection', 'buy', 2, 'Inspection', 'A licensed inspector is examining the property for issues. Once the report is in, we will review it together and decide what, if anything, to negotiate with the seller.'),
   ('appraisal', 'buy', 3, 'Appraisal', 'Your lender is having the home independently valued to confirm it supports the loan amount. This is handled by the lender; no action needed from you.'),
   ('loan_approval', 'buy', 4, 'Loan Approval', 'Your lender is finalizing full underwriting approval on your loan. You may be asked for a few more documents during this window — respond quickly to keep things on schedule.'),
-  ('clear_to_close', 'buy', 5, 'Clear to Close', 'All conditions have been met. Closing documents are being prepared. You will need to schedule a final walkthrough and wire your closing funds.'),
+  ('clear_to_close', 'buy', 5, 'Clear to Close', 'All conditions have been met and closing documents are being prepared. You''ll schedule a final walkthrough, and escrow will send you wiring instructions for your closing funds. Before you send any money, call escrow at a number you already have — not one from an email or text — and confirm the details by voice.'),
   ('closed', 'buy', 6, 'Closed', 'The purchase is complete and recorded. Keys are yours.'),
 
   ('prep', 'sell', 1, 'Prep', 'Getting the home ready to list — repairs, staging, and photography. We will confirm a target list date together.'),

@@ -166,3 +166,27 @@ export function formatTourDate(iso: string): string {
     day: "numeric",
   });
 }
+
+/**
+ * Whether a transaction has reached the point where money starts moving.
+ *
+ * Buy side only, from Offer Accepted onward — the earnest money deposit is
+ * wired right after acceptance, well before the closing funds everyone thinks
+ * of. Choosing the earlier of the two is deliberate: the broker was asked
+ * which boundary they want (review packet, item 01) and until they answer,
+ * warning too early costs a client nothing and warning too late costs them
+ * everything.
+ */
+export function isMovingMoney(
+  transaction: Transaction,
+  stages: StageDefinition[],
+): boolean {
+  if (transaction.type !== "buy") return false;
+
+  const sequence = stages.filter((s) => s.transaction_type === "buy");
+  const current = sequence.find((s) => s.stage_key === transaction.current_stage_key);
+  const threshold = sequence.find((s) => s.stage_key === "offer_accepted");
+  if (!current || !threshold) return false;
+
+  return current.sort_order >= threshold.sort_order;
+}
