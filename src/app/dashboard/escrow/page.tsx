@@ -1,6 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
-import { getClientTransactions, getStageDefinitions } from "@/lib/data/dashboard";
+import {
+  getClientTransactions,
+  getStageDefinitions,
+  isMovingMoney,
+} from "@/lib/data/dashboard";
 import { StageStepper } from "@/components/stage-stepper";
+import { WireFraudNotice } from "@/components/wire-fraud-notice";
 
 export default async function EscrowPage() {
   const supabase = await createClient();
@@ -10,6 +15,8 @@ export default async function EscrowPage() {
   const transactions = await getClientTransactions(supabase, user!.id);
   const stages = await getStageDefinitions(supabase);
 
+  const movingMoney = transactions.some((t) => isMovingMoney(t, stages));
+
   return (
     <div className="space-y-6">
       <div>
@@ -18,6 +25,8 @@ export default async function EscrowPage() {
           Every step from here to the keys, and what each one means.
         </p>
       </div>
+      {movingMoney && <WireFraudNotice />}
+
       <div className="grid gap-4 md:grid-cols-2">
         {transactions.map((t) => (
           <StageStepper key={t.id} transaction={t} stages={stages} />

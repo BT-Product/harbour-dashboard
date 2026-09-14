@@ -67,12 +67,14 @@ realtors from the start rather than at Britton alone.
   before they could set a password. Still short of a move-up buyer, which
   is the case the hypothesis actually turns on — with one client, no
   threshold in `strategy.md` can be read yet.
-- **Brokerage** — not yet engaged. The review packet is written and
-  waiting: six items of client-facing copy, one marked urgent (a stage
-  explainer instructs the client to wire closing funds with no fraud
-  warning anywhere in the product). Britton to find a broker to walk it
-  through. This was a pre-launch gate that a real client has now been
-  past for weeks, so it is overdue rather than pending.
+- **Managing broker** — **packet sent 2026-09-14**, awaiting response.
+  Six items of client-facing copy. Item 01 (a stage explainer instructed
+  the client to wire closing funds with no fraud warning anywhere in the
+  product) was fixed the same day with interim wording rather than held
+  for the review; what is still needed there is the brokerage's own
+  language. The other five block on them. This was a pre-launch gate that
+  a real client has been past for weeks, so it is overdue rather than
+  pending.
 - **Broker and real estate attorney** — review of the inspection agent's
   call-narrative framing rules is a precondition before that feature is
   built (added 2026-09-12). Britton to arrange. The questions to bring are

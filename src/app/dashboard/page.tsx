@@ -9,11 +9,13 @@ import {
   getCurrentProfile,
   getStageDefinitions,
   linkedTransaction,
+  isMovingMoney,
   overviewStatus,
   primaryTransaction,
 } from "@/lib/data/dashboard";
 import { CoordinationView } from "@/components/coordination-view";
 import { OverviewCard } from "@/components/overview-card";
+import { WireFraudNotice } from "@/components/wire-fraud-notice";
 
 const money = (n: number) =>
   n.toLocaleString(undefined, { style: "currency", currency: "USD", maximumFractionDigits: 0 });
@@ -93,6 +95,8 @@ export default async function DashboardOverviewPage() {
       </div>
 
       {isMoveUp && <CoordinationView buy={primary!} sell={linked!} />}
+
+      {transactions.some((t) => isMovingMoney(t, stages)) && <WireFraudNotice />}
 
       <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
         {hasBuy && (
