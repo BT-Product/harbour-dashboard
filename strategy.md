@@ -687,6 +687,90 @@ heartbeat, but **the pipeline does:**
 | Nightly | Deadline watch across both waves |
 | Daily | Pipeline test email; alert if it doesn't come back |
 
+## The seller's response round
+
+Settled 2026-09-14. The round differs from everything before it in one way:
+**the other side is now a participant.** The inputs were documents from
+inspectors and contractors; now the input is the seller's decision, through
+the listing agent, and every output is a move in a negotiation. It is also
+where client anxiety peaks — a refusal feels like conflict, it arrives with a
+deadline, and the client's question changes from "what's wrong with the
+house" to "am I going to lose it."
+
+### A loop, not a fixed number of rounds
+
+How the round goes varies by market: in a hot market sellers refuse and
+buyers take it, in a slow one sellers give a lot. So the design assumes no
+round count. It is a loop — request, response, client decision, possibly a
+counter that restarts it. **The market shapes the realtor's advice, which
+stays their judgment; it does not change the mechanics.**
+
+The seller's response reaches the realtor, not the client. The realtor
+forwards it to `inspections@`, the same pipeline, so Harbour still never
+reads the realtor's main inbox.
+
+### Every response
+
+- **Reconciled item by item against the current ask.** Each item comes back
+  agreed, credit offered, refused, countered, or **not addressed**. Every
+  item in the ask must receive a status; a response that quietly skips an
+  item is caught by the same kind of gate as extraction's count
+  reconciliation.
+- **Goes to the realtor first**, because it changes the story.
+- **A refused or unaddressed health or safety item is flagged as a possible
+  deal-at-risk** (step 12b). The realtor decides whether it is.
+- **Prepares the decision call:** what was asked, what the seller answered
+  item by item, the dollar gap, what was left unaddressed, and the client's
+  options with their deadlines. Unlike the orientation call, **this is the
+  call where the realtor recommends.** Legal watch item 3 still applies: the
+  deposit consequences of cancelling belong to an attorney.
+- **Counters are drafted by the agent and sent by the realtor.** Sending goes
+  to the other side of the deal, so it is above the line, like the extension
+  request.
+- **Each round's deadlines** — the seller's response window, the client's
+  reply window — go on the deadline watch.
+
+### What the client sees
+
+- **During the round: status and deadlines only.** "Request sent Tuesday;
+  the seller has until Friday to respond." Silence during a seller's window
+  is where the anxiety lives, so the waiting is made visible.
+- **After the realtor has talked it through: the record.** An item-by-item
+  account of what was asked, what was agreed, and what is still open. The
+  realtor publishes it after the call, which puts that publish above the
+  line, as with any revision to a brief the client has read.
+
+**A note on "Harbour never withholds."** That principle rests on the client
+already holding every source document. It holds for inspection reports; it
+does not hold here, because the seller's response goes to the realtor. The
+realtor telling the client first is *sequencing*, not withholding — the
+record always follows — but the premise changes in this round, and anything
+built on the principle should account for it.
+
+### Through close: verifying what was agreed
+
+The negotiation ends in something like "the seller repairs three items and
+credits $4,000." That agreement then has to actually happen before closing.
+A repair that was never done, or a credit missing from the closing
+statement, cannot be fixed after close and is silent until the final
+walkthrough or the signing table. Under the reversibility, blast-radius and
+observability test, that is exactly what needs a detector.
+
+- **Each agreed item becomes something to verify.** Repair receipts and the
+  closing statement come in through the same forwarding path.
+- **The agent proposes which receipt covers which agreed repair; the realtor
+  confirms.** Propose, never merge. A receipt that doesn't show a licensed
+  contractor is flagged, not judged.
+- **Credits are checked against the closing statement.** A missing or
+  different amount alerts the realtor.
+- **Anything unverified as closing approaches alerts the realtor.**
+  Non-optional, in the same way as the deadline watch.
+- **The client sees progress** — "3 of 5 agreed repairs confirmed done." A
+  confirmation is an addition and updates on its own; a repair that won't
+  happen is a revision and goes to the realtor first.
+
+This connects to something the schema already has: `inspection_items.resolved`.
+
 ## The client cannot ask the agent questions
 
 Decided 2026-09-11, and not a v1 scoping call — a permanent property of the
@@ -869,17 +953,46 @@ never a human review step.
 16. **Notify the client** — *below.* Coupled to 15 and gated with it. Once
     per completed wave, never once per bid.
 
+**Negotiation** (repeats for each round)
+
+17. **Reconcile the seller's response against the ask** — *below, behind a
+    completeness gate.* Every item in the ask must receive a status; an
+    unaddressed item is flagged rather than passed over.
+18. **Flag a possible deal-at-risk** — *below.* A refused or unaddressed
+    health or safety item alerts the realtor. Telling the client remains
+    12b, above.
+19. **Prepare the decision call** — *below.* Realtor-only, and read before
+    the call.
+20. **Draft a counter** — *below.* Drafting is never the risk.
+21. **Send a counter** — **above.** It goes to the other side of the deal.
+22. **Show round status to the client** — *below.* Dates and deadlines
+    only, which are additions.
+23. **Publish the round's record** — **above.** Published by the realtor
+    after the call; a revision to what the client has read.
+
+**Through close**
+
+24. **Match receipts to agreed repairs** — *proposing is below the line;
+    confirming is above.* Same asymmetry as 4b. A receipt without a licensed
+    contractor is flagged.
+25. **Check credits against the closing statement** — *below, behind a
+    gate.* A missing or different amount alerts the realtor.
+26. **Watch unverified agreed items against closing** — *below, and
+    non-optional.* A missed repair or credit cannot be fixed after close.
+
 **Learn**
 
-17. **Record Britton's disagreements** — *below, and non-optional.* No risk
+27. **Record Britton's disagreements** — *below, and non-optional.* No risk
     in doing it; the trust ladder is unmeasurable without it. Alarm if it
-    ever stops recording.
+    ever stops recording. (Numbered 17 before the negotiation phase was
+    added.)
 
-Worth noticing how small the above-the-line set is: two unconditional steps
-(telling a client their deal is at risk, and sending an extension request to
-the other side) and two conditional ones (a client's first brief, and a
-revision to a brief the client has already read). That is only defensible
-because of the gates —
+Worth noticing how small the above-the-line set is: three unconditional
+steps (telling a client their deal is at risk, and sending anything to the
+other side of the deal — an extension request or a counter) and two
+conditional ones (a client's first brief, and a revision to a brief the
+client has already read, which includes publishing a round's record). That
+is only defensible because of the gates —
 every qualified "below" above is below *because* a specific detector exists.
 Build the gate or move the row up.
 
@@ -951,9 +1064,8 @@ which is already a below-the-line step in the workflow.
 
 ## Known gaps, not yet resolved
 
-- The seller's response round is unmodeled, and client anxiety peaks there
-  rather than at the initial report. The natural starting point is the
-  fallback ask from "When the deadline won't wait."
+*No open design gaps as of 2026-09-14.*
+
 - **Precondition, not a gap:** broker and real estate attorney review of the
   call narrative's framing rules before it is built. See the legal watch
   list under "A narrative for the realtor's call."
@@ -976,6 +1088,11 @@ updating the brief and revisions going to the realtor first. See
 *Resolved 2026-09-12: triggers — what starts a deal's flow, what happens when
 a wave stalls or a report matches no one, and how mail reaches Harbour. See
 "Triggers" above.*
+
+*Resolved 2026-09-14: the seller's response round — a loop rather than a
+fixed round count, with status shown during and the record published after
+the realtor's call, and agreed items verified through close. See "The
+seller's response round" above.*
 
 ## Security posture
 

@@ -1069,6 +1069,44 @@ A second lesson, cheaper: this is twice now that reading the code beat
 recalling it. The first was asserting a pre-approval didn't exist when it
 had since September 11.
 
+### Also day 8 — the inspection agent's seller response round
+
+Closed the last design gap. The round differs from everything before it
+because the other side is now a participant: the input is the seller's
+decision, and every output is a move in a negotiation. It's also where
+client anxiety peaks.
+
+Asked how the round usually goes, Britton's answer was that it varies by
+market. That turned out to simplify things: the design can't assume a round
+count, so it's a loop, and the market shapes the realtor's advice rather than
+the mechanics.
+
+- **Every response is reconciled item by item** against the ask — agreed,
+  credit, refused, countered, or not addressed. The last is the dangerous
+  one, so every item must get a status.
+- **Responses go to the realtor first**, a refused or unaddressed safety item
+  is flagged as a possible deal-at-risk, and the agent prepares the decision
+  call. Unlike the orientation call, this is where the realtor recommends.
+- **Counters are drafted by the agent and sent by the realtor.**
+- **The client sees status during the round and the record after** the
+  realtor has talked it through. Silence during a seller's window is where
+  the anxiety lives, so the waiting is made visible; the outcome waits for a
+  person.
+- **Agreed items are verified through close.** Receipts are matched to agreed
+  repairs (proposed, then confirmed), credits are checked against the closing
+  statement, and anything unverified as closing approaches alerts the
+  realtor — a missed repair or credit can't be fixed after close.
+
+One principle needed a footnote. "Harbour never withholds" rested on the
+client already holding every document. Here the seller's response goes to
+the realtor, so telling the client first is sequencing, not withholding —
+but the premise changes in this round.
+
+The workflow model gained a negotiation phase and a through-close phase
+(steps 17–26), and the always-human set is now "telling a client their deal
+is at risk" plus "anything sent to the other side of the deal." The README
+now describes the design as complete.
+
 ### Not yet done
 
 - Pilot cohort is one client deep (Tara Taylor, onboarded 2026-09-10) and
@@ -1108,7 +1146,7 @@ had since September 11.
 - Visit data is collected per client but there's no cohort view — the
   median across clients is a manual read for now.
 - The inspection agent is **designed but not started** — see
-  `strategy.md`. Still open: the seller's response round. Deferred: independent
+  `strategy.md`. No open design questions. Deferred: independent
   contractor cost ranges and the standalone brief. Precondition: broker
   and real estate attorney review of the call narrative's framing rules.
 - **Migrations `0014` and `0015` are written but not applied to the live
