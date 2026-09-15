@@ -139,7 +139,7 @@ export function DashboardSidebar({
                   // motion-safe: a badge that blinks for anyone who has asked
                   // their device to reduce motion is an accessibility problem,
                   // not a delight.
-                  className="motion-safe:animate-pulse rounded-full bg-primary px-2 py-0.5 text-[10px] font-semibold tracking-wide text-primary-foreground uppercase"
+                  className="motion-safe:animate-pulse rounded-full bg-sidebar-primary px-2 py-0.5 text-[10px] font-semibold tracking-wide text-sidebar-primary-foreground uppercase"
                 >
                   New
                 </span>
@@ -164,7 +164,7 @@ export function DashboardSidebar({
         )}
 
         <div className="flex items-center gap-3 px-3">
-          <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
+          <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-sidebar-primary text-xs font-semibold text-sidebar-primary-foreground">
             {initials(fullName)}
           </div>
           <span className="truncate text-sm font-medium">{fullName}</span>

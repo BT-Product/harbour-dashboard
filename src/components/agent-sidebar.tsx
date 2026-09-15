@@ -56,7 +56,7 @@ export function AgentSidebar({ fullName }: { fullName: string }) {
 
       <div className="space-y-3 border-t border-sidebar-border pt-3">
         <div className="flex items-center gap-3 px-3">
-          <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
+          <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-sidebar-primary text-xs font-semibold text-sidebar-primary-foreground">
             {initials(fullName)}
           </div>
           <span className="truncate text-sm font-medium">{fullName}</span>

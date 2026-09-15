@@ -28,6 +28,8 @@ export type Agent = {
   dre_number: string | null;
   /** Shown to this agent's clients as the number to call about wiring. */
   phone: string | null;
+  /** Brokerage colour preset key (src/lib/brand-themes.ts). Null = default. */
+  brand_theme: string | null;
   created_at: string;
 };
 

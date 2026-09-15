@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import {
+  getAgentBrandTheme,
   getClientTransactions,
   getCurrentProfile,
   getStageDefinitions,
@@ -9,6 +10,7 @@ import {
 } from "@/lib/data/dashboard";
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
 import { AppShell } from "@/components/app-shell";
+import { BrandThemeStyle } from "@/components/brand-theme-style";
 import { SellerStatusStrip } from "@/components/seller-status-strip";
 import { VisitBeacon } from "@/components/visit-beacon";
 
@@ -19,9 +21,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const profile = await getCurrentProfile(supabase, user.id);
-  const transactions = await getClientTransactions(supabase, user.id);
-  const stages = await getStageDefinitions(supabase);
+  const [profile, transactions, stages, brandTheme] = await Promise.all([
+    getCurrentProfile(supabase, user.id),
+    getClientTransactions(supabase, user.id),
+    getStageDefinitions(supabase),
+    getAgentBrandTheme(supabase),
+  ]);
 
   const hasBuy = transactions.some((t) => t.type === "buy");
   const transactionIds = transactions.map((t) => t.id);
@@ -71,31 +76,34 @@ export default async function DashboardLayout({ children }: { children: React.Re
     primary?.type === "buy" ? linkedTransaction(transactions, primary) : undefined;
 
   return (
-    <AppShell
-      sidebar={
-        <DashboardSidebar
-          fullName={profile.full_name}
-          unlocked={{
-            hasBuy,
-            hasHomesSeen: Boolean(unlockedAt["/dashboard/homes"]),
-            hasInspectionItems: Boolean(unlockedAt["/dashboard/inspections"]),
-            hasPreapproval: Boolean(unlockedAt["/dashboard/financials"]),
-          }}
-          newSections={newSections}
-          partnerName={profile.partner_name}
-          partnerEmail={profile.partner_email}
-        />
-      }
-      banner={
-        linkedSell && linkedSell.status === "active" ? (
-          <SellerStatusStrip sellTransaction={linkedSell} stages={stages} />
-        ) : null
-      }
-    >
-      <main className="w-full px-4 py-6 sm:px-8 sm:py-8">{children}</main>
-      {/* Renders nothing; records the visit metric from strategy.md. Agents
-          are filtered out database-side, not here. */}
-      <VisitBeacon />
-    </AppShell>
+    <>
+      <BrandThemeStyle theme={brandTheme} />
+      <AppShell
+        sidebar={
+          <DashboardSidebar
+            fullName={profile.full_name}
+            unlocked={{
+              hasBuy,
+              hasHomesSeen: Boolean(unlockedAt["/dashboard/homes"]),
+              hasInspectionItems: Boolean(unlockedAt["/dashboard/inspections"]),
+              hasPreapproval: Boolean(unlockedAt["/dashboard/financials"]),
+            }}
+            newSections={newSections}
+            partnerName={profile.partner_name}
+            partnerEmail={profile.partner_email}
+          />
+        }
+        banner={
+          linkedSell && linkedSell.status === "active" ? (
+            <SellerStatusStrip sellTransaction={linkedSell} stages={stages} />
+          ) : null
+        }
+      >
+        <main className="w-full px-4 py-6 sm:px-8 sm:py-8">{children}</main>
+        {/* Renders nothing; records the visit metric from strategy.md. Agents
+            are filtered out database-side, not here. */}
+        <VisitBeacon />
+      </AppShell>
+    </>
   );
 }
