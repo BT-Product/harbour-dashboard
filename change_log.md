@@ -1240,6 +1240,42 @@ covers. "Exceptions only" now means critic findings, gate trips and category
 rules, and the critic's own misses and false alarms are measured from the
 review edits already recorded.
 
+### Also day 8 — two sessions, one checkout
+
+Two Claude sessions have been working on this repo at the same time — one on
+the app and the broker packet, one on the inspection agent design — and it
+surfaced through a wrong status report rather than a collision.
+
+The app session reported its commits as unpushed for a day, and attributed it
+to a push block from a single denied `git push` it never re-tested. When
+asked directly, the push ran fine — and there was nothing to push. The
+commits were already on GitHub, along with one it hadn't made. It then
+claimed the local copy was a commit behind; a pull showed that was wrong too.
+**The other session wasn't in a separate clone. It was committing into the
+same working directory.**
+
+That changes what can go wrong. Two clones produce merge conflicts, which
+are loud. Two sessions in one folder produce silent overwrites: whichever
+writes a file last wins, and the other's uncommitted edit disappears with no
+warning to either. It hadn't happened yet only because the two sessions had
+mostly stayed in different files — and the shared ones are exactly the
+tracking docs, this file included. The other session's latest commit had
+just added two sections to this log, interleaved with the app session's.
+
+Recorded in `CLAUDE.md` as rules for any session:
+
+- Only one session edits the tracking docs at a time; an uncommitted change
+  to one in `git status` means another session is mid-edit.
+- Re-read a file immediately before changing it.
+- Stage by path, never `git add -A` — which the app session had used for most
+  of its commits and got away with only because the tree was otherwise clean
+  each time.
+- Commit small and soon, since only uncommitted work can be overwritten.
+- Fetch and look before claiming anything about the remote.
+
+This entry was written that way: status checked, the other session's commit
+inspected, the end of this file re-read before appending, and staged by path.
+
 ### Not yet done
 
 - Pilot cohort is one client deep (Tara Taylor, onboarded 2026-09-10) and
