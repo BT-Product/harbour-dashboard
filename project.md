@@ -84,7 +84,10 @@ realtors from the start rather than at Britton alone.
   built (added 2026-09-12). **The broker half is on the agenda for the
   managing broker meeting on 2026-09-15**, using the design review page
   under Links: twelve questions, eight for the broker and four expected to
-  need an attorney. The attorney half is not yet arranged.
+  need an attorney. **The attorney half is an email to Britton's real
+  estate attorney with ten questions, drafted to send 2026-09-15** — the
+  four attorney questions from the review page plus six more; see the
+  precondition status in `strategy.md`.
 
 ## Links
 

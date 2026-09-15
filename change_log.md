@@ -1510,6 +1510,35 @@ identity appears on client materials; colours alone was chosen as the
 cautious first step. The brokerage's brand guide is also exactly what the
 future upload would be built from.
 
+## Day 9 — 2026-09-15 (Discovery phase)
+
+### The attorney half of the inspection agent's review
+
+Drafted the email to Britton's real estate attorney, to go out the same day
+as the broker meeting. It opens with how the design works in four bullets —
+including the three things that would reach a client without Britton's
+review — and asks ten questions in three groups: the client summary, the
+negotiation, and records and client data. Brokerage policy, supervision and
+E&O are left to the broker so the attorney isn't billing for them.
+
+Four questions are the attorney ones from the broker review page. Six are
+new, from reading the design for legal exposure rather than brokerage
+policy: the "an ask, not a bill" cost framing, liability for unreviewed
+messages, whether "3 of 5 agreed repairs confirmed" makes Britton answerable
+for the repairs, client consent and AI disclosure under California law, and
+one the design had never checked — **whether holding a seller's written
+response until after the realtor's call conflicts with a duty to deliver it
+promptly.** The seller's response round was designed around that hold, so
+the answer could change it.
+
+Britton asked whether the email needed a link, as the broker's did. It
+doesn't: the review page addresses its questions to the broker, and like the
+dashboard packet it can't save answers for someone outside Britton's
+organization. An email reply keeps questions and answers in one thread,
+which also suits a confidential exchange with counsel. The email offers a
+one-page overview instead; if the attorney wants one, it should be a short
+PDF written for them.
+
 ### Not yet done
 
 - Pilot cohort is one client deep (the pilot client, onboarded 2026-09-10) and
@@ -1570,7 +1599,8 @@ future upload would be built from.
   `strategy.md`. No open design questions. Deferred: independent
   contractor cost ranges and the standalone brief. Precondition: broker
   and real estate attorney review of the call narrative's framing rules —
-  broker half scheduled for 2026-09-15, attorney half not yet arranged.
+  broker half scheduled for 2026-09-15; attorney half is a ten-question
+  email drafted to send 2026-09-15, awaiting a reply and a quote.
 - The inspection agent review page has not been seen rendered, and has not
   been tried from a shared link by someone outside Britton's organization.
 - **Applying a migration is a manual paste, and it has now failed
