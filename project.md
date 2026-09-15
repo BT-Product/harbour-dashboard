@@ -90,3 +90,9 @@ realtors from the start rather than at Britton alone.
   Six items needing a broker's sign-off, each with the exact copy as the
   client sees it and a verdict field. Private until shared from the
   page's share menu.
+- Inspection agent design review (2026-09-14, for the managing broker
+  meeting on 2026-09-15): https://claude.ai/artifact/MV1GEWZerTiYn5ieGRKoxh
+  What the agent would do, where the realtor stays in control, and twelve
+  questions (eight for the broker, four likely for an attorney) with
+  answers saved on the page. Private until shared from the page's share
+  menu.
