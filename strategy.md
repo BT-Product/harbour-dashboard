@@ -588,6 +588,41 @@ stage-explainer copy, and reviewed once as rules rather than per deal.
 meeting with the managing broker on 2026-09-15, using a review page linked
 from `project.md`. The attorney half is not yet arranged.
 
+**Status, 2026-09-15:** the attorney half is an email to Britton's real
+estate attorney, drafted to go out on 2026-09-15 (not yet confirmed sent). It
+asks ten questions, leaving brokerage policy, supervision and E&O to the
+broker:
+
+- *The client summary:* whether ranking and collapsing findings invites a
+  misrepresentation or failure-to-disclose claim when the client also holds
+  the reports; whether attributing a cause to the inspectors keeps grouping
+  findings by cause inside the realtor's license; the "an ask, not a bill"
+  cost framing and quoting contractor bids; and liability for the three
+  messages that reach a client without review.
+- *The negotiation:* whether talking a seller's response through before its
+  record reaches the dashboard conflicts with a duty to deliver it
+  promptly; what may be said about cancelling under the contingency and when
+  to refer out; phrasing a seller disclosure discrepancy without implying
+  concealment; and whether reporting "3 of 5 agreed repairs confirmed"
+  creates a duty for the repairs themselves.
+- *Records and data:* discoverability and retention of AI drafts, call
+  notes, critic findings and review edits; and whether California law
+  requires client consent, or disclosure that AI is involved, when documents
+  pass through an email-forwarding service and an AI provider.
+
+Four of the ten are the attorney questions from the broker review page. The
+other six came from reading the design for legal exposure rather than
+brokerage policy, and one of them is a gap the design never checked: the
+seller's response round deliberately holds the written record until after
+the realtor's call, which is only sound if no duty requires the response to
+be delivered sooner.
+
+The email carries no link to the review page. That page addresses its
+questions to the broker, and like the dashboard packet it cannot save
+answers for a reader outside Britton's organization; a reply in the email
+thread avoids both. If the attorney wants background, the plan is a short PDF
+written for them rather than the broker's page.
+
 Preparing that page widened the review beyond this watch list. Six questions
 belong to the brokerage rather than to law, and none of them were on the
 list:
@@ -1309,7 +1344,8 @@ which is already a below-the-line step in the workflow.
 - **Precondition, not a gap:** broker and real estate attorney review of the
   call narrative's framing rules before it is built. See the legal watch
   list under "A narrative for the realtor's call." The broker half is
-  scheduled for 2026-09-15; the attorney half is not yet arranged.
+  scheduled for 2026-09-15; the attorney half is a ten-question email
+  drafted to go out the same day.
 
 *Resolved 2026-09-11: whether the client can ask the agent questions. No —
 see "The client cannot ask the agent questions" above. And where calibration
