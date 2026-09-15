@@ -102,6 +102,41 @@ export async function updateKeyDates(clientId: string, transactionId: string, ke
   ok(clientId);
 }
 
+/**
+ * Escrow contact for one transaction, plus the agent's own number, saved
+ * together because they're entered together — both feed the wire-fraud
+ * warning the client sees.
+ */
+export async function saveEscrowContact(
+  clientId: string,
+  transactionId: string,
+  contact: {
+    company: string | null;
+    officer: string | null;
+    phone: string | null;
+    agentPhone: string | null;
+  },
+) {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("agent_update_escrow_contact", {
+    p_transaction_id: transactionId,
+    p_company: contact.company,
+    p_officer: contact.officer,
+    p_phone: contact.phone,
+  });
+  if (error) throw new Error(error.message);
+
+  const { error: phoneError } = await supabase.rpc("agent_update_my_phone", {
+    p_phone: contact.agentPhone,
+  });
+  if (phoneError) throw new Error(phoneError.message);
+
+  revalidatePath("/dashboard", "layout");
+  // The agent's number is shown to every client, not just this one.
+  revalidatePath("/agent", "layout");
+  ok(clientId);
+}
+
 export async function savePreapproval(
   clientId: string,
   preapproval: {

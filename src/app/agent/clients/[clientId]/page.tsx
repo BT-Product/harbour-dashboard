@@ -8,7 +8,13 @@ import {
   getClientVisitStats,
 } from "@/lib/data/agent";
 import { VisitStatsCard } from "@/components/visit-stats-card";
-import { getClientTransactions, getStageDefinitions } from "@/lib/data/dashboard";
+import {
+  getClientTransactions,
+  getMyAgentContact,
+  getStageDefinitions,
+  isMovingMoney,
+} from "@/lib/data/dashboard";
+import { EscrowContactEditor } from "./escrow-contact-editor";
 import { GettingStartedCard } from "./getting-started-card";
 import { NewTransactionDialog } from "./new-transaction-dialog";
 import { RemoveClientDialog } from "./remove-client-dialog";
@@ -23,15 +29,17 @@ export default async function ClientOverviewPage({
   const { clientId } = await params;
   const supabase = await createClient();
 
-  const [client, transactions, stages, tours, homesSeen, preapproval, visits] = await Promise.all([
-    getClientProfile(supabase, clientId).catch(() => null),
-    getClientTransactions(supabase, clientId),
-    getStageDefinitions(supabase),
-    getClientTours(supabase, clientId),
-    getClientHomesSeen(supabase, clientId),
-    getClientPreapproval(supabase, clientId),
-    getClientVisitStats(supabase, clientId),
-  ]);
+  const [client, transactions, stages, tours, homesSeen, preapproval, visits, agent] =
+    await Promise.all([
+      getClientProfile(supabase, clientId).catch(() => null),
+      getClientTransactions(supabase, clientId),
+      getStageDefinitions(supabase),
+      getClientTours(supabase, clientId),
+      getClientHomesSeen(supabase, clientId),
+      getClientPreapproval(supabase, clientId),
+      getClientVisitStats(supabase, clientId),
+      getMyAgentContact(supabase),
+    ]);
   if (!client) notFound();
 
   const hasBuy = transactions.some((t) => t.type === "buy");
@@ -83,7 +91,18 @@ export default async function ClientOverviewPage({
       )}
 
       {transactions.map((t) => (
-        <TransactionEditor key={t.id} clientId={clientId} transaction={t} stages={stages} />
+        <div key={t.id} className="space-y-4">
+          <TransactionEditor clientId={clientId} transaction={t} stages={stages} />
+          {/* Not shown while house hunting: there's no escrow to name yet. */}
+          {t.type === "buy" && t.current_stage_key !== "house_hunting" && (
+            <EscrowContactEditor
+              clientId={clientId}
+              transaction={t}
+              agentPhone={agent?.phone ?? null}
+              warningVisible={isMovingMoney(t, stages)}
+            />
+          )}
+        </div>
       ))}
 
       {transactions.length === 0 && (
