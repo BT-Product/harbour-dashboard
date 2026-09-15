@@ -1430,6 +1430,80 @@ recalled. It is also the pilot's retention signal, and one visit in four days
 is worth watching — though a buyer between tours may simply have had no reason
 to look.
 
+### Also day 8 — each agent's dashboards wear their brokerage's colours
+
+Britton pointed out that the dashboard should look like his brokerage,
+Sotheby's International Realty, and asked how other agents would set their
+own branding — perhaps by uploading a brand guide or a screenshot.
+
+**The colours belong to the agent, not the app.** A client reads Harbour as
+part of their agent's service, under a brand they already know, and Harbour
+is multi-tenant from day one; hardcoding Sotheby's navy into the app would
+dress every future agent in it. `agents.brand_theme` (migration `0017`) names
+a preset in `src/lib/brand-themes.ts`, and both dashboard layouts apply it.
+
+**Presets rather than raw colours, and that answers the "how" question.** A
+usable palette is more than two hex codes: it needs text on the brand colour,
+hover tints, a sidebar, and contrast checked for every pair. And most agents
+work under one of a short list of franchise brands whose affiliates all share
+the same standards — so one carefully built preset per brand covers every
+agent under it, and an agent would simply pick their brokerage. The brand-guide
+or screenshot upload Britton described fits independent brokerages: extract
+the colours, build a preset, check it, and have the agent approve a preview
+before it reaches clients. Neither the picker nor the upload is built yet.
+
+The colours were read from the computed styles of `sothebysrealty.com` and an
+affiliate's site rather than recalled: navy `#002349` carries headers, the
+logo block and primary buttons, with deep navy `#001731`; gold `#C29B40` is an
+accent used sparingly; grounds are white and neutral grey. So the preset
+changes Harbour's warm cream neutrals too, not only its teal, and gives the
+sidebar the brand's navy, like the site header.
+
+Every text-on-background pair was checked against WCAG AA before use, and all
+pass — secondary text lowest at 5.6:1. The one failure was the useful finding:
+**gold text on white is 2.6:1**, so gold appears only on navy (the New badge
+and initials circle, 6.9:1 with deep-navy text), never as text on the light
+ground. A preset never overrides `--destructive`, because red means danger —
+the wire-fraud warning included — whatever the brand, and never overrides
+fonts, since brand typefaces are licensed.
+
+Implementation notes worth keeping:
+
+- The preset is applied as a server-rendered `<style>` rather than a class on
+  the app shell. Dialogs, dropdowns and toasts render in portals outside the
+  shell and would keep the default colours; server rendering also avoids a
+  flash of the default palette. The CSS comes only from presets in code, never
+  from user input.
+- The avatar and New badge in both sidebars used `bg-primary`. With a navy
+  sidebar and a navy primary they'd have vanished, so they now use
+  `sidebar-primary` — identical in the default theme, gold in this one.
+- The lookup fails soft to the default look, so branding can never be why a
+  dashboard doesn't load, including before the migration runs.
+
+**This migration landed on the first paste.** It was replayed locally on top
+of `0001`–`0016` before being handed over, including the case-insensitive match
+on Britton's email — the technique from the failed `0016` paste, used this time
+before a failure instead of after one.
+
+A slip along the way: running Prettier to tidy the layouts reformatted
+unrelated lines at its 80-column default. The repo doesn't use Prettier and is
+written at 100 columns, so the layouts were restored and only the real changes
+re-applied.
+
+**It went to a preview deployment, not production.** A colour change is the
+most visible thing a real client can notice, so Britton reviews it before the client
+sees it; the brand setting was written to the database with no effect on the
+live site, which doesn't read that column yet. Not rendered by anyone yet —
+the preview sits behind Vercel's and Harbour's sign-ins.
+
+A question went on the meeting run sheet alongside license disclosure: whether
+the brokerage has brand standards or an approval process for client-facing
+tools, and whether using the colours without the Sotheby's name or logo is
+acceptable. Franchise brands, Sotheby's included, typically govern how their
+identity appears on client materials; colours alone was chosen as the
+cautious first step. The brokerage's brand guide is also exactly what the
+future upload would be built from.
+
 ### Not yet done
 
 - Pilot cohort is one client deep (the pilot client, onboarded 2026-09-10) and
@@ -1453,6 +1527,14 @@ to look.
 - The agent phone is still empty until Britton enters it on the Escrow &
   wiring card; until then the warning says "call Britton directly" with no
   number, and reminders stay unsigned.
+- **The Sotheby's colours are on a preview, not live** — waiting on Britton's
+  review of `harbour-dashboard-ftyztf18k`. Promote after sign-off; the README
+  should mention per-agent branding once it's live, not before.
+- Branding stops at the dashboards. The login page stays default (no agent is
+  known before sign-in), and tour reminder emails still use Harbour's teal.
+- No way for an agent to choose a preset in the app yet; `brand_theme` is set
+  in the database. Brand-guide or screenshot upload for independents is an idea,
+  not a design — and waits on the broker's answer about brand standards.
 - `TransactionCard` (`src/components/transaction-card.tsx`) is dead code —
   nothing imports it. Either delete it or wire it up; leaving it invites
   exactly the mistake it already caused, which was reasoning about client-
