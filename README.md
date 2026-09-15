@@ -163,9 +163,22 @@ hour on the phone afterward.
   client their deal may be at risk, and sending anything to the other side of
   the deal, like an extension request or a counteroffer. Two more go to a human
   in specific cases: a new client's first brief, and any change to a brief the
-  client has already read. Everything else
-  runs automatically *because* a specific check catches its failure mode, and a
-  step with no check stays with a human.
+  client has already read. Everything else runs automatically *because* a
+  specific check catches its failure mode, and a step with no check stays with
+  a human.
+- **The agent never checks its own work.** A separate critic, ideally on a
+  different model, reviews every draft against the original documents without
+  seeing the drafting agent's reasoning, so it can't be argued into agreement.
+  It can only report problems, never edit, and only the human agent can dismiss
+  what it finds. It blocks anything going to the client or the other side of
+  the deal. This also fixed a flaw in an earlier version of the design, where
+  "show me only the exceptions" meant exceptions the agent had flagged about
+  itself.
+- **Every loop has a limit and a visible stop.** A loop can fail by running
+  forever or by quietly stopping, so each one has a maximum and a halt that
+  alerts a person. Writing these out turned up a loop the design had missed: an
+  out-of-office reply to one of Harbour's own emails could feed back into the
+  inspection inbox and set off more mail.
 
 **The two most valuable parts came from working a real inspection, not from
 the design sessions:**
