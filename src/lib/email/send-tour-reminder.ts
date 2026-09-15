@@ -93,7 +93,7 @@ export async function sendTourReminder(
   if (claimError) return { status: "skipped", reason: "already sent for that date" };
 
   const [{ data: agent }, { data: agentProfile }] = await Promise.all([
-    admin.from("agents").select("name, email").limit(1).single(),
+    admin.from("agents").select("name, email, phone").limit(1).single(),
     admin.from("profiles").select("full_name, phone").eq("is_agent", true).limit(1).single(),
   ]);
 
@@ -107,7 +107,9 @@ export async function sendTourReminder(
     clientName: profile.full_name,
     agentName: agentProfile?.full_name ?? agent?.name ?? "Your agent",
     agentEmail: agent?.email ?? "",
-    agentPhone: agentProfile?.phone ?? null,
+    // agents.phone is the number clients are shown (0016); the profile field
+    // it was copied from is the fallback, and was empty in production.
+    agentPhone: agent?.phone ?? agentProfile?.phone ?? null,
     tourDateLabel: new Date(`${options.tourDate}T12:00:00`).toLocaleDateString("en-US", {
       weekday: "long",
       month: "long",

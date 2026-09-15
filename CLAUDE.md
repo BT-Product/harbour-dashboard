@@ -111,6 +111,13 @@ gone. Nothing warns either of them.
     pointing it at the `homes_seen` row just written. Re-derives
     authorization from the tour's own `client_id` and refuses a link
     across two different clients
+  - `agent_update_escrow_contact`, `agent_update_my_phone` (0016) — feed
+    the client's wire-fraud warning. The first sets a transaction's escrow
+    company, officer and phone; there is **deliberately no escrow email
+    column**, since the warning tells clients to verify by phone and an
+    address would invite verifying by email, the channel being attacked.
+    The second writes the caller's own `agents.phone` and takes no agent
+    id, so one agent can never set another's number
   - `agent_onboard_client` (0009) — creates a new client's transactions
     from the buying/selling/both answer in one call, so a move-up client
     can't end up with one leg saved, the other failed, and no link

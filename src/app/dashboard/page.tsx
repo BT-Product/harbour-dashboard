@@ -7,6 +7,7 @@ import {
   formatTourDate,
   getClientTransactions,
   getCurrentProfile,
+  getMyAgentContact,
   getStageDefinitions,
   linkedTransaction,
   isMovingMoney,
@@ -29,11 +30,13 @@ export default async function DashboardOverviewPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const [profile, transactions, stages] = await Promise.all([
+  const [profile, transactions, stages, agent] = await Promise.all([
     getCurrentProfile(supabase, user!.id),
     getClientTransactions(supabase, user!.id),
     getStageDefinitions(supabase),
+    getMyAgentContact(supabase),
   ]);
+  const movingMoney = transactions.find((t) => isMovingMoney(t, stages)) ?? null;
 
   const transactionIds = transactions.map((t) => t.id);
   const nowIso = new Date().toISOString();
@@ -96,7 +99,7 @@ export default async function DashboardOverviewPage() {
 
       {isMoveUp && <CoordinationView buy={primary!} sell={linked!} />}
 
-      {transactions.some((t) => isMovingMoney(t, stages)) && <WireFraudNotice />}
+      {movingMoney && <WireFraudNotice escrow={movingMoney} agent={agent} />}
 
       <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
         {hasBuy && (

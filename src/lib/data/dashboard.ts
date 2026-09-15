@@ -190,3 +190,23 @@ export function isMovingMoney(
 
   return current.sort_order >= threshold.sort_order;
 }
+
+export type AgentContact = { name: string; phone: string | null };
+
+/**
+ * The signed-in client's agent, as far as a client may see them. Reads the
+ * `agents` row (clients can read their own agent's), not the agent's profile
+ * (they can't).
+ */
+export async function getMyAgentContact(supabase: Client): Promise<AgentContact | null> {
+  const { data, error } = await supabase.from("agents").select("name, phone").maybeSingle();
+  // Deliberately not thrown. This only personalises the wire-fraud warning,
+  // which has a general version for exactly this case; throwing would take the
+  // client's whole dashboard down over a missing phone number (including if
+  // this code ever reaches production before migration 0016).
+  if (error) {
+    console.error("getMyAgentContact", error.message);
+    return null;
+  }
+  return data;
+}

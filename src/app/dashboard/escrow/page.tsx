@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import {
   getClientTransactions,
+  getMyAgentContact,
   getStageDefinitions,
   isMovingMoney,
 } from "@/lib/data/dashboard";
@@ -12,10 +13,13 @@ export default async function EscrowPage() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  const transactions = await getClientTransactions(supabase, user!.id);
-  const stages = await getStageDefinitions(supabase);
+  const [transactions, stages, agent] = await Promise.all([
+    getClientTransactions(supabase, user!.id),
+    getStageDefinitions(supabase),
+    getMyAgentContact(supabase),
+  ]);
 
-  const movingMoney = transactions.some((t) => isMovingMoney(t, stages));
+  const movingMoney = transactions.find((t) => isMovingMoney(t, stages)) ?? null;
 
   return (
     <div className="space-y-6">
@@ -25,7 +29,7 @@ export default async function EscrowPage() {
           Every step from here to the keys, and what each one means.
         </p>
       </div>
-      {movingMoney && <WireFraudNotice />}
+      {movingMoney && <WireFraudNotice escrow={movingMoney} agent={agent} />}
 
       <div className="grid gap-4 md:grid-cols-2">
         {transactions.map((t) => (

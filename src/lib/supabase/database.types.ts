@@ -26,6 +26,8 @@ export type Agent = {
   email: string;
   brokerage: string | null;
   dre_number: string | null;
+  /** Shown to this agent's clients as the number to call about wiring. */
+  phone: string | null;
   created_at: string;
 };
 
@@ -61,6 +63,10 @@ export type Transaction = {
   property_address: string | null;
   key_dates: KeyDates;
   linked_transaction_id: string | null;
+  /** Who the client should call before wiring money. No email by design. */
+  escrow_company: string | null;
+  escrow_officer: string | null;
+  escrow_phone: string | null;
   created_at: string;
 };
 
@@ -268,6 +274,19 @@ export type Database = {
       agent_delete_tour: {
         Args: { p_tour_id: string };
         Returns: undefined;
+      };
+      agent_update_escrow_contact: {
+        Args: {
+          p_transaction_id: string;
+          p_company: string | null;
+          p_officer: string | null;
+          p_phone: string | null;
+        };
+        Returns: Transaction;
+      };
+      agent_update_my_phone: {
+        Args: { p_phone: string | null };
+        Returns: Agent;
       };
       agent_link_tour_to_home: {
         Args: { p_tour_id: string; p_home_id: string };
