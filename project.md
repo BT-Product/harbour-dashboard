@@ -79,8 +79,10 @@ realtors from the start rather than at Britton alone.
   pending.
 - **Broker and real estate attorney** — review of the inspection agent's
   call-narrative framing rules is a precondition before that feature is
-  built (added 2026-09-12). Britton to arrange. The questions to bring are
-  the legal watch list in `strategy.md`.
+  built (added 2026-09-12). **The broker half is on the agenda for the
+  managing broker meeting on 2026-09-15**, using the design review page
+  under Links: twelve questions, eight for the broker and four expected to
+  need an attorney. The attorney half is not yet arranged.
 
 ## Links
 
