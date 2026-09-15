@@ -1196,6 +1196,50 @@ Republished to the same artifact. Its link now displays in a newer format
 (https://claude.ai/artifact/6onJiwsEC9gBCc1HcV7Sq1); the original link format may still resolve, but the
 current one is what to send.
 
+### Also day 8 — stop conditions and a separate critic for the inspection agent
+
+With the design otherwise complete, Britton asked for two guarantees: that
+no goal-driven trigger can run away without a stop condition, and that the
+inspection agent is never the critic of its own work.
+
+**Stop conditions.** A loop can fail by running away or by stopping
+silently, so every loop got both a ceiling and a halt someone can see.
+Four rules apply everywhere: a deal's end state stops all its watches, every
+retry has a maximum that halts to the realtor, every alert fires once per
+condition with at most one reminder, and every agent run has a step, time and
+token budget with a per-deal spending ceiling. Each loop was then listed with
+its own stop. Two were real runaway risks rather than theoretical ones: the
+wave-2 expected list can grow indefinitely because each bid recommends
+another evaluation (every addition now needs the realtor's confirmation), and
+match proposals could be re-proposed after being rejected (rejections are
+now remembered).
+
+The audit also found a loop the design had missed completely: **email
+loops.** Harbour sends mail and receives it from a mailbox, so an
+out-of-office reply to a holding message could flow back into
+`inspections@` and generate more mail. Harbour now never sends from or with
+a reply-to of that address, drops automatic replies and its own messages on
+receipt, and caps intake per sender and per client.
+
+**The critic.** Nothing independent sat between the mechanical gates and the
+realtor's review. And the trust ladder's "exceptions only" mode had defined
+an exception as anything the agent flagged itself as unsure about — the
+agent grading its own work, and exactly what Britton wanted ruled out.
+
+The critic is a separate subagent, ideally on a different model, that sees
+the output and the source documents but never the drafting agent's
+reasoning. It is read-only; the drafting agent cannot dismiss its findings,
+only the realtor can. It verifies against the sources rather than the
+extraction, since checking the extraction would inherit its mistakes, and
+its most valuable job is hunting for findings that never made it into the
+output. Britton agreed to the recommended split on what it can do: it **blocks**
+anything bound for the client or the other side of the deal, and **annotates**
+realtor-only artifacts. Revision is capped at two rounds before halting to
+the realtor, which is itself one of the loops the stop-condition audit
+covers. "Exceptions only" now means critic findings, gate trips and category
+rules, and the critic's own misses and false alarms are measured from the
+review edits already recorded.
+
 ### Not yet done
 
 - Pilot cohort is one client deep (the pilot client, onboarded 2026-09-10) and

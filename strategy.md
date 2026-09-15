@@ -804,7 +804,9 @@ of the three reasons above.
 ## Autonomy is a per-tenant setting, not a build stage
 
 Every realtor starts at *show me the reasoning with citations* and graduates
-to *show me only the exceptions* on a measured track record. This is
+to *show me only the exceptions* on a measured track record. An exception is
+a critic finding, a gate trip or a category rule — never the drafting agent's
+own confidence (see "The critic"). This is
 per-tenant state from the first migration, not something retrofitted once
 Britton personally gets comfortable — a new realtor arriving in month
 eighteen has extended the agent exactly zero trust and must start at the
@@ -861,6 +863,10 @@ never a human review step.
 0. **Prove the pipeline works** — *below, and non-optional.* A daily test
    email through the real forwarding path, alerting if it doesn't arrive.
    Push delivery fails silently, so this is what makes step 1 trustworthy.
+0b. **Drop mail that would loop** — *below, and non-optional.* Automatic
+   replies, Harbour's own outbound messages and pipeline test emails are
+   dropped on receipt, and a per-sender and per-client daily cap halts intake
+   and alerts. See "Stop conditions."
 1. **Detect arrival** — *below.* Trivially reversible and tiny radius. A miss
    is made visible by the pipeline test (step 0) and, mid-deal, the stall
    alert — not by assuming the realtor also received the email.
@@ -915,6 +921,11 @@ never a human review step.
 10. **Recommend specialists** — *below.* Over-referral costs the client $500
     and three days; under-referral is caught at 12b. The safe direction is
     built into the step.
+10b. **Critic review** — *below, as a gate run by a separate subagent.* Every
+    judgment-bearing draft is checked against the source documents by an
+    agent that did not write it. It blocks anything bound for the client or
+    the other side of the deal and annotates realtor-only artifacts. At most
+    two revision rounds, then halt to the realtor. See "The critic."
 
 **Escalation**
 
@@ -996,6 +1007,117 @@ is only defensible because of the gates —
 every qualified "below" above is below *because* a specific detector exists.
 Build the gate or move the row up.
 
+## Stop conditions
+
+Added 2026-09-14 at Britton's request: no goal-driven trigger may run away
+with no stop condition.
+
+A loop can fail two ways. It can **run away** — repeat forever, spam a
+client, spend money — or it can **stop silently**, which is the failure this
+design already treats as the dangerous kind. So every loop needs both a
+ceiling and a halt that someone can see.
+
+### Rules that apply to every loop
+
+- **Every deal has an end state.** When a transaction is closed or falls
+  through (`transactions.status` already records this), every watch and
+  alert for that deal stops.
+- **Every retry has a maximum.** Exceeding it halts the work and alerts the
+  realtor. A loop never quietly gives up.
+- **Every alert fires once per condition.** It re-arms only when the
+  underlying state changes, with at most one follow-up reminder — never on a
+  schedule indefinitely.
+- **Every agent run has a budget:** maximum steps, wall-clock time and tokens
+  per run, and a spending ceiling per deal. Hitting a budget halts to the
+  realtor rather than retrying.
+
+### Each loop and what stops it
+
+| Loop | Runaway risk | Stop condition |
+|---|---|---|
+| Waiting for wave 1 | Waits forever | Complete, publish now, a cancelled item removed, or the stall alert; the deadline watch takes over after that |
+| Waiting for wave 2 | Each bid recommends another evaluation, so the expected list keeps growing | Every addition needs the realtor's confirmation; the deadline is the backstop |
+| Negotiation rounds | Endless back-and-forth | Every new round needs the realtor to send something, so the agent cannot loop on its own. Ends at agreement, cancellation, contingency removal, or a passed deadline |
+| Deadline, stall and through-close watches | Nightly alerts forever | Once per condition plus one reminder; end at the deadline, at close, or when the deal ends |
+| Match and cluster proposals | Re-proposing something already rejected | Rejections are remembered; a rejected pairing returns only if a new report adds evidence |
+| Extraction reconciliation | Re-extracting indefinitely | One retry, then halt to the realtor |
+| Critic revisions | Drafter and critic trading drafts forever | Two revision rounds, then halt to the realtor with the unresolved objections |
+| Daily pipeline test | Alerting daily through one outage | Once per outage, cleared by the next success; test emails are recognized and never processed as reports |
+| Inbound delivery retries | Duplicate processing | The provider's retry limit, plus storing each message by ID before acting |
+
+### Email loops
+
+A risk the earlier design missed entirely. Harbour both sends mail (holding
+messages, alerts) and receives it from a mailbox. An inspector's
+out-of-office reply to a holding message, or a client hitting reply, could
+flow back into `inspections@`, trigger an unmatched-report alert, and
+generate more mail. Guards:
+
+- Harbour never sends *from* `inspections@`, and never sets it as a
+  reply-to address.
+- Automatic replies (identified by standard auto-reply headers) and
+  Harbour's own outbound messages are dropped on receipt.
+- A per-sender and per-client daily cap halts intake for that sender or
+  client and alerts the realtor when exceeded.
+
+## The critic
+
+Added 2026-09-14 at Britton's request: **the inspection agent must not
+validate or critique its own work.**
+
+Before this, the design had mechanical gates and the realtor's review, and
+no independent check between them. Worse, the trust ladder's *exceptions
+only* mode defined an exception as anything the agent flagged itself as
+unsure about — which is the agent grading its own work.
+
+### Design
+
+- **A separate subagent with its own instructions**, ideally running on a
+  different model, so the two do not share blind spots. It sees the output
+  and the **source documents**, never the drafting agent's reasoning, so it
+  cannot be argued into agreement.
+- **Read-only.** It returns findings and never edits. The drafting agent
+  cannot dismiss a finding; only the realtor can.
+- **It verifies against the sources, not against the agent's extraction** —
+  otherwise it would inherit the extraction's mistakes. It checks:
+  - every finding in the source appears in the output (the missed-finding
+    hunt, its most valuable job)
+  - quotes and costs match the cited page
+  - every causal link is attributed to an inspector
+  - no finding has been folded into a cluster whose cause does not fit it
+  - the legal watch list: minimizing, unattributed causation, steering
+  - seller-response statuses match the actual response
+
+### Three layers, each doing what the others cannot
+
+- **Gates** check what is mechanical: counts, provenance tags, exact matches.
+- **The critic** checks what takes reading comprehension but is still
+  verification against a source.
+- **The realtor** checks judgment.
+
+### What it reviews, and what it can do
+
+- **It blocks** anything leaving to the client or the other side of the
+  deal: client briefs, round records, counters, extension requests.
+- **It annotates** artifacts only the realtor reads — call prep and the
+  negotiation brief — because the realtor reads those before using them.
+  Call prep is still reviewed because the realtor repeats it aloud (legal
+  watch item 6).
+- **It skips the holding message**, a fixed template with no judgment that
+  has to go out within seconds.
+- **Revision is bounded:** critic rejects, agent revises, at most two
+  rounds. If objections remain, the work halts and goes to the realtor with
+  the draft and the unresolved objections.
+
+### Consequences elsewhere
+
+- **"Exceptions only" is redefined** as critic findings, gate trips and
+  category rules. The drafting agent's self-reported confidence never
+  defines an exception.
+- **The critic is measured too.** Realtor edits the critic didn't flag are
+  its misses; findings the realtor dismisses are its false alarms. Both come
+  from the review edits the measurement plan already records.
+
 ## Measurement plan
 
 The trust ladder above has no rungs unless disagreement is captured. **Every
@@ -1014,6 +1136,10 @@ central safety claim of the whole design goes unverified.
   dashboard hypothesis is already collecting.
 - Qualitative, at close: did the client mention the inspection as a moment
   of stress or of reassurance?
+- **Critic accuracy:** realtor edits on work the critic passed (misses) and
+  critic findings the realtor dismissed (false alarms). The critic is what
+  "exceptions only" trusts, so its misses are the number that decides
+  whether graduation is safe.
 
 ## Deferred deliberately
 
@@ -1093,6 +1219,11 @@ a wave stalls or a report matches no one, and how mail reaches Harbour. See
 fixed round count, with status shown during and the record published after
 the realtor's call, and agreed items verified through close. See "The
 seller's response round" above.*
+
+*Added 2026-09-14, at Britton's request after the design was otherwise
+complete: a stop condition for every loop, including email loops the design
+had missed, and a separate critic so the agent never validates its own work.
+See "Stop conditions" and "The critic" above.*
 
 ## Security posture
 
