@@ -91,6 +91,19 @@ form. That sounds like housekeeping and isn't: the debrief is the one thing the
 product asks of the agent, and it gets written hours later, from memory, on a
 phone. Anything it has to ask them to retype is a reason it doesn't get done.
 
+**Both dashboards wear the agent's brokerage brand.** A client reads Harbour as
+part of their agent's service, under a brand they already know, so colours are
+set per agent rather than per app. The first is Sotheby's International Realty,
+read from the brand's own sites: navy for the brand, gold as a small accent,
+neutral backgrounds. Each brand is a designed preset rather than colours an
+agent types in, because a usable palette needs more than a brand colour — text
+on it, hover states, a sidebar — with contrast checked for every pair. That
+check is what ruled gold text out entirely: on white it's 2.6:1, too faint to
+read. Presets also fit how the industry is organised: most agents work under a
+handful of franchise brands whose affiliates share one set of brand standards,
+so one preset covers every agent under a brand. Red stays red whatever the
+brand, because on a warning it means danger, not decoration.
+
 ## Engineering decisions worth knowing
 
 **Private notes are unreachable to clients at the database level, not in app

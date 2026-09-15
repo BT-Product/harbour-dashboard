@@ -1496,6 +1496,12 @@ sees it; the brand setting was written to the database with no effect on the
 live site, which doesn't read that column yet. Not rendered by anyone yet —
 the preview sits behind Vercel's and Harbour's sign-ins.
 
+Promoted to production the same evening on Britton's instruction, as the exact
+build on the preview (only the change_log had changed since). His confirmation
+that the colours looked right arrived just after the promote rather than
+before it; the review happened, but not in the order the plan intended. Tara's
+dashboard changes appearance on their next visit.
+
 A question went on the meeting run sheet alongside license disclosure: whether
 the brokerage has brand standards or an approval process for client-facing
 tools, and whether using the colours without the Sotheby's name or logo is
@@ -1527,9 +1533,6 @@ future upload would be built from.
 - The agent phone is still empty until Britton enters it on the Escrow &
   wiring card; until then the warning says "call Britton directly" with no
   number, and reminders stay unsigned.
-- **The Sotheby's colours are on a preview, not live** — waiting on Britton's
-  review of `harbour-dashboard-ftyztf18k`. Promote after sign-off; the README
-  should mention per-agent branding once it's live, not before.
 - Branding stops at the dashboards. The login page stays default (no agent is
   known before sign-in), and tour reminder emails still use Harbour's teal.
 - No way for an agent to choose a preset in the app yet; `brand_theme` is set
