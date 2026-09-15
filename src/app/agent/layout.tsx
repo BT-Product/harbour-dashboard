@@ -29,7 +29,7 @@ export default async function AgentLayout({ children }: { children: React.ReactN
           It has to appear on every client email and on your clients&apos; dashboards, so tour
           reminders and recaps won&apos;t send until it&apos;s on file.
         </span>{" "}
-        <Link href="/agent#your-details" className="font-medium underline">
+        <Link href="/agent/profile" className="font-medium underline">
           Add it now
         </Link>
       </div>
@@ -38,7 +38,10 @@ export default async function AgentLayout({ children }: { children: React.ReactN
   return (
     <>
       <BrandThemeStyle theme={agent?.brandTheme ?? null} />
-      <AppShell sidebar={<AgentSidebar fullName={profile.full_name} />} banner={licenseBanner}>
+      <AppShell
+        sidebar={<AgentSidebar fullName={profile.full_name} photoUrl={agent?.photoUrl ?? null} />}
+        banner={licenseBanner}
+      >
         <div className="w-full px-4 py-6 sm:px-8 sm:py-8">{children}</div>
       </AppShell>
     </>

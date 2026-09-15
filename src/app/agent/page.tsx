@@ -4,9 +4,7 @@ import { StatBar } from "@/components/stat-bar";
 import { IconListRow } from "@/components/icon-list-row";
 import { createClient } from "@/lib/supabase/server";
 import { getAgentClients, getAgentTours } from "@/lib/data/agent";
-import { getCurrentProfile, getMyAgent } from "@/lib/data/dashboard";
-import { hasLicense } from "@/lib/license";
-import { YourDetailsCard } from "./your-details-card";
+import { getCurrentProfile } from "@/lib/data/dashboard";
 
 function formatWhen(iso: string) {
   return new Date(iso).toLocaleString(undefined, {
@@ -30,20 +28,11 @@ export default async function AgentHomePage() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  const [profile, clients, tours, agent] = await Promise.all([
+  const [profile, clients, tours] = await Promise.all([
     getCurrentProfile(supabase, user!.id),
     getAgentClients(supabase),
     getAgentTours(supabase),
-    getMyAgent(supabase),
   ]);
-
-  const detailsCard = agent ? (
-    <YourDetailsCard
-      name={agent.name}
-      phone={agent.phone}
-      dreNumber={hasLicense(agent.dreNumber) ? agent.dreNumber : null}
-    />
-  ) : null;
 
   const now = new Date().getTime();
   const weekAgo = now - 7 * 86_400_000;
@@ -77,10 +66,6 @@ export default async function AgentHomePage() {
         </h1>
         <p className="text-sm text-muted-foreground">{today}</p>
       </div>
-
-      {/* Up front while client emails are paused for want of a license number;
-          at the bottom once it's on file. */}
-      {agent && !hasLicense(agent.dreNumber) && detailsCard}
 
       <StatBar
         stats={[
@@ -135,8 +120,6 @@ export default async function AgentHomePage() {
           </CardContent>
         </Card>
       </div>
-
-      {agent && hasLicense(agent.dreNumber) && detailsCard}
     </div>
   );
 }

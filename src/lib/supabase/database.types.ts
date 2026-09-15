@@ -30,6 +30,10 @@ export type Agent = {
   phone: string | null;
   /** Brokerage colour preset key (src/lib/brand-themes.ts). Null = default. */
   brand_theme: string | null;
+  /** Office postal address, free text. Not yet shown to clients. */
+  office_address: string | null;
+  /** Public URL in the agent-photos bucket, under the agent's own folder. */
+  photo_url: string | null;
   created_at: string;
 };
 
@@ -308,6 +312,18 @@ export type Database = {
       };
       agent_update_my_license: {
         Args: { p_dre_number: string | null };
+        Returns: Agent;
+      };
+      agent_update_my_profile: {
+        Args: {
+          p_phone: string | null;
+          p_dre_number: string | null;
+          p_office_address: string | null;
+        };
+        Returns: Agent;
+      };
+      agent_update_my_photo: {
+        Args: { p_photo_url: string | null };
         Returns: Agent;
       };
       agent_link_tour_to_home: {
