@@ -6,6 +6,7 @@ import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { getCurrentProfile } from "@/lib/data/dashboard";
 import { getSiteUrl } from "@/lib/site-url";
 import { sendTourReminder } from "@/lib/email/send-tour-reminder";
+import { sendTourRecap } from "@/lib/email/send-tour-recap";
 import type {
   InterestLevel,
   ItemImportance,
@@ -62,6 +63,44 @@ export async function sendReminderNow(
   const siteUrl = await getSiteUrl();
   const outcome = await sendTourReminder(admin, { clientId, tourDate, siteUrl });
 
+  if (outcome.status === "skipped") return { ok: false, error: outcome.reason };
+
+  ok(clientId);
+  return { ok: true, recipients: outcome.recipients };
+}
+
+/**
+ * Emails the client the recap of one tour day, once every home from it is
+ * written up. Always the agent's click — see sendTourRecap for why it never
+ * fires on its own.
+ */
+export async function sendRecapNow(
+  clientId: string,
+  tourDate: string,
+): Promise<{ ok: true; recipients: string[] } | { ok: false; error: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "Not signed in" };
+
+  const profile = await getCurrentProfile(supabase, user.id);
+  if (!profile.is_agent) return { ok: false, error: "Not authorized" };
+
+  // RLS decides whether this client is the caller's before the service-role
+  // client is used to read their email address and write the recap row.
+  const { error: ownership } = await supabase
+    .from("profiles")
+    .select("id")
+    .eq("id", clientId)
+    .single();
+  if (ownership) return { ok: false, error: "Not your client" };
+
+  const outcome = await sendTourRecap(createServiceRoleClient(), {
+    clientId,
+    tourDate,
+    siteUrl: await getSiteUrl(),
+  });
   if (outcome.status === "skipped") return { ok: false, error: outcome.reason };
 
   ok(clientId);

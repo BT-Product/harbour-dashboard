@@ -14,10 +14,13 @@ export function useSidebarDrawer() {
 export function AppShell({
   sidebar,
   banner,
+  footer,
   children,
 }: {
   sidebar: React.ReactNode;
   banner?: React.ReactNode;
+  /** Rendered after the page on every screen size — license disclosure lives here. */
+  footer?: React.ReactNode;
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
@@ -59,6 +62,7 @@ export function AppShell({
           <div className="flex-1 overflow-y-auto">
             {banner}
             {children}
+            {footer}
           </div>
         </div>
       </div>

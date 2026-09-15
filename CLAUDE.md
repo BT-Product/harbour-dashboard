@@ -118,6 +118,10 @@ gone. Nothing warns either of them.
     address would invite verifying by email, the channel being attacked.
     The second writes the caller's own `agents.phone` and takes no agent
     id, so one agent can never set another's number
+  - `agent_update_my_license` (0018) — writes the caller's own
+    `agents.dre_number`, same shape as `agent_update_my_phone`. Format is
+    validated in the app (`normalizeDreNumber`), where the error can be
+    explained
   - `agent_onboard_client` (0009) — creates a new client's transactions
     from the buying/selling/both answer in one call, so a move-up client
     can't end up with one leg saved, the other failed, and no link
@@ -164,6 +168,32 @@ gone. Nothing warns either of them.
   a server render, because Next prefetches routes and those renders would
   count as visits nobody made. Agents are filtered out inside
   `record_my_page_view`, not in app code.
+- **No client email without the sending agent's license number.** California
+  requires the DRE number on marketing and client-facing material, and it
+  applies to every future agent. Every client email is signed through
+  `src/lib/email/agent-signature.ts`: `getSendingAgent` finds the agent via
+  the client's `profiles.agent_id` (never "the first agents row" —
+  multi-tenant), and `missingLicenseReason` makes the send skip when there's
+  no valid number. The client dashboard shows it in `LicenseFooter`, in the
+  page rather than the sidebar because the sidebar is a closed drawer on
+  phones. Use `hasLicense()` rather than a truthiness check: the seed once
+  wrote `"TBD"`, and "DRE #TBD" on a client email is worse than not sending.
+  Supabase's own auth emails (invite, password reset) are templates in the
+  Supabase dashboard and don't go through this path — the number has to be
+  added to those templates by hand.
+- **Group by day in the tour's time zone, not the server's.** Vercel runs in
+  UTC, so any Pacific tour after 5pm is on the next UTC day. Server code that
+  buckets tours or homes by date uses `src/lib/time-zone.ts`
+  (`zonedDateKey`, `localDayRange`); `dateKey` in `date-grouping.ts` is for
+  the browser, where local time is already right.
+- **The tour recap is always the agent's click.** Once every home from a tour
+  day is written up (`recapReadyDays`), the client's Homes Seen tab offers
+  "Send recap"; `sendTourRecap` emails the homes with an excerpt of each
+  client note and a question answered by replying. It never fires when the
+  last debrief saves — that would go out before the agent reread their notes.
+  It selects `homes_seen` columns by name, never `*`: it runs with the
+  service-role key, which can read `private_notes`. `tour_recaps` (0018)
+  claims the day before sending, like `tour_reminders`.
 - **Colours belong to the agent, not the app.** `agents.brand_theme`
   (migration `0017`) names a preset in `src/lib/brand-themes.ts`, and both
   dashboard layouts render it through `BrandThemeStyle` as a `<style>`

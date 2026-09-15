@@ -146,6 +146,15 @@ export type TourReminder = {
   stop_count: number;
 };
 
+export type TourRecap = {
+  id: string;
+  client_id: string;
+  tour_date: string;
+  sent_at: string;
+  recipients: string[];
+  home_count: number;
+};
+
 export type Database = {
   public: {
     Tables: {
@@ -215,6 +224,13 @@ export type Database = {
         Row: TourReminder;
         Insert: Partial<TourReminder>;
         Update: Partial<TourReminder>;
+        Relationships: [];
+      };
+      // Written only by the recap send path with the service-role key.
+      tour_recaps: {
+        Row: TourRecap;
+        Insert: Partial<TourRecap>;
+        Update: Partial<TourRecap>;
         Relationships: [];
       };
       // Insert is structurally empty: rows only ever arrive through
@@ -288,6 +304,10 @@ export type Database = {
       };
       agent_update_my_phone: {
         Args: { p_phone: string | null };
+        Returns: Agent;
+      };
+      agent_update_my_license: {
+        Args: { p_dre_number: string | null };
         Returns: Agent;
       };
       agent_link_tour_to_home: {
