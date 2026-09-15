@@ -44,6 +44,35 @@ of product reasoning shouldn't exist only in the tracking docs.
 **Refer to pilot clients as "they," never "she" or "he,"** in all four docs,
 commit messages, and code comments.
 
+## More than one session works in this checkout at once
+
+Separate Claude sessions — typically one on the app, one on the inspection
+agent design — run against **this same working directory**, not separate
+clones. A commit can appear on `main`, and on GitHub, that the current
+session didn't make.
+
+That changes the failure mode. Two clones produce merge conflicts, which are
+loud. Two sessions in one folder produce **silent overwrites**: whichever
+writes a file last wins, and the other session's uncommitted edit is simply
+gone. Nothing warns either of them.
+
+- **Only one session edits the tracking docs at a time.** `change_log.md`,
+  `project.md`, `strategy.md`, and `README.md` are the files both sessions
+  touch. Before editing one, run `git status` — an uncommitted change to it
+  means another session is mid-edit, so leave it alone and say so.
+- **Re-read a file immediately before changing it.** A read from earlier in
+  the session may be stale. A scripted replace that asserts the exact old text
+  is present fails safely on a changed file; a whole-file rewrite does not.
+- **Stage by path, never `git add -A` or `git add .`.** Either one sweeps
+  another session's half-finished work into your commit under your message.
+- **Commit small and soon.** Uncommitted work is the only thing that can be
+  overwritten, so the shorter it sits in the tree, the smaller the exposure.
+- **Check, don't assume, what's on the remote.** The git status given at
+  session start is a snapshot and goes stale. Before saying a commit is
+  local-only, pushed, or behind, run `git fetch` and look — a session here
+  once reported commits as unpushed for a day after the other session had
+  already pushed them, and blamed a push block it hadn't re-tested.
+
 ## Architecture notes worth knowing before changing the schema
 
 - **Multi-tenant from day one**: every client-owned row traces back to
