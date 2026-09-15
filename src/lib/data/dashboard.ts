@@ -210,3 +210,19 @@ export async function getMyAgentContact(supabase: Client): Promise<AgentContact 
   }
   return data;
 }
+
+/**
+ * The signed-in user's agent's brokerage colour preset — works for the agent
+ * and for their clients, who can both read that agent's row.
+ *
+ * Fails soft to the default look: branding must never be the reason a
+ * dashboard doesn't load, including before migration 0017 has run.
+ */
+export async function getAgentBrandTheme(supabase: Client): Promise<string | null> {
+  const { data, error } = await supabase.from("agents").select("brand_theme").maybeSingle();
+  if (error) {
+    console.error("getAgentBrandTheme", error.message);
+    return null;
+  }
+  return data?.brand_theme ?? null;
+}

@@ -164,6 +164,18 @@ gone. Nothing warns either of them.
   a server render, because Next prefetches routes and those renders would
   count as visits nobody made. Agents are filtered out inside
   `record_my_page_view`, not in app code.
+- **Colours belong to the agent, not the app.** `agents.brand_theme`
+  (migration `0017`) names a preset in `src/lib/brand-themes.ts`, and both
+  dashboard layouts render it through `BrandThemeStyle` as a `<style>`
+  overriding the `globals.css` tokens — a style element, not a class on the
+  shell, because dialogs and toasts render in portals outside it. Null or an
+  unknown key means the default Harbour look, and the lookup fails soft.
+  Presets are designed sets checked against WCAG AA, not raw colours from an
+  agent; a brand guide or screenshot becomes a new preset after that check.
+  A preset never overrides `--destructive` (danger is not branding) or fonts
+  (brand typefaces are licensed). Inside a sidebar, use `sidebar-primary`
+  rather than `primary` — with a navy sidebar and navy primary, `bg-primary`
+  disappears into its background.
 - **`/api/health`** round-trips a real write against a dedicated
   `_health_check` single-row table (migration `0003`) using the service-role
   client, never the app's real tables. Returns 503 on failure.
