@@ -1311,6 +1311,125 @@ the meeting, the page should say up front that saving may not work for them.
 Not seen rendered before publishing — the browser pane can't display a local
 file — so Britton opening it once before the meeting is the first real look.
 
+### Also day 8 — the wire warning names escrow and a number to call
+
+Britton caught a flaw from practice that no amount of reading the code would
+have: the warning said "we will never email you wiring instructions," and
+escrow *does* email clients — a link to a secure portal where the instructions
+are. A client told those emails don't exist either distrusts the real one and
+closing slips, or learns the warning is wrong and discounts the rest.
+
+His proposed fix — show the escrow company and officer so the client knows
+what to look for — was right but incomplete. A name protects no one on its
+own: attackers reuse real officers' names and lookalike domains, and a fake
+portal link is one of the most common lures. **What protects the client is a
+phone number they didn't get from email**, and the dashboard is unusually well
+placed to supply one: it's behind a login on a channel separate from the
+client's inbox, so someone who has broken into that inbox can't change what it
+shows.
+
+Migration `0016` adds escrow company, officer and phone to `transactions`, set
+through `agent_update_escrow_contact`. There is **deliberately no escrow email
+column** — the warning tells clients to verify by phone, and showing an
+address would invite verifying by email, the channel being attacked. The agent
+form says to take the number from escrow's website or known contacts, never
+from an email, since a number copied from a spoofed message relays the fraud.
+Without an escrow phone the client sees a general version, never a blank or
+placeholder number. Both versions close on the line that catches the classic
+attack: wiring instructions don't change once they're sent.
+
+Building it surfaced that **the agent's own phone was empty in production**,
+so tour reminders had been going out signed without a number. It also lived
+only on the agent's profile, which clients can't read. `agents.phone` now
+holds it (clients can read their agent's row), set through
+`agent_update_my_phone`, which takes no agent id so one agent can never set
+another's number. Reminders read it, falling back to the profile field.
+
+The client-side lookup of the agent's contact fails soft rather than
+throwing. It only personalises the warning, which has a general version for
+exactly that case; throwing would take a client's whole dashboard down over a
+missing phone number — including in the window where this code is deployed
+before its migration.
+
+**The migration failed on the first paste, and nothing said why.** It rolled
+back cleanly, so the database was untouched. Rather than guess between "the
+SQL is wrong" and "the paste was wrong," every migration from `0001` was
+replayed against a throwaway local Postgres 17 — the production major version
+— with a stubbed `auth` schema, then the exact paste file on top. It ran and
+returned all four checks true, which settled it: the SQL was fine, and the
+clipboard most likely held the terminal command rather than its output. The
+migration was put on the clipboard directly, and the second run succeeded.
+Replaying the migration chain locally took about a minute and is worth
+reaching for whenever a production run fails without a readable error.
+
+Deployed after both sides were confirmed: the columns and functions from the
+API, and production pointing at the new build by deployment id rather than by
+a status poll that had come back blank.
+
+### Also day 8 — a demo buyer for the meeting, and a published password
+
+Britton had removed the pure-buyer demo account because the client now covered that
+case — then realised he can't sign in as the client, so there was nothing to show
+the broker. Recreated **Sam Buyer** as a plain buyer at Offer Accepted, so the
+wire warning shows: two debriefed homes, a Conventional pre-approval, and tours
+dated only in the past. A future tour would have made the nightly reminder job
+email `demo.buyer@example.com` from the real sending domain, and bounces cost
+sender reputation. It uses a random password that isn't in the repo, verified
+with the admin API rather than by signing in with it.
+
+Two things turned up while doing it. The request's premise was only partly
+right — the move-up demo, Jordan, was still there with a purchase at Loan
+Approval, so a buyer demo existed, just not a plain one. And **the repository
+is public, and `scripts/seed.ts` contains the demo password** used by Jordan's
+and Alex's accounts on the production app. Row-level security keeps anyone
+using them to fake data — the client's rows are unreachable — but it is still a
+signed-in session inside the live tenant, able to do what a client can, such as
+setting a partner email that tour reminders would then be sent to.
+
+### Also day 8 — a run sheet for the meeting, and an overstatement caught writing it
+
+The meeting on 2026-09-15 now covers both review pages: the dashboard packet
+and the inspection agent review the other session built. That is eighteen
+questions, which won't fit, so the run sheet orders them by what only the
+broker can decide and what it unblocks:
+
+- A five-minute live demo first, on Sam Buyer — the warning shown both ways.
+- What clients see today, since it's live: wire wording and showing escrow's
+  number, then license and brokerage disclosure (the fields exist, so it can
+  ship days after an answer), then note fields and Fair Housing.
+- The inspection agent, starting with the brokerage's AI-use policy, because
+  a "no" there makes the questions after it moot.
+- Overlaps asked once: E&O for both products together, and discoverability of
+  private notes (packet 05) with that of saved call prep (inspection 12).
+- Stage copy, coordination copy, the HOA estimate and two practice-standard
+  questions handed over for review afterward; attorney questions reduced to
+  asking whether the brokerage has counsel.
+- A 20-minute version of five core asks, and a note on capture: the packet
+  can't save, so its text box gets copied before the tab closes, while the
+  inspection page saves for its owner and can be read back.
+
+Run sheet: https://claude.ai/artifact/Sw4dV4ngrWRfbVozfg2Qxy
+
+**Writing the opening line surfaced a claim nobody had checked.** The packet
+said the pilot client "signs into it most days" and had been reading the stage
+copy "for weeks"; the docs said "daily." The visit tracking built to answer
+exactly this question says otherwise: the client opened the dashboard on **one day,
+September 11** — ten page views — and not since, with one further sign-in on
+the 12th that recorded no views. And because a client only sees the explainer
+for their current stage, a house-hunting client has seen one of the fourteen,
+and no real client ever reached the wire-funds line.
+
+Every one of those overstatements made the exposure sound worse than it was,
+which is a comfortable direction to be wrong in and still wrong — and one of
+them was in the document the broker opens tomorrow. Corrected in the packet,
+in `project.md`, and in the open items below; the Day 8 description of the
+email's framing is left as written, as a record of how it was pitched.
+
+Claims about what clients do should be read from `client_page_views`, not
+recalled. It is also the pilot's retention signal, and one visit in four days
+is worth watching — though a buyer between tours may simply have had no reason
+to look.
+
 ### Not yet done
 
 - Pilot cohort is one client deep (the pilot client, onboarded 2026-09-10) and
@@ -1321,9 +1440,19 @@ file — so Britton opening it once before the meeting is the first real look.
   take their name. Watch whether the fixed page gets used or the answers
   come back as an email reply; either is fine, but it says something about
   whether a form was the right shape for this at all. Item 01 is fixed on our side and needs only their wording.
-  The other five genuinely block on them, and a real client is reading the
-  unreviewed copy daily in the meantime. No follow-up date set yet — worth
-  one if nothing comes back within a week.
+  The other five genuinely block on them. Actual exposure is small — one
+  client, house hunting, one visit (2026-09-11) — but it grows the day a
+  client goes under contract. Being covered in the 2026-09-15 meeting.
+- **Demo passwords are published.** The repo is public and
+  `scripts/seed.ts` holds the password for Jordan's and Alex's production
+  logins. Rotate both and move the seed password out of source. Sam Buyer's
+  is random and not in the repo.
+- Three demo profiles (Jordan, Alex, Sam) live in production next to the real
+  client, and their page views land in the same visit data. Exclude them by
+  name when reading retention.
+- The agent phone is still empty until Britton enters it on the Escrow &
+  wiring card; until then the warning says "call Britton directly" with no
+  number, and reminders stay unsigned.
 - `TransactionCard` (`src/components/transaction-card.tsx`) is dead code —
   nothing imports it. Either delete it or wire it up; leaving it invites
   exactly the mistake it already caused, which was reasoning about client-

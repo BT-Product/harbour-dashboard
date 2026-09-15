@@ -74,9 +74,11 @@ realtors from the start rather than at Britton alone.
   the client to wire closing funds with no fraud warning anywhere in the
   product) was fixed the same day with interim wording rather than held
   for the review; what is still needed there is the brokerage's own
-  language. The other five block on them. This was a pre-launch gate that
-  a real client has been past for weeks, so it is overdue rather than
-  pending.
+  language. The warning was revised the same day to name the client's
+  escrow and give them a number to call. The other five block on the
+  broker. **Covered in the meeting on 2026-09-15** alongside the inspection
+  agent review, using the run sheet under Links. Real exposure so far is
+  small: one house-hunting client who has visited once.
 - **Broker and real estate attorney** — review of the inspection agent's
   call-narrative framing rules is a precondition before that feature is
   built (added 2026-09-12). **The broker half is on the agenda for the
@@ -98,3 +100,6 @@ realtors from the start rather than at Britton alone.
   questions (eight for the broker, four likely for an attorney) with
   answers saved on the page. Private until shared from the page's share
   menu.
+- Broker meeting run sheet (2026-09-15): https://claude.ai/artifact/Sw4dV4ngrWRfbVozfg2Qxy
+  Setup, a timed order across both review pages, a 20-minute version, and
+  how answers are captured. For Britton's own use during the call.
