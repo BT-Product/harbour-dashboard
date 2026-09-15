@@ -83,6 +83,93 @@ and the missing half is usually the one causing the anxiety. Without that,
 this phase would only be testing a generic status tracker, not the actual
 differentiator.
 
+## Bringing clients back during the home search
+
+*Added 2026-09-15. Scoped to house hunting; escrow has its own reasons to
+return.*
+
+The pilot client was asked what would bring them back, and pointed at Zillow:
+its emails about new homes are what send them back to the site, and an update
+like "your favourite home dropped its price" would do the same here. The
+evidence behind the question: that client opened the dashboard on one day,
+2026-09-11, and not after the tour that followed two days later — nothing
+told them anything new was there.
+
+Three principles decide which mechanisms are worth building:
+
+- **The 2+ visits a week threshold is a proxy, not the goal.** The riskiest
+  assumption is that self-serve status *adds* to felt care rather than
+  replacing contact with Britton. Notifications can raise visits while the
+  relationship thins — a pass on the metric and a fail on the hypothesis. So
+  every mechanism here routes the client back through the agent's judgment,
+  not just back to a screen.
+- **Don't out-Zillow Zillow.** Zillow owns the listing data and already emails
+  this client. A second stream of similar alerts duplicates what they get and
+  trains them to ignore Harbour's emails. What Zillow cannot send is the
+  agent's read on *this* client's search.
+- **Every email must point at something genuinely new.** The measurement plan
+  already says it: a client who checks twice and finds nothing new stops
+  checking. The email states its fact plainly — "Harbour never withholds"
+  applies — and the dashboard holds what an email can't: the client's own
+  notes, the comparison to their pre-approval, the agent's take.
+
+A home search alternates **tour weeks** and **quiet weeks**, and quiet weeks
+are where checking stops. The plan covers both:
+
+| Week | Return 1 | Return 2 |
+|---|---|---|
+| Tour week | Evening-before reminder (built) | Tour recap |
+| Quiet week | The agent's weekly picks | A change to a home they liked |
+
+### 1. The tour recap — building first
+
+When the agent has written up every home from a tour day, the client gets an
+email: those homes, the agent's read on each, and a question — "Which one
+stayed with you?" — answered by replying to the agent. Built first because
+everything it needs exists (tours, debriefs, the reminder infrastructure, and
+past tours moving into Homes Seen), and because it closes the exact gap in the
+evidence above.
+
+The agent sends it, prompted, rather than it firing on its own: a recap sent
+the moment the last debrief saves would go out before the agent had reread
+their notes. Once a day's homes are all written up, the client's Homes Seen tab
+offers the send. That also makes debrief speed visible — the staleness metric
+this plan leans on.
+
+### 2. Changes to a home they've already seen
+
+Price drops, back on market, gone pending — only for homes in the client's
+Homes Seen marked Strong or Maybe, never all listings. What makes it more than
+a Zillow alert is context only Harbour has: "now $15,000 under your
+pre-approval, and still under it with the $220 HOA", beside the client's notes
+from the tour. First version is agent-triggered — Britton already sees these in
+MLS alerts, so one tap sends it with no data feed or licensing. An automatic
+MLS/IDX feed is a later step governed by MLS and brokerage rules. The HOA
+figure is the existing estimate, which only ever qualifies the lender's number
+downward.
+
+### 3. The agent's weekly picks
+
+Two or three new listings on a set day each week, each with one line on why the
+agent thinks it fits, and "Tour it" / "Pass" on the dashboard — the first way a
+client answers back inside Harbour. Its cost is agent time, so it stays small or
+it becomes the chore that lapses. The "why it fits" line is agent judgment,
+marked as such, and needs the same Fair Housing care as debrief notes.
+
+### Constraints on all three
+
+- **License disclosure on every client-facing surface.** Britton's California
+  DRE number must appear on marketing and client-facing material, emails and
+  the dashboard included, and the same will hold for every future agent. A
+  client email is not sent without the sending agent's license number.
+- **Picks are marketing email**, which brings an unsubscribe link and a
+  physical address, and possibly MLS rules on sending listing information.
+  Brokerage brand standards apply to all three.
+- **Measurement needs attribution.** Page views record where a client went, not
+  what brought them. Links in these emails should be tagged so returns can be
+  credited to the mechanism that caused them — otherwise there's no telling
+  which of the three works.
+
 ---
 
 # The inspection agent
