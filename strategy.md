@@ -497,6 +497,33 @@ written brief to **the spoken narrative.**
 before this is built.** Same shape as the existing gate on the
 stage-explainer copy, and reviewed once as rules rather than per deal.
 
+**Status, 2026-09-14:** the broker half is on the agenda for Britton's
+meeting with the managing broker on 2026-09-15, using a review page linked
+from `project.md`. The attorney half is not yet arranged.
+
+Preparing that page widened the review beyond this watch list. Six questions
+belong to the brokerage rather than to law, and none of them were on the
+list:
+
+- whether the brokerage has an AI-use policy the design must fit
+- how the broker's duty to supervise applies to client messages an AI drafts
+  under the realtor's name — in particular the three things that reach the
+  client without review: the holding message, a licensed quote added to a
+  finding the client has seen, and negotiation status
+- whether clients must be told an AI helps prepare their brief
+- whether errors-and-omissions coverage extends to AI-assisted communication
+- whether AI drafts, call prep and critic findings are transaction records
+  the brokerage must keep
+- whether confidential transaction documents may pass through the outside
+  inbound email service
+
+The watch list itself was split by who can answer it. Items 4 (discouraging
+further investigation) and 5 (seller disclosure discrepancies) are practice
+standards, so they went to the broker. Items 1 (stating causes), 2 (framing
+that minimizes), 3 (advice about cancelling) and 6 (discoverability) went on
+the page as questions expected to need an attorney, with room for the broker
+to answer or redirect them.
+
 ## Publication timing: two waves, two publication points
 
 Settled 2026-09-12. The worry was that reports arrive over several days, so
@@ -1194,7 +1221,8 @@ which is already a below-the-line step in the workflow.
 
 - **Precondition, not a gap:** broker and real estate attorney review of the
   call narrative's framing rules before it is built. See the legal watch
-  list under "A narrative for the realtor's call."
+  list under "A narrative for the realtor's call." The broker half is
+  scheduled for 2026-09-15; the attorney half is not yet arranged.
 
 *Resolved 2026-09-11: whether the client can ask the agent questions. No —
 see "The client cannot ask the agent questions" above. And where calibration

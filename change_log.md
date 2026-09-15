@@ -1276,6 +1276,41 @@ Recorded in `CLAUDE.md` as rules for any session:
 This entry was written that way: status checked, the other session's commit
 inspected, the end of this file re-read before appending, and staged by path.
 
+### Also day 8 — a review page for the inspection agent
+
+Britton is meeting the managing broker about the dashboard on 2026-09-15
+and will use the time to cover the inspection agent too. Built a review page
+for it, linked from `project.md`, styled as a sibling of the dashboard
+packet so the two read as a set.
+
+It explains the design in three short sections — what the agent would do,
+where the realtor stays in control, and the safeguards — then asks twelve
+questions. The middle section matters most for a broker: it separates what
+always waits for the realtor, what stops and comes to them, and the three
+things that reach a client **without** review, which is where a broker's
+duty to supervise bites.
+
+Preparing the questions widened the precondition review. The legal watch
+list covered what the narrative says; it didn't cover the brokerage's own
+concerns — AI-use policy, supervision, telling clients AI is involved, E&O
+coverage, record keeping, and routing documents through an outside email
+service. Those six went to the broker along with the two watch-list items
+that are practice standards. The other four watch-list items went on the page
+as questions expected to need an attorney. Recorded in `strategy.md` under
+the narrative's precondition.
+
+**Built with the packet's lesson in mind, but not fully free of it.** The
+dashboard packet failed because it assumed a reader who could save. This
+page saves answers to itself, which works for Britton as its owner recording
+answers in the meeting. A broker opening a shared link on their own is
+outside the organization, where saving is unavailable: the page falls back to
+gathering their answers as text to copy into an email, but only after a save
+attempt is refused. If the broker is going to fill it in alone rather than in
+the meeting, the page should say up front that saving may not work for them.
+
+Not seen rendered before publishing — the browser pane can't display a local
+file — so Britton opening it once before the meeting is the first real look.
+
 ### Not yet done
 
 - Pilot cohort is one client deep (Tara Taylor, onboarded 2026-09-10) and
@@ -1320,7 +1355,10 @@ inspected, the end of this file re-read before appending, and staged by path.
 - The inspection agent is **designed but not started** — see
   `strategy.md`. No open design questions. Deferred: independent
   contractor cost ranges and the standalone brief. Precondition: broker
-  and real estate attorney review of the call narrative's framing rules.
+  and real estate attorney review of the call narrative's framing rules —
+  broker half scheduled for 2026-09-15, attorney half not yet arranged.
+- The inspection agent review page has not been seen rendered, and has not
+  been tried from a shared link by someone outside Britton's organization.
 - **Applying a migration is a manual paste, and it has now failed
   silently once.** The Supabase CLI is linked to the project but not
   logged in, so `supabase db push` does nothing rather than erroring in a
