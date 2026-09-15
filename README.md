@@ -127,87 +127,139 @@ conventions for extending any of this are in [`CLAUDE.md`](CLAUDE.md).
 
 ## In design: the inspection agent
 
-**Designed, not built.** It's deliberately kept out of the discovery pilot so
-the two don't muddy each other, and unlike the dashboard it's aimed at many
-agents from the start. The full design is in [`strategy.md`](strategy.md).
+**The design is complete and nothing is built yet.** It's deliberately kept out
+of the discovery pilot so the two don't muddy each other, and unlike the
+dashboard it's designed for many agents from the start. Before any build, a
+broker and a real estate attorney will review the rules for how it frames
+findings. The full reasoning, including the decisions that were reversed, is
+in [`strategy.md`](strategy.md).
 
-**The problem.** A home inspection produces a sixty-page PDF with forty-odd
-flagged "deficiencies," most of them routine. The inspector sends it to the
-client and the agent at the same moment, so the client opens it alone, counts
-the problems, and panics. The expensive part isn't reading the report. It's the
-hour on the phone afterward.
+In this section, **the AI** means the inspection agent and **the realtor**
+means the human agent, to keep the two apart.
 
-**The principles it rests on:**
+### The problem
 
-- **Fast where no judgment is needed, reviewed where it is.** Any flow that
-  drafts and then waits for the agent's approval reaches the client after the
-  panic has started. So a message that needs no judgment ("the report's in,
-  most of this is routine, I'm reviewing it tonight") sends automatically on
-  arrival, and everything substantive waits for a human.
-- **The agent is never the source of a fact.** Agents aren't licensed to
-  assess structures or price repairs, so every claim shown to a client is
-  attributed: to the inspector, to base-rate context, or to a specialist who
-  needs to look. A counterintuitive result is that a longer brief is *safer*
-  than a short one, because "minor, don't worry about it" is an unlicensed
-  opinion.
+A home inspection produces a sixty-page PDF with forty-odd flagged
+"deficiencies," most of them routine. The inspector sends it to the client and
+the realtor at the same moment, so the client opens it alone, counts the
+problems, and panics. The expensive part isn't reading the report. It's the hour
+on the phone afterward.
+
+### How it works, from report to closing
+
+```mermaid
+flowchart TD
+    A["Inspection reports arrive"] --> B["Holding message to the client<br/>(automatic, within seconds)"]
+    B --> C["Client brief and realtor's call prep<br/>(once every ordered inspection is in)"]
+    C --> D["Contractor repair quotes arrive"]
+    D --> E["Negotiation brief and recommendation"]
+    E --> F["Realtor sends the repair request"]
+    F --> G["Seller responds"]
+    G --> H["Decision call with the client"]
+    H -- "counteroffer" --> F
+    H -- "terms agreed" --> I["Repairs and credits verified<br/>before closing"]
+```
+
+1. **A report arrives.** Inspectors send reports to a dedicated address that
+   forwards them straight into Harbour, so the AI never reads anyone's inbox.
+   It matches the report to the right client, and if the match isn't exact, it
+   stops and asks the realtor. A short holding message goes to the client within
+   seconds: the report is in, most of what's in it is routine, and the realtor
+   is reviewing it.
+2. **The inspections are in.** Reports and quotes arrive in two waves. Each
+   report gets its own holding message, but a brief, and the notification that
+   comes with it, goes out once per wave, never once per document. The first
+   wave produces a **client brief** and the realtor's **call prep**:
+   - The brief ranks findings using the inspector's own severity grades. Routine
+     items are collapsed, never removed.
+   - When the pest or roof report prices a defect the home inspection only
+     flagged, the AI proposes the match, and the realtor confirms it.
+   - The call prep groups findings by root cause, names what's still unknown,
+     and lays out the client's options.
+   - If an ordered report is 48 hours late, the realtor is alerted. The AI never
+     publishes a partial set on its own.
+3. **The repair quotes are in.** A quote that only adds a price updates the
+   brief. A quote that changes the story ("replace the whole system, not the
+   ducts") goes to the realtor first, so the client hears it from a person. The
+   AI produces a negotiation brief and a recommendation. If quotes won't arrive
+   before the inspection deadline, it drafts an extension request for the
+   realtor to send.
+4. **The seller responds.** This can take one round or several, depending on
+   the market. The AI checks the response against the request item by item and
+   catches anything the seller didn't address. While the client waits, they see
+   where things stand and when the seller's deadline is. They see the outcome
+   only after the realtor has talked it through with them. The AI drafts
+   counteroffers, and the realtor sends them.
+5. **Through closing.** For each agreed repair, the AI matches a receipt to it
+   and checks for a licensed contractor. Each agreed credit is checked against
+   the closing statement. Anything unverified as closing approaches alerts the
+   realtor, because neither a missed repair nor a missing credit can be fixed
+   after closing.
+
+### The principles behind it
+
+- **Fast where no judgment is needed, reviewed where it is.** A flow that drafts
+  and then waits for approval reaches the client after the panic has started.
+  The holding message needs no judgment, so it sends immediately; everything
+  substantive waits for review.
+- **The AI is never the source of a fact.** Realtors aren't licensed to assess
+  structures or price repairs, so every claim is attributed to an inspector, to
+  general context, or to a specialist who needs to look. That makes a longer
+  brief *safer* than a short one, because "minor, don't worry about it" is an
+  unlicensed opinion.
 - **Harbour never withholds, it only frames.** The client already has every
-  source document, so leaving something out protects no one. This reversed an
-  earlier rule against filtering findings, and it shapes how costs are
-  presented. The most frightening thing about "$10,700 in repairs" is that it
-  reads as a bill, when at this stage it's what the buyer is asking the
-  *seller* to cover. Saying so isn't spin. It's what the number is for.
-- **Autonomy comes from detectors, not from trust.** Each workflow step was
-  scored on how reversible it is, how far the damage spreads (including the
-  damage to a client's confidence in their agent), and whether a failure would
-  be visible or silent. Only two kinds of step are always a human's: telling a
-  client their deal may be at risk, and sending anything to the other side of
-  the deal, like an extension request or a counteroffer. Two more go to a human
-  in specific cases: a new client's first brief, and any change to a brief the
+  report, so leaving something out protects no one. This reversed an earlier
+  rule against filtering findings, and it shapes how costs read. "$10,700 in
+  repairs" sounds like a bill, when at this stage it's what the buyer is asking
+  the *seller* to cover. Saying so isn't spin. It's what the number is for.
+- **Autonomy comes from detectors, not from trust.** Each step was scored on how
+  reversible it is, how far the damage spreads (including to a client's
+  confidence in their realtor), and whether a failure would be visible or
+  silent. Two things always wait for the realtor: telling a client their deal
+  may be at risk, and sending anything to the seller's side. Two more wait in
+  specific cases: a new client's first brief, and any change to a brief the
   client has already read. Everything else runs automatically *because* a
-  specific check catches its failure mode, and a step with no check stays with
-  a human.
-- **The agent never checks its own work.** A separate critic, ideally on a
+  specific check catches its failure, and a step without one waits for a person.
+- **The AI never checks its own work.** A separate critic, ideally on a
   different model, reviews every draft against the original documents without
-  seeing the drafting agent's reasoning, so it can't be argued into agreement.
-  It can only report problems, never edit, and only the human agent can dismiss
-  what it finds. It blocks anything going to the client or the other side of
-  the deal. This also fixed a flaw in an earlier version of the design, where
-  "show me only the exceptions" meant exceptions the agent had flagged about
-  itself.
+  seeing the drafting AI's reasoning, so it can't be argued into agreement. It
+  can only report problems, and only the realtor can dismiss one. It blocks
+  anything bound for the client or the seller's side. This also fixed a flaw in
+  an earlier version, where "show me only the exceptions" meant exceptions the
+  AI had flagged about itself.
 - **Every loop has a limit and a visible stop.** A loop can fail by running
-  forever or by quietly stopping, so each one has a maximum and a halt that
-  alerts a person. Writing these out turned up a loop the design had missed: an
+  forever or by quietly stopping, so each has a maximum and a halt that alerts a
+  person. Writing them out turned up a loop the design had missed: an
   out-of-office reply to one of Harbour's own emails could feed back into the
   inspection inbox and set off more mail.
 
-**The two most valuable parts came from working a real inspection, not from
-the design sessions:**
+### Two parts came from working a real inspection
+
+The design sessions didn't produce the two most valuable ideas. Sitting with a
+live client's reports did.
 
 - **The same defect shows up in several reports, and only one of them prices
-  it.** The home inspection flags an issue with no cost, and the pest or roof
-  inspector finds the same thing and quotes a repair. Matching them gives a
-  licensed price with no contractor to chase, which overturned an earlier plan
-  to defer cost data. The agent proposes matches and never merges them itself,
-  because a wrong merge hides one defect under another's cost.
-- **A narrative for the agent's call.** Grouping findings by root cause turns
-  fourteen separate crises into one problem with one fix. This changes what the
-  client thinks the problem *is*, which calms them more than any statistic. It's
-  also the lowest-risk thing the agent produces, because a licensed human retells
-  it in their own words.
+  it.** Matching them gives a licensed repair price with no contractor to chase.
+  That overturned an earlier plan to leave cost data for a later version. The AI
+  proposes matches but never merges them, because a wrong merge hides one defect
+  under another's cost.
+- **A story about the house for the realtor's call.** Grouping findings by root
+  cause turns fourteen separate crises into one problem with one fix, which
+  changes what the client thinks the problem *is*. It's also the lowest-risk
+  thing the AI produces, because a licensed person retells it in their own
+  words.
 
-**Where it stands.** The design is complete, with no open questions. The
-client can't ask the agent questions, because that would replace the call and
-contradict the riskiest assumption above. Severity comes from the inspector's
-own grading rather than the model's judgment, and a report without usable
-grading goes to a human. Reports and repair quotes arrive in two waves, so the
-client hears from Harbour twice: once the inspections are in, and again once
-the quotes are. When the seller responds, the client sees where the
-negotiation stands while they wait, and the item-by-item outcome only after
-their agent has talked it through with them. After terms are agreed, the agent
-checks that each repair was actually done and each credit appears on the
-closing statement, because neither can be fixed after closing. Before anything
-is built, a broker and a real estate attorney will review the rules for how
-the narrative is framed.
+### What it deliberately won't do
+
+- **Answer the client's questions.** A chat box would replace the realtor's
+  call, which contradicts the riskiest assumption this whole product is testing.
+  And "is this crack serious?" has no answer that is both useful and licensed.
+- **Rank findings by what the client can afford.** A pre-approval shows what a
+  lender would lend, not what's in savings. And changing what clients see based
+  on their circumstances is exactly what fair housing review exists to catch.
+  Everyone sees the same order.
+- **Decide severity itself.** It uses the inspector's grading. A report with no
+  usable grading goes to the realtor.
 
 ## Stack
 
