@@ -1,9 +1,9 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import {
-  getAgentBrandTheme,
   getClientTransactions,
   getCurrentProfile,
+  getMyAgent,
   getStageDefinitions,
   linkedTransaction,
   primaryTransaction,
@@ -11,6 +11,7 @@ import {
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
 import { AppShell } from "@/components/app-shell";
 import { BrandThemeStyle } from "@/components/brand-theme-style";
+import { LicenseFooter } from "@/components/license-footer";
 import { SellerStatusStrip } from "@/components/seller-status-strip";
 import { VisitBeacon } from "@/components/visit-beacon";
 
@@ -21,11 +22,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const [profile, transactions, stages, brandTheme] = await Promise.all([
+  const [profile, transactions, stages, agent] = await Promise.all([
     getCurrentProfile(supabase, user.id),
     getClientTransactions(supabase, user.id),
     getStageDefinitions(supabase),
-    getAgentBrandTheme(supabase),
+    getMyAgent(supabase),
   ]);
 
   const hasBuy = transactions.some((t) => t.type === "buy");
@@ -77,7 +78,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <>
-      <BrandThemeStyle theme={brandTheme} />
+      <BrandThemeStyle theme={agent?.brandTheme ?? null} />
       <AppShell
         sidebar={
           <DashboardSidebar
@@ -93,6 +94,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
             partnerEmail={profile.partner_email}
           />
         }
+        footer={<LicenseFooter agent={agent} />}
         banner={
           linkedSell && linkedSell.status === "active" ? (
             <SellerStatusStrip sellTransaction={linkedSell} stages={stages} />

@@ -1,5 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/supabase/database.types";
+import { DEFAULT_TIME_ZONE, localDayRange } from "@/lib/time-zone";
+import { getSendingAgent, missingLicenseReason } from "./agent-signature";
 import { sendEmail } from "./send";
 import { reminderHtml, reminderSubject, reminderText, type ReminderStop } from "./tour-reminder";
 
@@ -9,31 +11,9 @@ export type ReminderOutcome =
   | { status: "sent"; recipients: string[]; stops: number }
   | { status: "skipped"; reason: string };
 
-export const DEFAULT_TIME_ZONE = process.env.TOUR_TIME_ZONE ?? "America/Los_Angeles";
-
-/**
- * The UTC instants bounding a local calendar day. Parsing
- * "2026-09-13T00:00:00" directly would anchor it to the server's zone — UTC
- * on Vercel — shifting the window by the offset, which on the Pacific coast
- * means missing every tour before 5pm and picking up the previous evening's.
- */
-export function localDayRange(dateKey: string, timeZone: string): { start: string; end: string } {
-  const midnightUtc = new Date(`${dateKey}T00:00:00Z`).getTime();
-  const shown = new Date(midnightUtc);
-  const zoned = new Date(shown.toLocaleString("en-US", { timeZone })).getTime();
-  const utc = new Date(shown.toLocaleString("en-US", { timeZone: "UTC" })).getTime();
-  const start = midnightUtc + (utc - zoned);
-  return {
-    start: new Date(start).toISOString(),
-    end: new Date(start + 86_400_000).toISOString(),
-  };
-}
-
-/** The local calendar date n days from now, as YYYY-MM-DD. */
-export function localDateKey(daysFromNow: number, timeZone: string): string {
-  const target = new Date(Date.now() + daysFromNow * 86_400_000);
-  return target.toLocaleDateString("en-CA", { timeZone });
-}
+// Moved to @/lib/time-zone so the data layer can use them without importing
+// the email sender; re-exported for existing callers.
+export { DEFAULT_TIME_ZONE, localDateKey, localDayRange } from "@/lib/time-zone";
 
 /**
  * Sends one client their reminder for one tour date. Shared by the nightly
@@ -79,6 +59,12 @@ export async function sendTourReminder(
   const clientEmail = authUser?.user?.email;
   if (!clientEmail) return { status: "skipped", reason: "no email address on file" };
 
+  // Checked before claiming the reminder row, so a missing license number
+  // leaves the day unclaimed and the reminder sends once it's added.
+  const agent = await getSendingAgent(admin, options.clientId);
+  const blocked = missingLicenseReason(agent);
+  if (blocked || !agent) return { status: "skipped", reason: blocked ?? "no agent" };
+
   const recipients = [clientEmail];
   // The partner is on file precisely so they aren't left out of the loop.
   if (profile.partner_email) recipients.push(profile.partner_email);
@@ -92,11 +78,6 @@ export async function sendTourReminder(
 
   if (claimError) return { status: "skipped", reason: "already sent for that date" };
 
-  const [{ data: agent }, { data: agentProfile }] = await Promise.all([
-    admin.from("agents").select("name, email, phone").limit(1).single(),
-    admin.from("profiles").select("full_name, phone").eq("is_agent", true).limit(1).single(),
-  ]);
-
   const stops: ReminderStop[] = tours.map((tour) => ({
     address: tour.address,
     scheduledAt: tour.scheduled_at,
@@ -105,11 +86,7 @@ export async function sendTourReminder(
 
   const input = {
     clientName: profile.full_name,
-    agentName: agentProfile?.full_name ?? agent?.name ?? "Your agent",
-    agentEmail: agent?.email ?? "",
-    // agents.phone is the number clients are shown (0016); the profile field
-    // it was copied from is the fallback, and was empty in production.
-    agentPhone: agent?.phone ?? agentProfile?.phone ?? null,
+    agent,
     tourDateLabel: new Date(`${options.tourDate}T12:00:00`).toLocaleDateString("en-US", {
       weekday: "long",
       month: "long",
@@ -122,7 +99,7 @@ export async function sendTourReminder(
 
   const result = await sendEmail({
     to: recipients,
-    replyTo: agent?.email,
+    replyTo: agent.email,
     subject: reminderSubject(input),
     html: reminderHtml(input),
     text: reminderText(input),

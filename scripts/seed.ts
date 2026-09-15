@@ -51,7 +51,8 @@ async function main() {
       name: "Britton Taylor",
       email: "BT@brittontaylor.com",
       brokerage: "TBD Brokerage",
-      dre_number: "TBD",
+      // Not a placeholder: "TBD" would print as "DRE #TBD" on client email.
+      dre_number: null,
     })
     .select()
     .single();

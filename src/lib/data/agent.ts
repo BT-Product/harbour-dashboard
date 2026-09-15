@@ -9,7 +9,7 @@ import type {
   Preapproval,
   TourReminder,
 } from "@/lib/supabase/database.types";
-import { dateKey } from "@/lib/date-grouping";
+import { DEFAULT_TIME_ZONE, localDateKey, zonedDateKey } from "@/lib/time-zone";
 
 type Client = SupabaseClient<Database>;
 
@@ -217,11 +217,75 @@ export function pendingDebriefTours(
   homes: Pick<HomeSeen, "address" | "seen_at">[],
   now: Date = new Date(),
 ): Tour[] {
-  const debriefed = new Set(homes.map((h) => `${dateKey(h.seen_at)}|${addressKey(h.address)}`));
+  // Days in the tour's own time zone, not the server's: on Vercel (UTC) a
+  // 6pm Pacific tour lands on the next day, and would never match the home
+  // debriefed for it.
+  const day = (iso: string) => zonedDateKey(iso, DEFAULT_TIME_ZONE);
+  const debriefed = new Set(homes.map((h) => `${day(h.seen_at)}|${addressKey(h.address)}`));
 
   return tours
     .filter((tour) => new Date(tour.scheduled_at).getTime() < now.getTime())
     .filter((tour) => tour.home_seen_id === null)
-    .filter((tour) => !debriefed.has(`${dateKey(tour.scheduled_at)}|${addressKey(tour.address)}`))
+    .filter((tour) => !debriefed.has(`${day(tour.scheduled_at)}|${addressKey(tour.address)}`))
     .sort((a, b) => new Date(b.scheduled_at).getTime() - new Date(a.scheduled_at).getTime());
+}
+
+/** How far back a finished tour day is still worth recapping. */
+const RECAP_WINDOW_DAYS = 7;
+
+export type RecapReadyDay = { tourDate: string; homeCount: number };
+
+/**
+ * Tour days whose homes are all written up and whose recap hasn't gone out.
+ *
+ * A day qualifies when it has at least one home seen, no tour that day still
+ * waiting on a debrief, and falls within the last week — a recap of a tour
+ * from a month ago would read as an afterthought, and old history (homes seen
+ * before someone became a client) shouldn't prompt anything.
+ */
+export function recapReadyDays(
+  tours: Tour[],
+  homes: Pick<HomeSeen, "address" | "seen_at">[],
+  sentTourDates: Set<string>,
+  now: Date = new Date(),
+): RecapReadyDay[] {
+  const today = localDateKey(0, DEFAULT_TIME_ZONE);
+  const earliest = localDateKey(-RECAP_WINDOW_DAYS, DEFAULT_TIME_ZONE);
+
+  const counts = new Map<string, number>();
+  for (const home of homes) {
+    const key = zonedDateKey(home.seen_at, DEFAULT_TIME_ZONE);
+    counts.set(key, (counts.get(key) ?? 0) + 1);
+  }
+
+  const stillPending = new Set(
+    pendingDebriefTours(tours, homes, now).map((t) => zonedDateKey(t.scheduled_at, DEFAULT_TIME_ZONE)),
+  );
+
+  return [...counts.entries()]
+    .filter(([key]) => key >= earliest && key <= today)
+    .filter(([key]) => !stillPending.has(key) && !sentTourDates.has(key))
+    .map(([tourDate, homeCount]) => ({ tourDate, homeCount }))
+    .sort((a, b) => (a.tourDate < b.tourDate ? 1 : -1));
+}
+
+/**
+ * Tour dates a recap has already gone out for, or null when that can't be
+ * known. Null means offer no recaps at all: guessing "none sent" could offer
+ * a second send. Fails soft rather than throwing, so a missing table (before
+ * migration 0018) hides the feature instead of breaking Homes Seen.
+ */
+export async function getClientRecapDates(
+  supabase: Client,
+  clientId: string,
+): Promise<Set<string> | null> {
+  const { data, error } = await supabase
+    .from("tour_recaps")
+    .select("tour_date")
+    .eq("client_id", clientId);
+  if (error) {
+    console.error("getClientRecapDates", error.message);
+    return null;
+  }
+  return new Set((data ?? []).map((row) => row.tour_date));
 }

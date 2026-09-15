@@ -211,18 +211,34 @@ export async function getMyAgentContact(supabase: Client): Promise<AgentContact 
   return data;
 }
 
+export type MyAgent = {
+  name: string;
+  phone: string | null;
+  dreNumber: string | null;
+  brandTheme: string | null;
+};
+
 /**
- * The signed-in user's agent's brokerage colour preset — works for the agent
- * and for their clients, who can both read that agent's row.
+ * The signed-in user's agent — the agent themselves, or a client's agent,
+ * since both can read that agents row. Supplies the brokerage colours and the
+ * license number both dashboards show.
  *
- * Fails soft to the default look: branding must never be the reason a
- * dashboard doesn't load, including before migration 0017 has run.
+ * Fails soft: branding and disclosure must never be why a dashboard doesn't
+ * load, including in the window before a migration has run.
  */
-export async function getAgentBrandTheme(supabase: Client): Promise<string | null> {
-  const { data, error } = await supabase.from("agents").select("brand_theme").maybeSingle();
-  if (error) {
-    console.error("getAgentBrandTheme", error.message);
+export async function getMyAgent(supabase: Client): Promise<MyAgent | null> {
+  const { data, error } = await supabase
+    .from("agents")
+    .select("name, phone, dre_number, brand_theme")
+    .maybeSingle();
+  if (error || !data) {
+    if (error) console.error("getMyAgent", error.message);
     return null;
   }
-  return data?.brand_theme ?? null;
+  return {
+    name: data.name,
+    phone: data.phone,
+    dreNumber: data.dre_number,
+    brandTheme: data.brand_theme,
+  };
 }

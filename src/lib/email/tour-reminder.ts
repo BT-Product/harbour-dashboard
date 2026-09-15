@@ -1,3 +1,5 @@
+import { signatureHtml, signatureText, type SendingAgent } from "./agent-signature";
+
 /**
  * The day-before tour reminder.
  *
@@ -14,9 +16,8 @@ export type ReminderStop = {
 
 export type ReminderInput = {
   clientName: string;
-  agentName: string;
-  agentEmail: string;
-  agentPhone: string | null;
+  /** Signs the email, license number included. */
+  agent: SendingAgent;
   tourDateLabel: string;
   stops: ReminderStop[];
   dashboardUrl: string;
@@ -64,9 +65,7 @@ export function reminderText(input: ReminderInput) {
     "",
     "If anything's changed on your end, just reply to this email or call me.",
     "",
-    input.agentName,
-    input.agentPhone ?? "",
-    input.agentEmail,
+    ...signatureText(input.agent),
   ];
 
   return lines.filter((line, i) => !(line === "" && lines[i - 1] === "")).join("\n");
@@ -116,13 +115,7 @@ export function reminderHtml(input: ReminderInput) {
         If anything's changed on your end, just reply to this email or call me.
       </p>
 
-      <p style="margin:0;font-size:15px;line-height:1.6;">
-        ${escapeHtml(input.agentName)}<br />
-        ${input.agentPhone ? `${escapeHtml(input.agentPhone)}<br />` : ""}
-        <a href="mailto:${escapeHtml(input.agentEmail)}" style="color:#1f4e46;">${escapeHtml(
-          input.agentEmail,
-        )}</a>
-      </p>
+      ${signatureHtml(input.agent)}
     </div>
   </body>
 </html>`;
