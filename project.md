@@ -86,7 +86,7 @@ realtors from the start rather than at Britton alone.
 
 - Live app: https://harbour-dashboard-ten.vercel.app
 - Repo: this repository (`RE-Transaction-Dash`)
-- Broker review packet (2026-09-13): https://claude.ai/code/artifact/2f05d3c8-08ee-45ab-a6cb-ecb2f51637f4
+- Broker review packet (2026-09-13, sign-off fixed 2026-09-14): https://claude.ai/artifact/6onJiwsEC9gBCc1HcV7Sq1
   Six items needing a broker's sign-off, each with the exact copy as the
   client sees it and a verdict field. Private until shared from the
   page's share menu.

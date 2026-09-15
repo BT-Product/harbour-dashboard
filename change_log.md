@@ -950,7 +950,8 @@ repo link, since the broker is not going to read source:
    neither field is read by any client-facing code. The automated tour
    reminder emails are the stronger case of the two surfaces.
 
-Packet: https://claude.ai/code/artifact/2f05d3c8-08ee-45ab-a6cb-ecb2f51637f4
+Packet: https://claude.ai/artifact/6onJiwsEC9gBCc1HcV7Sq1 (originally published at
+https://claude.ai/code/artifact/2f05d3c8-08ee-45ab-a6cb-ecb2f51637f4)
 
 Attorney-side items (discoverability and retention of agent notes, no
 terms or privacy policy while `client_page_views` records every client
@@ -1141,13 +1142,70 @@ The workflow model gained a negotiation phase and a through-close phase
 is at risk" plus "anything sent to the other side of the deal." The README
 now describes the design as complete.
 
+### The packet couldn't be completed by the person it was built for
+
+The managing broker reported they could neither save their answers nor
+enter their name and date. Two separate faults, and only one was a slip.
+
+**The slip:** the "Reviewed by" and "Date" lines were built as ruled lines
+for a printed copy, with no input behind them. On screen they looked
+fillable and weren't. A print-first detail that nobody checked on screen.
+
+**The design error:** answers were kept in browser storage, and the page
+promised they'd "save in this browser as you go." Shared views frequently
+block browser storage outright, and even where it works it saves only on the
+reviewer's own machine — so in the best case the answers still never reached
+Britton unless the reviewer thought to copy them into an email.
+
+The obvious repair turned out to be unavailable, which is the part worth
+keeping. Both of the page's server-side persistence options exclude exactly
+this reader: shared storage makes a page organization-internal (a broker is
+not a member of Britton's Claude organization, so they'd have lost access to
+the page entirely), and letting a page save itself requires edit access and
+is disabled on shared links. **A page meant for someone outside the
+organization cannot depend on any of it.** That should have been the first
+question asked when building the packet — who opens this, and with what
+access — rather than discovered from the reviewer's report.
+
+The rebuilt page assumes no storage at all:
+
+- Name and date are real fields.
+- The instructions state plainly that the page can't save or send anything,
+  instead of promising it does, and say that replying to the email directly
+  is equally fine.
+- Everything entered, name and date included, gathers live into one text box
+  at the bottom. Getting it out needs only the reviewer's own select-and-copy,
+  which no browser policy can block. The Copy button remains as a convenience
+  but claims "Copied" only when the browser confirms it — a false success
+  message is the most reliable way to lose someone's answers.
+- The Print button was removed: printing from inside a shared view is as
+  unreliable as the clipboard, and it was one more control that could silently
+  do nothing.
+- Browser storage survives only as a best-effort draft under the original
+  key, so anything that did manage to save carries over.
+
+Anything the broker typed before the fix was most likely lost. Britton was
+advised to say so up front rather than let them reopen the page expecting
+their answers, and to make an inline email reply an explicit, equal option —
+a reviewer who has already hit one broken form may reasonably not try again.
+
+Checked that the script parses; not seen rendered in the broker's own view,
+so their next attempt is the real test.
+
+Republished to the same artifact. Its link now displays in a newer format
+(https://claude.ai/artifact/6onJiwsEC9gBCc1HcV7Sq1); the original link format may still resolve, but the
+current one is what to send.
+
 ### Not yet done
 
 - Pilot cohort is one client deep (Tara Taylor, onboarded 2026-09-10) and
   still has no move-up buyer — the case the hypothesis actually turns on.
   Two more clients needed before the thresholds mean anything.
 - **The packet is with the managing broker (sent 2026-09-14), awaiting a
-  response.** Item 01 is fixed on our side and needs only their wording.
+  response** — on its second attempt, after the first failed to save or
+  take their name. Watch whether the fixed page gets used or the answers
+  come back as an email reply; either is fine, but it says something about
+  whether a form was the right shape for this at all. Item 01 is fixed on our side and needs only their wording.
   The other five genuinely block on them, and a real client is reading the
   unreviewed copy daily in the meantime. No follow-up date set yet — worth
   one if nothing comes back within a week.
