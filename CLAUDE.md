@@ -122,6 +122,11 @@ gone. Nothing warns either of them.
     `agents.dre_number`, same shape as `agent_update_my_phone`. Format is
     validated in the app (`normalizeDreNumber`), where the error can be
     explained
+  - `agent_update_my_profile`, `agent_update_my_photo` (0019) — the profile
+    page's writes, both scoped to the caller's own agent row. The photo
+    function refuses any URL that doesn't point into the caller's own folder
+    of the `agent-photos` bucket, so a stored photo can never be an arbitrary
+    image or tracking pixel
   - `agent_onboard_client` (0009) — creates a new client's transactions
     from the buying/selling/both answer in one call, so a move-up client
     can't end up with one leg saved, the other failed, and no link
@@ -224,6 +229,14 @@ widened — managing a client's transaction needed a real UI. Today:
 - `/agent/debrief` — still its own standalone fast-entry form. The
   original reasoning holds here: this is the one used in a parking lot
   between showings, so it stays optimized for speed over completeness.
+- `/agent/profile` — the agent's own details, reached by clicking their
+  name at the foot of the sidebar: licensed name, photo, DRE number, phone,
+  office address. New agent information goes here, and each field says
+  where clients see it. Photos are the app's first use of Supabase Storage:
+  a public `agent-photos` bucket (0019) where storage policies let an agent
+  write only inside a folder named for their own `agents.id`, one fixed
+  object per agent overwritten on replace. Photo and office address are
+  stored but not yet shown to clients.
 
 **Add client** asks whether they're buying, selling, or both, and
 creates their transactions as part of the invite — a buyer defaults to

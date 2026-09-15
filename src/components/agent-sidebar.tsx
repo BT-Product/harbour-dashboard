@@ -18,7 +18,13 @@ function initials(name: string) {
   return ((parts[0]?.[0] ?? "") + (parts[1]?.[0] ?? "")).toUpperCase();
 }
 
-export function AgentSidebar({ fullName }: { fullName: string }) {
+export function AgentSidebar({
+  fullName,
+  photoUrl,
+}: {
+  fullName: string;
+  photoUrl: string | null;
+}) {
   const pathname = usePathname();
   const { close } = useSidebarDrawer();
 
@@ -55,12 +61,32 @@ export function AgentSidebar({ fullName }: { fullName: string }) {
       </nav>
 
       <div className="space-y-3 border-t border-sidebar-border pt-3">
-        <div className="flex items-center gap-3 px-3">
-          <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-sidebar-primary text-xs font-semibold text-sidebar-primary-foreground">
-            {initials(fullName)}
-          </div>
-          <span className="truncate text-sm font-medium">{fullName}</span>
-        </div>
+        {/* The way into the agent's own profile — where their license number,
+            photo and contact details live. */}
+        <Link
+          href="/agent/profile"
+          onClick={close}
+          aria-current={pathname === "/agent/profile" ? "page" : undefined}
+          className={cn(
+            "flex items-center gap-3 rounded-lg px-3 py-2 transition-colors",
+            pathname === "/agent/profile"
+              ? "bg-sidebar-accent text-sidebar-accent-foreground"
+              : "hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground",
+          )}
+        >
+          {photoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element -- a small avatar from our own storage
+            <img src={photoUrl} alt="" className="size-8 shrink-0 rounded-full object-cover" />
+          ) : (
+            <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-sidebar-primary text-xs font-semibold text-sidebar-primary-foreground">
+              {initials(fullName)}
+            </div>
+          )}
+          <span className="min-w-0">
+            <span className="block truncate text-sm font-medium">{fullName}</span>
+            <span className="block text-xs text-sidebar-foreground/60">Your profile</span>
+          </span>
+        </Link>
 
         <div className="px-1">
           <SignOutButton full />

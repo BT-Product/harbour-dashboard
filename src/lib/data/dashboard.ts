@@ -212,10 +212,13 @@ export async function getMyAgentContact(supabase: Client): Promise<AgentContact 
 }
 
 export type MyAgent = {
+  id: string;
   name: string;
   phone: string | null;
   dreNumber: string | null;
   brandTheme: string | null;
+  officeAddress: string | null;
+  photoUrl: string | null;
 };
 
 /**
@@ -229,16 +232,19 @@ export type MyAgent = {
 export async function getMyAgent(supabase: Client): Promise<MyAgent | null> {
   const { data, error } = await supabase
     .from("agents")
-    .select("name, phone, dre_number, brand_theme")
+    .select("id, name, phone, dre_number, brand_theme, office_address, photo_url")
     .maybeSingle();
   if (error || !data) {
     if (error) console.error("getMyAgent", error.message);
     return null;
   }
   return {
+    id: data.id,
     name: data.name,
     phone: data.phone,
     dreNumber: data.dre_number,
     brandTheme: data.brand_theme,
+    officeAddress: data.office_address,
+    photoUrl: data.photo_url,
   };
 }
