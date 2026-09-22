@@ -64,7 +64,7 @@ realtors from the start rather than at Britton alone.
 - **Pilot cohort clients** — 2–3 active clients, prioritizing at least one
   move-up buyer (the primary persona the product is designed around).
   **First real client onboarded 2026-09-10, first actually signed in
-  2026-09-11** (the pilot client). The gap is not a typo: their invite link
+  2026-09-11**. The gap is not a typo: their invite link
   verified their account and then dead-ended, and it took three fixes
   before they could set a password. Still short of a move-up buyer, which
   is the case the hypothesis actually turns on — with one client, no

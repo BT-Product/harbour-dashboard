@@ -1,18 +1,24 @@
 // Seeds demo data for local testing: one agent (you) and three demo clients
 // covering the move-up buyer, pure buyer, and pure seller cases.
 //
-// This uses admin.createUser with a fixed password (not the invite-by-email
-// flow) because these are fake accounts for you to click through, not real
-// client onboarding. For real clients, use scripts/invite-client.ts instead.
+// This uses admin.createUser with a password (not the invite-by-email flow)
+// because these are fake accounts for you to click through, not real client
+// onboarding. For real clients, use scripts/invite-client.ts instead.
+//
+// The password is generated per run and printed at the end, or taken from
+// DEMO_PASSWORD if you set one. It used to be a constant in this file — which
+// is a live credential for accounts that exist on the production project, in
+// a public repository. Never put it back.
 //
 // Usage: npm run seed
 
+import { randomBytes } from "node:crypto";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "../src/lib/supabase/database.types";
 
 process.loadEnvFile?.(".env.local");
 
-const DEMO_PASSWORD = "***credential removed***";
+const DEMO_PASSWORD = process.env.DEMO_PASSWORD || `demo-${randomBytes(9).toString("base64url")}`;
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -258,6 +264,7 @@ async function main() {
   if (preapprovalError) throw preapprovalError;
 
   console.log("\nDone. Demo login (password for all): " + DEMO_PASSWORD);
+  console.log("  Save it now — it isn't stored anywhere, and isn't in the repo.");
   console.log("  Agent:      BT@brittontaylor.com  -> /agent/debrief");
   console.log("  Move-up:    demo.moveup@example.com");
   console.log("  Pure buyer: demo.buyer@example.com");

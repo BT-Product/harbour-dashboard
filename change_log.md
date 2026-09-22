@@ -231,8 +231,8 @@ starts from zero.
 
 ## Day 4 — 2026-09-10 (Discovery phase)
 
-**The first real client was invited and signed in** (the pilot client,
-invited 9:30am, password set and first login by 9:59am). The invite
+**The first real client was invited and signed in** — invited 9:30am,
+password set and first login by 9:59am. The invite
 email delivered on Supabase's built-in service — the SMTP worry didn't
 block the first one, though nothing about volume or deliverability at
 scale is proven by a single send.
@@ -274,7 +274,7 @@ double-tapped link would. Visit counts were never affected — only the
 finer-grained "pages opened" number.
 
 **The first real client's invite link dead-ended, and it was our bug.**
-the client clicked "Accept invitation" and got an error. Their auth record
+The client clicked "Accept invitation" and got an error. Their auth record
 showed the token was consumed — account confirmed, session created — but
 visit tracking showed they never reached the dashboard. Probing the auth
 API confirmed why: the project's Site URL is still Supabase's default,
@@ -326,7 +326,7 @@ that still being wrong.
   accepted — gsmtp`. Custom SMTP had been switched on and pointed at
   Gmail with a regular account password, which Google stopped accepting
   for SMTP years ago. An App Password fixed it.
-- **the client's link went out** at 17:17 UTC — `recovery_sent_at` populated
+- **Their link went out** at 17:17 UTC — `recovery_sent_at` populated
   for the first time, confirming a real dispatch rather than another
   silent failure.
 
@@ -493,7 +493,7 @@ that mattered more: the overlap is ugly on the agent's own screen, but
 the run-on text is what a client reads on theirs. Now rendered with
 `whitespace-pre-line`, private notes included.
 
-Both verified against the client's real debriefs at 1280px and 375px before
+Both verified against their real debriefs at 1280px and 375px before
 deploying, rather than against seeded data — the multi-line notes only
 exist in what he actually typed.
 
@@ -1368,8 +1368,9 @@ a status poll that had come back blank.
 
 ### Also day 8 — a demo buyer for the meeting, and a published password
 
-Britton had removed the pure-buyer demo account because the client now covered that
-case — then realised he can't sign in as the client, so there was nothing to show
+Britton had removed the pure-buyer demo account because the pilot client now
+covered that case — then realised he can't sign in as them, so there was
+nothing to show
 the broker. Recreated **Sam Buyer** as a plain buyer at Offer Accepted, so the
 wire warning shows: two debriefed homes, a Conventional pre-approval, and tours
 dated only in the past. A future tour would have made the nightly reminder job
@@ -1382,7 +1383,7 @@ right — the move-up demo, Jordan, was still there with a purchase at Loan
 Approval, so a buyer demo existed, just not a plain one. And **the repository
 is public, and `scripts/seed.ts` contains the demo password** used by Jordan's
 and Alex's accounts on the production app. Row-level security keeps anyone
-using them to fake data — the client's rows are unreachable — but it is still a
+using them to fake data — the real client's rows are unreachable — but it is still a
 signed-in session inside the live tenant, able to do what a client can, such as
 setting a partner email that tour reminders would then be sent to.
 
@@ -1413,7 +1414,7 @@ Run sheet: https://claude.ai/artifact/Sw4dV4ngrWRfbVozfg2Qxy
 **Writing the opening line surfaced a claim nobody had checked.** The packet
 said the pilot client "signs into it most days" and had been reading the stage
 copy "for weeks"; the docs said "daily." The visit tracking built to answer
-exactly this question says otherwise: the client opened the dashboard on **one day,
+exactly this question says otherwise: they opened the dashboard on **one day,
 September 11** — ten page views — and not since, with one further sign-in on
 the 12th that recorded no views. And because a client only sees the explainer
 for their current stage, a house-hunting client has seen one of the fourteen,
@@ -1491,16 +1492,16 @@ written at 100 columns, so the layouts were restored and only the real changes
 re-applied.
 
 **It went to a preview deployment, not production.** A colour change is the
-most visible thing a real client can notice, so Britton reviews it before the client
-sees it; the brand setting was written to the database with no effect on the
+most visible thing a real client can notice, so Britton reviews it before the
+client sees it; the brand setting was written to the database with no effect on the
 live site, which doesn't read that column yet. Not rendered by anyone yet —
 the preview sits behind Vercel's and Harbour's sign-ins.
 
 Promoted to production the same evening on Britton's instruction, as the exact
 build on the preview (only the change_log had changed since). His confirmation
 that the colours looked right arrived just after the promote rather than
-before it; the review happened, but not in the order the plan intended. the client's
-dashboard changes appearance on their next visit.
+before it; the review happened, but not in the order the plan intended. The
+client's dashboard changes appearance on their next visit.
 
 A question went on the meeting run sheet alongside license disclosure: whether
 the brokerage has brand standards or an approval process for client-facing
@@ -1686,7 +1687,7 @@ broker's eight — the meeting spent its time on the dashboard instead.
 
 ### Not yet done
 
-- Pilot cohort is one client deep (the pilot client, onboarded 2026-09-10) and
+- Pilot cohort is one client deep (onboarded 2026-09-10) and
   still has no move-up buyer — the case the hypothesis actually turns on.
   Two more clients needed before the thresholds mean anything.
 - **The broker's answers are in (2026-09-22 debrief); none of the work is
