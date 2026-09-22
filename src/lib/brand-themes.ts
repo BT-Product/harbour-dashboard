@@ -28,7 +28,7 @@ export const BRAND_THEMES = {
   sothebys: {
     label: "Sotheby's International Realty",
     source:
-      "Computed styles on sothebysrealty.com and an affiliate site (an affiliate brokerage site), 2026-09-14: " +
+      "Computed styles on sothebysrealty.com and on a local affiliate brokerage's site, 2026-09-14: " +
       "navy #002349 carries headers, logo block and primary buttons; deep navy #001731; gold #C29B40 " +
       "used sparingly as an accent; neutral greys and white grounds.",
     tokens: {
