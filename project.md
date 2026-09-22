@@ -69,19 +69,23 @@ realtors from the start rather than at Britton alone.
   before they could set a password. Still short of a move-up buyer, which
   is the case the hypothesis actually turns on — with one client, no
   threshold in `strategy.md` can be read yet.
-- **Managing broker** — **packet sent 2026-09-14**, awaiting response.
-  Six items of client-facing copy. Item 01 (a stage explainer instructed
-  the client to wire closing funds with no fraud warning anywhere in the
-  product) was fixed the same day with interim wording rather than held
-  for the review; what is still needed there is the brokerage's own
-  language. The warning was revised the same day to name the client's
-  escrow and give them a number to call. The other five block on the
-  broker. **Covered in the meeting on 2026-09-15** alongside the inspection
-  agent review, using the run sheet under Links. Real exposure so far is
-  small: one house-hunting client who has visited once.
+- **Managing broker** — **engaged; answers received 2026-09-22.** All six
+  packet items answered plus a call. Two shipped features come out (the HOA
+  calculator and the coordination view's financing lines) on one principle:
+  numbers belong to the lender, and a realtor does not model loan math. The
+  wire warning takes her wording plus a client acknowledgement, and the
+  disclosure block gains the brokerage's name and DRE. Her most valuable
+  contribution wasn't a correction: the client's stages should track
+  **contingencies** — what still protects them, what they have released —
+  rather than activities. Wording for the new stages comes back to her.
+  Nothing from the review is built yet; see `change_log.md` day 10.
 - **Broker and real estate attorney** — review of the inspection agent's
   call-narrative framing rules is a precondition before that feature is
-  built (added 2026-09-12). **The broker half is on the agenda for the
+  built (added 2026-09-12). **Still open as of 2026-09-22:** the meeting ran
+  out of time on the dashboard, and the attorney gave a direction by phone —
+  no NAR guidance exists, and the risk he would litigate is the appearance
+  that the realtor outsourced the job to the AI — without answering the
+  written questions. **The broker half is on the agenda for the
   managing broker meeting on 2026-09-15**, using the design review page
   under Links: twelve questions, eight for the broker and four expected to
   need an attorney. **The attorney half is an email to Britton's real

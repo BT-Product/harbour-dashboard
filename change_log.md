@@ -1539,19 +1539,181 @@ which also suits a confidential exchange with counsel. The email offers a
 one-page overview instead; if the attorney wants one, it should be a short
 PDF written for them.
 
+## Day 10 — 2026-09-22 (Discovery phase)
+
+### The broker review came back, and it reverses two shipped features
+
+All six packet items answered, plus a phone call on the stage copy, plus a
+separate call with the attorney. The headline is that two things already live
+have to come out, and one thing nobody had asked about turns out to be the
+largest piece of work in the product.
+
+**01 — Wire fraud (revise).** The brokerage has no standard wording, because
+the instructions come from title and every title company words them
+differently. She supplied language and agreed with the boundary already
+shipped: it belongs at acceptance, aimed at the *initial deposit* wire, not
+only at closing. She wants the client to **acknowledge** it. Her language
+replaces the interim copy, except that the escrow officer's phone stays —
+her own text tells the client to verify by a "known and independently
+verified telephone number", which is exactly what the dashboard supplies out
+of band.
+
+**03 and 04 — no agent-side calculation (exclude).** Her reasoning is
+narrower than "don't show numbers", and worth recording exactly: numbers are
+the lender's job, lenders have their own portals and their own required
+disclosures, and a realtor has no business modelling amortisation. Anything
+**the lender provided** may be displayed. So:
+
+- The HOA calculator comes off the Financials page. It is the one feature in
+  Harbour that Britton asked for by name, and it dies on a principle he
+  already argued for himself when he rejected the derived pre-approval
+  figure: **the number belongs to whoever is licensed to produce it.**
+- The coordination view keeps the timing comparison — which closes first,
+  and planning for the gap — and loses every financing line, including
+  calling sale-first the "lower-risk order for financing".
+- The loss is real, not cosmetic. An HOA of $400 a month moves what a buyer
+  can offer by tens of thousands, and a buyer who doesn't know that tours
+  homes they can't buy. **The route back is the lender**: ask them at
+  pre-approval for the adjusted maximum at a few HOA levels and display
+  their table, attributed and dated. Britton thinks his lender would supply
+  it. That keeps the fact and moves the arithmetic to the licensee.
+
+**05 — notes belong to the broker's file.** The answer nobody anticipated.
+Any note, on any platform, carries the agent's DRE obligation to put it in
+the **broker's file** — today by uploading a PDF or screen recording to
+Brokerage Engine, usually via a transaction coordinator. The broker, not the
+agent, is responsible for maintaining that file, and anything missing from it
+can weaken E&O protection and leave liability with the agent alone.
+
+This reframes what Harbour is. It is not only a client's window; it is a
+**source of record that has to be handed over**. Consequences:
+
+- *"Private" notes are private from the client, not from the broker.*
+- **Removing a client currently destroys the file.** `agent_delete_client_data`
+  deletes every row a client owns, and the file is due exactly when a client
+  stops working with the agent. Removal has to produce the file first, or
+  become an archive.
+- **Harbour doesn't keep enough to produce one.** It records that a reminder
+  or recap was sent, not what it said, and it keeps a transaction's current
+  stage with no history of when stages changed. Both start being kept from
+  now on; what has already happened can't be reconstructed.
+- The file covers the engagement, which starts at the **buyer representation
+  agreement**, so homes toured before that stay out. It is due when the file
+  ends — closed escrow or client gone. Output is a PDF, downloadable or
+  emailed to a transaction coordinator, deliberately brokerage-neutral:
+  Brokerage Engine is this brokerage's system, not the market's.
+
+**06 — one disclosure block (revise).** Everything client-facing, logged in
+or not, carries the agent's DRE number. She asked for a standard block —
+name, brokerage, email, phone, DRE — so the shipped footer grows the
+brokerage's identity:
+
+> Britton Taylor · DRE #02021858
+> (925) 597-0227 · BT@brittontaylor.com
+> [the brokerage] · DRE #[brokerage DRE]
+
+An agent who is their own broker shows only their own name and number, so the
+model needs that to be explicit rather than inferred from a blank field.
+
+### The stage list should be about contingencies, not activities
+
+The most valuable thing said in the call, and it came from the practitioner
+rather than the product: replace `inspection`, `appraisal` and
+`loan_approval` with the **contingencies**, so the client can see what has
+been removed and what still protects them.
+
+That is a better answer to the question a buyer in escrow actually has. The
+appraisal happening is an activity; a released appraisal contingency is a
+decision that put their deposit at risk. Britton sent the CAR contingency
+removal form, which sets the shape:
+
+- Ten categories — loan, appraisal, investigation of property, insurance,
+  review of seller documents, preliminary title report, HOA/common interest
+  disclosures, leased or liened items, sale of buyer's property, other.
+- **Removal is not always all-or-nothing.** Investigation can be released in
+  parts (physical inspections separately from everything else), seller
+  documents can be released except government reports or statutory
+  disclosures, and sale-of-buyer's-property has two different triggers. The
+  form's structure has to survive into the data, or Harbour will misstate
+  what a client has given up.
+- **The client sees "still in place" or "released", with dates.** Partial
+  detail belongs in the agent's view and the broker file, not the client's.
+- Not every deal has all ten. **Deadlines prefill from acceptance using the
+  agent's own defaults** — Britton writes 10-day inspection where the
+  California standard is 17 — and are adjustable per client. That makes
+  per-agent contingency defaults a settings feature.
+- **Sellers too**, mirroring the buyer's contingencies against their home,
+  plus the seller's own obligation to deliver disclosures, standard 7 days
+  after acceptance.
+- Explaining what removal means is the realtor's job and stays in, but it has
+  to inform without frightening — the same constraint `strategy.md` already
+  names for the inspection agent: **Harbour never withholds, it only
+  frames.** Wording goes back to the broker.
+
+### Clear to Close becomes "your closing disclosure is ready"
+
+Also from the call: a stage for the closing disclosure reaching the client,
+**before** Clear to Close rather than replacing it. Same reasoning as the
+contingencies — the lender being clear to close is their internal state,
+while the disclosure is something the client has to do, with a legal clock
+on it (the lender must deliver it at least three business days before
+signing).
+
+- Harbour will show the earliest signing date from the delivery date. A
+  deliberate bet, to be judged by whether clients use it: the broker's
+  objection is to money math, not to dates, which a realtor does track.
+- The client acknowledges it, like the wire warning, and both
+  acknowledgements go in the broker file.
+- **Cash purchases have no closing disclosure**, so the stage disappears for
+  them rather than being reworded.
+
+### The attorney: the risk is looking like you outsourced the job
+
+No NAR guidance on AI exists yet, so there is nothing to comply with. His
+contribution was the litigator's view: what he would attack is the claim that
+the realtor **outsourced their responsibilities** to the AI. Not any
+particular sentence — the overall impression of absence.
+
+That lands squarely on the inspection agent's three unreviewed messages, and
+it changes what the design has to prove. Being in the loop isn't enough;
+being **demonstrably** in the loop is the requirement, and the evidence is the
+same record the broker file now needs. The two answers converge: document
+everything, and keep the realtor visibly on every client-facing step.
+
+He gave this without the full design in front of him, so it is a direction,
+not a ruling on the twelve questions. Those remain unanswered, as do the
+broker's eight — the meeting spent its time on the dashboard instead.
+
 ### Not yet done
 
 - Pilot cohort is one client deep (the pilot client, onboarded 2026-09-10) and
   still has no move-up buyer — the case the hypothesis actually turns on.
   Two more clients needed before the thresholds mean anything.
-- **The packet is with the managing broker (sent 2026-09-14), awaiting a
-  response** — on its second attempt, after the first failed to save or
-  take their name. Watch whether the fixed page gets used or the answers
-  come back as an email reply; either is fine, but it says something about
-  whether a form was the right shape for this at all. Item 01 is fixed on our side and needs only their wording.
-  The other five genuinely block on them. Actual exposure is small — one
-  client, house hunting, one visit (2026-09-11) — but it grows the day a
-  client goes under contract. Being covered in the 2026-09-15 meeting.
+- **The broker's answers are in (2026-09-22 debrief); none of the work is
+  built yet.** In the order it should be done:
+  1. *Live client sees it now:* the disclosure block gains the brokerage
+     name and its DRE; the wire warning takes her language plus a client
+     acknowledgement; the HOA calculator and the coordination view's
+     financing lines come out.
+  2. *Records are being lost daily:* stop deleting a client's data on
+     removal, start keeping sent-email copies and stage history, then build
+     the broker-file PDF export (downloadable or emailed to a transaction
+     coordinator).
+  3. *Then:* contingency-based stages with per-agent deadline defaults, the
+     closing-disclosure stage, and the seller-disclosure milestone — all
+     needing wording back from the broker.
+  4. *Later:* lender-supplied HOA numbers, the retention plan rework, the
+     inspection agent.
+- **The answers came back as a pasted email, not through the page.** Worth
+  remembering next time a form is built for someone else: the fixed page was
+  never used, and the phone call carried more than all six written answers.
+- **Neither the inspection agent's twelve questions nor the brand-colour
+  question were covered** in the meeting — the dashboard took the time. The
+  attorney gave a direction ("don't look like you outsourced the job")
+  rather than answers to his ten. Both reviews are still open.
+- **`README.md` and the portfolio brief both describe the HOA calculator**
+  as a current feature, which it is until the removal ships. Update both in
+  the same change, not before.
 - **Demo passwords are published.** The repo is public and
   `scripts/seed.ts` holds the password for Jordan's and Alex's production
   logins. Rotate both and move the seed password out of source. Sam Buyer's

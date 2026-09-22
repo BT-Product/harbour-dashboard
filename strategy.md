@@ -140,13 +140,17 @@ this plan leans on.
 
 Price drops, back on market, gone pending — only for homes in the client's
 Homes Seen marked Strong or Maybe, never all listings. What makes it more than
-a Zillow alert is context only Harbour has: "now $15,000 under your
-pre-approval, and still under it with the $220 HOA", beside the client's notes
-from the tour. First version is agent-triggered — Britton already sees these in
-MLS alerts, so one tap sends it with no data feed or licensing. An automatic
-MLS/IDX feed is a later step governed by MLS and brokerage rules. The HOA
-figure is the existing estimate, which only ever qualifies the lender's number
-downward.
+a Zillow alert is context only Harbour has: the client's own notes from the
+tour, and the price set against what their lender approved. First version is
+agent-triggered — Britton already sees these in MLS alerts, so one tap sends
+it with no data feed or licensing. An automatic MLS/IDX feed is a later step
+governed by MLS and brokerage rules.
+
+**Revised 2026-09-22 after the broker review.** This originally leaned on the
+HOA-adjusted figure — "still under it with the $220 HOA" — which Harbour may
+no longer compute (see the constraint below). The hook is now the lender's own
+number, and regains its HOA half only once lenders supply adjusted figures
+directly.
 
 ### 3. The agent's weekly picks
 
@@ -155,6 +159,33 @@ agent thinks it fits, and "Tour it" / "Pass" on the dashboard — the first way 
 client answers back inside Harbour. Its cost is agent time, so it stays small or
 it becomes the chore that lapses. The "why it fits" line is agent judgment,
 marked as such, and needs the same Fair Housing care as debrief notes.
+
+### What the broker review settled (2026-09-22)
+
+Three constraints now bind every part of the dashboard, not just the
+mechanisms above.
+
+**Harbour does not calculate money.** Numbers belong to whoever is licensed
+to produce them: the lender. Anything a lender provided may be displayed,
+attributed. Amortisation, affordability, and HOA adjustments are outside what
+a realtor may model — and this is the same principle that killed the derived
+pre-approval figure in day 6, arriving this time from the broker instead of
+from us. Dates are not money: contingency deadlines and the closing
+disclosure's three-day clock stay, because tracking dates *is* the realtor's
+job.
+
+**Harbour is a source of record, not only a window.** Every note on any
+platform carries the agent's obligation to file it with their broker, who is
+the one responsible for maintaining the file. So anything Harbour holds has
+to be exportable as a handover document, "private" means private from the
+client rather than from the broker, and deleting a client's data is the one
+thing removal must never quietly do.
+
+**Being in the loop has to be visible.** The attorney's read is that the
+attack on any AI-assisted practice is that the realtor outsourced their
+responsibilities. The defence is the same record the broker file needs — who
+reviewed what, and when — which makes documentation a product feature rather
+than an afterthought.
 
 ### Constraints on all three
 
@@ -587,6 +618,16 @@ stage-explainer copy, and reviewed once as rules rather than per deal.
 **Status, 2026-09-14:** the broker half is on the agenda for Britton's
 meeting with the managing broker on 2026-09-15, using a review page linked
 from `project.md`. The attorney half is not yet arranged.
+
+**Status, 2026-09-22:** the broker meeting spent its time on the dashboard,
+so the twelve design questions are still unanswered. The attorney answered by
+phone without the design in front of him, and gave a direction rather than
+rulings: there is no NAR guidance on AI to comply with, and what he would
+attack as a litigator is the impression that the realtor **outsourced their
+responsibilities** to the AI. That raises the bar on the three messages that
+reach a client without review — the design must make the realtor's
+involvement demonstrable, not merely real — and it is met with the same
+evidence the broker file requires. His ten written questions still stand.
 
 **Status, 2026-09-15:** the attorney half is an email to Britton's real
 estate attorney, drafted to go out on 2026-09-15 (not yet confirmed sent). It
