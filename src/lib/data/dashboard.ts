@@ -108,7 +108,16 @@ export function overviewStatus(
     if (houseHunting) {
       detail = `Your sale of ${transactionLabel(sell)} is at ${sellStage?.label.toLowerCase() ?? "its current stage"}, and you're still looking for the next place.`;
     } else if (sellClose && buyClose) {
-      detail = `Your sale closes ${sellClose} and your purchase ${buyClose}.`;
+      // Chronological, not buy-then-sell: whichever closes first is named
+      // first. Listing the sale first regardless implied the sale came first,
+      // which for a move-up client is the one thing the sentence must get
+      // right.
+      const sellCoe = new Date(sell.key_dates?.coe_date ?? 0).getTime();
+      const buyCoe = new Date(buy.key_dates?.coe_date ?? 0).getTime();
+      detail =
+        sellCoe <= buyCoe
+          ? `Your sale closes ${sellClose} and your purchase ${buyClose}.`
+          : `Your purchase closes ${buyClose} and your sale ${sellClose}.`;
     } else if (sellClose) {
       detail = `Your sale closes ${sellClose}. The purchase closing date isn't set yet.`;
     } else if (buyClose) {

@@ -1708,6 +1708,17 @@ Nothing else from the review is built yet: the client acknowledgement on the
 wire warning, the brokerage line in the disclosure block, removing the HOA
 calculator, and the broker-file export all remain open.
 
+### The overview sentence named the sale first, whatever the dates said
+
+Spotted by Britton while setting up a demo recording. The move-up overview read
+"Your sale closes in 29 days and your purchase in 21 days" — always sale first,
+regardless of which actually closes first. A client reading left to right takes
+the first number as the nearer one, so the sentence implied the opposite of the
+truth for every purchase-first client.
+
+It now names whichever closes first, first. Small fix; it was the one sentence
+on the page whose entire job is sequence, and it had the sequence backwards.
+
 ### Not yet done
 
 - Pilot cohort is one client deep (onboarded 2026-09-10) and
