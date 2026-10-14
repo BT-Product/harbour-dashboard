@@ -1,5 +1,16 @@
 import type { Transaction } from "@/lib/supabase/database.types";
 
+/**
+ * How a move-up client's two closings relate — in time, never in money.
+ *
+ * This used to name loan products ("bridge financing or a contingency-backed
+ * loan"). The managing broker ruled that out on 2026-09-22: numbers and
+ * financing are the lender's licensed work, lenders have their own portals and
+ * their own required disclosures, and a realtor narrating them takes on
+ * liability that isn't theirs. What stays is the thing a realtor does own —
+ * which closing lands first, how big the gap is, and who to ask about it.
+ */
+
 export type CoordinationRelation = "sale_first" | "purchase_first" | "same_day" | "unknown";
 
 export interface Coordination {
@@ -19,7 +30,7 @@ export function computeCoordination(buy: Transaction, sell: Transaction): Coordi
       daysApart: null,
       headline: "Closing dates aren't set on both sides yet.",
       riskRead:
-        "Once both closing dates are confirmed, this will show whether your sale funds your purchase in time.",
+        "Once both closing dates are confirmed, this will show which one closes first and how much time sits between them.",
     };
   }
 
@@ -33,7 +44,7 @@ export function computeCoordination(buy: Transaction, sell: Transaction): Coordi
       daysApart: 0,
       headline: "Your sale and purchase are scheduled to close the same day.",
       riskRead:
-        "This is a tight, common arrangement — a same-day close usually means a short-term rental car or storage plan for moving day, but no gap in financing or housing.",
+        "This is a tight, common arrangement — a same-day close usually means a short-term rental car or storage plan for moving day, but no gap to cover in between.",
     };
   }
 
@@ -43,7 +54,7 @@ export function computeCoordination(buy: Transaction, sell: Transaction): Coordi
       daysApart: diffDays,
       headline: `Your sale is scheduled to close ${diffDays} day${diffDays === 1 ? "" : "s"} before your purchase.`,
       riskRead:
-        "This is the lower-risk order for financing — your sale proceeds are typically available to fund your purchase. The main thing to plan for is where you'll stay for the gap between closings.",
+        "This is the more forgiving order: your sale completes first. The main thing to plan for is where you'll stay for the gap between closings.",
     };
   }
 
@@ -53,6 +64,6 @@ export function computeCoordination(buy: Transaction, sell: Transaction): Coordi
     daysApart: gap,
     headline: `Your purchase is scheduled to close ${gap} day${gap === 1 ? "" : "s"} before your sale.`,
     riskRead:
-      "This order means you may need bridge financing or a contingency-backed loan to fund the purchase before your sale proceeds arrive. This is the timeline to watch most closely — talk to your lender about how it's being covered.",
+      "This is the timeline to watch most closely, because your purchase completes before your sale does. Your lender is the one to talk to about how the purchase is covered in that window — ask them early rather than close to the date.",
   };
 }

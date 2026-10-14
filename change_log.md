@@ -1685,6 +1685,29 @@ He gave this without the full design in front of him, so it is a direction,
 not a ruling on the twelve questions. Those remain unanswered, as do the
 broker's eight — the meeting spent its time on the dashboard instead.
 
+## Day 11 — 2026-10-14
+
+### The first of the broker's changes: no financing advice in the coordination view
+
+Britton is recording a product video and didn't want to narrate around copy his
+broker had already ruled out, so the first item from the 2026-09-22 review
+shipped on its own.
+
+The move-up coordination view told clients they "may need bridge financing or a
+contingency-backed loan," called sale-first the "lower-risk order for
+financing," and promised to show whether "your sale funds your purchase in
+time." All of it is gone. What's left is what a realtor actually owns: which
+closing lands first, how many days sit between them, where you'll stay in the
+gap, and — for the risky order — that the lender is the person to ask, early.
+
+The reasoning is recorded at the top of `coordination.ts` rather than only in
+this log, because the next person to read that file will otherwise wonder why
+the obvious advice is missing and put it back.
+
+Nothing else from the review is built yet: the client acknowledgement on the
+wire warning, the brokerage line in the disclosure block, removing the HOA
+calculator, and the broker-file export all remain open.
+
 ### Not yet done
 
 - Pilot cohort is one client deep (onboarded 2026-09-10) and
